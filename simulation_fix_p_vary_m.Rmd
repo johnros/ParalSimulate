@@ -5,14 +5,16 @@ date: "1/1/2015"
 output: pdf_document
 ---
 ```{r Initializing}
-library(AIStat2015)
-# source('libraries.R')
-# source('utility.R')
-# source('utility_fixed_p_vary_m.R')
+library(InformationAndInference)
 ms <- c(1e1, 1e2)
 p <- 1e2
 replications <- 2L
 kappas <- seq(2^-6, 2^-2, length.out = 2)
+```
+
+
+```{r MakeConfiguration}
+configuration <- makeConfiguration() 
 ```
 
 
