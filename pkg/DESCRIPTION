@@ -7,5 +7,6 @@ Author: Jonathan Rosenblatt
 Maintainer: Jonathan Rosenblatt <john.ros.work@gmail.com>
 Description: InformationAndInference
 Depends:
-  magrittr
+  magrittr, 
+  dplyr
 License: FreeBSD

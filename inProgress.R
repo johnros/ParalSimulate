@@ -1,16 +1,15 @@
-
-# Return a list with all simulation configurations
-makeConfiguration <- function(replications){
+# Get single configuration, make data and return errors for parallelized and distributed:
+getErrors <- function(configuration){
+  # Sketch: 
+  ## Generate parameters
+  ## Generate data
+  ## Estimate parameters
+  ## Compute ground true
+  ## Compute errors
   
 }
 ## Testing:
-.replications <- 1e1
-.m <- c(10,100)
-.p <- 1e2
-.n <- c(1e2,1e3)
-.fitter <- 
-  
-  
-  .configuration <- makeConfiguration()
+makeTest()
+getErrors
 
-excludeConfigurations <- function()
+
