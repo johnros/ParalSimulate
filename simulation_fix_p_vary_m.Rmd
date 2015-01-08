@@ -6,41 +6,32 @@ output: pdf_document
 ---
 ```{r Initializing}
 library(InformationAndInference)
-ms <- c(1e1, 1e2)
-p <- 1e2
-replications <- 2L
-kappas <- seq(2^-6, 2^-2, length.out = 2)
 ```
 
 
 ```{r MakeConfiguration}
-configuration <- makeConfiguration() 
+# Create configurations:
+configurations <- makeConfiguration(reps = 1e1, m = 1e1, p = 5e1, n = c(2e2, 5e2) , kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+
+# Testing:
+configurations %>% dim
+apply(configurations, 1, replicateMSE)
 ```
 
 
 ## OLS
-
-Now computing the ratio of $l_2$ norm of errors between estimtors:
 ```{r}
-.getMSE <- function(kappa) getMSERegression_ms(replications, kappa, p, ms, my.ols, coefs.ols)
-MSEs_ms.0 <- kappas %>% lapply(.getMSE)
-```
-
-```{r}
-cl <- makeCluster(detectCores()-1)
+cl <- makeCluster(2)
 clusterEvalQ(cl, {
-  source('libraries.R')
-  source('utility.R')
-  source('utility_fixed_p_vary_m.R')
+  library(InformationAndInference)
   })
-exporting <- c('p', 'ms','kappas','replications', '.getMSE', 'my.ols', 'coefs.ols')
-clusterExport(cl, exporting )
-MSEs_ms.0 <- parLapplyLB(cl, kappas, .getMSE)
+MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
 stopCluster(cl)
 ```
 
 
 ```{r plot_1, eval=FALSE, echo=FALSE}
+## TODO: plot results 
 plotMSE_ms(MSEs_ms.0, p, kappas, replications , "Squared")
 ```
 

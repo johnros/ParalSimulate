@@ -61,19 +61,17 @@ makeConfiguration <- function(reps,
                               n, 
                               kappa, 
                               model, 
-                              parameters, 
                               link=identity, 
                               sigma=1, 
-                              beta,
-                              beta.star){
+                              beta=makeBetas(p),
+                              beta.star=beta){
   
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
                                       p=p, 
                                       n=n, 
                                       kappa=kappa, 
-                                      model=list(model), 
-                                      params=c(makeBetas),
+                                      model=list(model),
                                       link=c(link),
                                       sigma=sigma,
                                       beta=list(beta),
@@ -86,7 +84,7 @@ makeConfiguration <- function(reps,
 }
 ## Testing:
 # makeTest()
-# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, .params, identity, 1, .beta,.beta.star)
+# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, identity, 1, .beta,.beta.star)
 # .configurations %>% dim
 # .configurations %>% names
 
@@ -116,11 +114,12 @@ makeRegressionData <- function(p, N, beta, link, sigma,...){
 # makeRegressionData(.p, .N, .betas, identity, 1)
 
 
-analyzeParallel <- function(data, m, model, N, ...){
+analyzeParallel <- function(data, m, model, N, p,...){
   y <- data$y
   X <- data$X
-  FITTER <- model[[1]]$fitter
-  COEFS <- model[[1]]$coefs
+  
+  FITTER <- model$fitter
+  COEFS <- model$coefs
   
   ## Centralized Solution:
   the.fit <- FITTER(y=y,x=X)
@@ -181,7 +180,9 @@ SSQ <- function(x) x^2 %>% sum
 
 # Compute the squared error of estimates
 errorFun <- function(errors){
-  lapply(errors, SSQ)
+  MSEs <- lapply(errors, SSQ)
+  ratio <- with(MSEs, averaged/centralized)
+  result <- c(list(ratio=ratio), MSEs )
 }
 ## Testing:
 # errorFun(.errors)

@@ -8,5 +8,6 @@ Maintainer: Jonathan Rosenblatt <john.ros.work@gmail.com>
 Description: InformationAndInference
 Depends:
   magrittr, 
-  dplyr
+  dplyr,
+  parallel
 License: FreeBSD
