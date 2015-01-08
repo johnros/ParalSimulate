@@ -20,9 +20,9 @@ my.logistic <- list(fitter=function(y, x,...) glm(y~x-1, family = binomial,...),
 
 # Generate true parameters
 makeBetas <- function(p){
-  betas <- rnorm(p)
-  betas <- betas / sqrt(betas %*% betas)
-  return(betas)
+  beta <- rnorm(p)
+  beta <- beta / sqrt(beta %*% beta)
+  return(beta)
 }
 ## Testing:
 #makeBetas(100)
@@ -34,13 +34,17 @@ makeTest <- function(reps=1e1,
                      p=5e1, 
                      n=c(1e2,1e3), 
                      kappa=0.1, 
-                     model=my.ols){
+                     model=my.ols,
+                     beta=makeBetas(p),
+                     beta.star=beta){
   .reps <<- reps
   .m <<- m
   .p <<- p
   .n <<- n
   .kappa <<- kappa
   .model <<- model
+  .beta<<- beta
+  .beta.star<<- beta.star
 }
 ## Testing
 # makeTest()
@@ -51,7 +55,17 @@ makeTest <- function(reps=1e1,
 
 
 # Return a frame with all simulation configurations
-makeConfiguration <- function(reps, m, p, n, kappa, model, parameters, link=identity, sigma=1){
+makeConfiguration <- function(reps, 
+                              m, 
+                              p, 
+                              n, 
+                              kappa, 
+                              model, 
+                              parameters, 
+                              link=identity, 
+                              sigma=1, 
+                              beta,
+                              beta.star){
   
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
@@ -61,40 +75,36 @@ makeConfiguration <- function(reps, m, p, n, kappa, model, parameters, link=iden
                                       model=list(model), 
                                       params=c(makeBetas),
                                       link=c(link),
-                                      sigma=sigma)
+                                      sigma=sigma,
+                                      beta=list(beta),
+                                      beta.star=list(beta.star))
   configurations.frame <- configurations.frame %>% mutate(N=n*m)
+  configurations.frame <- configurations.frame %>% 
+    filter(p/n < kappa)
+ 
   return(configurations.frame)
 }
 ## Testing:
 # makeTest()
-# .configuration <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, .params)
-# .configuration %>% dim
-# .configuration %>% names
-# .configuration$model 
+# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, .params, identity, 1, .beta,.beta.star)
+# .configurations %>% dim
+# .configurations %>% names
 
 
-# Which configurations not to run
-excludeConfigurations <- function(configurations){
-  result <- configurations %>% 
-    filter(p/n < kappa)
-  return(result)
-}
-## Testing:
-# makeTest(p=1e1)
-# .configuration <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, .params)
-# excludeConfigurations(.configuration) 
+
 
 
 # Take betas and make sample:
 ## betas are assumed to have unit variance.
-makeRegressionData <- function(p, N, betas, link, sigma,...){
+makeRegressionData <- function(p, N, beta, link, sigma,...){
   
   # Deal with call from do.call where link is a list:
   if(is.list(link)) link <- link[[1]]
+  if(is.list(beta)) beta <- beta[[1]]
   
   # Generate data:
   X <-  matrix(rnorm(p*N), nrow=N, ncol=p)
-  linear.effect <- X %*% betas
+  linear.effect <- X %*% beta
   y <- link(linear.effect) + rnorm(N, 0, sd=sigma)
   result <- list(y=y, X=X)
   return(result)
@@ -142,7 +152,7 @@ analyzeParallel <- function(data, m, model, N, ...){
 
 
 # Get single configuration, make data and return errors for parallelized and distributed:
-getErrors <- function(configuration, beta, beta.star){
+getErrors <- function(configuration){
   # Sketch: 
   ## Generate parameters
   ## Generate data
@@ -150,23 +160,20 @@ getErrors <- function(configuration, beta, beta.star){
   ## Compute ground true
   ## Compute errors
   p <- configuration[['p']]
-  data <- do.call(makeRegressionData, c(list(betas=beta), configuration))
-  coefs <- do.call(analyzeParallel, c(list(data), configuration))
+  data <- do.call(makeRegressionData, configuration)
+  coefs <- do.call(analyzeParallel, c(list(data),configuration))
   errors <- list(
-    averaged= coefs$averaged-beta.star,
-    centralized= coefs$centralized-beta.star)  
-  #TODO: dump errors to file.
+    averaged= coefs$averaged - configuration$beta.star[[1]],
+    centralized= coefs$centralized - configuration$beta.star[[1]])  
   return(errors)      
 }
 ## Testing:
 # .beta <- makeBetas(.p)
 # .beta.star <- .beta
-# makeTest(n=c(1e3))
-# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, .params)
-# .errors <- getErrors( .configurations[1,], .beta, .beta.star)
+# makeTest(n=c(1e4))
+# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, .params, beta=.beta, beta.star=.beta.star)
+# .errors <- getErrors( .configurations[1,])
 # plot(averaged~centralized, data=.errors)
-# plot(.errors$averaged);abline(0,0)
-# plot(.errors$centralized);abline(0,0)
 
 
 # Compute sum of squares 
@@ -177,12 +184,20 @@ errorFun <- function(errors){
   lapply(errors, SSQ)
 }
 ## Testing:
-# .beta <- makeBetas(.p)
-# .beta.star <- .beta
-# makeTest(n=c(1e4))
-# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, .params)
-# .errors <- getErrors( .configurations[1,], .beta, .beta.star)
 # errorFun(.errors)
 
+
+
+# Repeat estimation for a given configuration
+replicateMSE <- function(configuration){
+  MSEs <- replicate(configuration$replications,{
+    errors <- getErrors(configuration)
+    errorFun(errors)
+  })
+  return(MSEs)
+}
+## Testing:
+# configuration <- .configurations[1,]
+# replicateMSE(configuration)
 
 
