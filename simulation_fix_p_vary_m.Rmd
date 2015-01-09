@@ -4,7 +4,10 @@ author: "Jonathan Rosenblatt"
 date: "1/1/2015"
 output: pdf_document
 ---
+
+## Initializing and testing
 ```{r Initializing}
+.libPaths('~/R/x86_64-unknown-linux-gnu-library/')
 library(InformationAndInference)
 ```
 
@@ -21,8 +24,16 @@ apply(configurations, 1, replicateMSE)
 
 ## OLS
 ```{r}
-cl <- makeCluster(2)
+configurations <- makeConfiguration(
+  reps = 1e2,
+  m = c(1e1, 1e2), 
+  p = 5e1, 
+  n = seq(2e2,2e3,length.out=10), 
+  kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+
+cl <- makeCluster(30)
 clusterEvalQ(cl, {
+  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
   library(InformationAndInference)
   })
 MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
