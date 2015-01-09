@@ -16,6 +16,9 @@ my.logistic <- list(fitter=function(y, x,...) glm(y~x-1, family = binomial,...),
                     getTrueBeta=function(x) x)
 
 
+# Convert a list of lists to a matrix.
+extractor <- function(x) apply(x, 1, unlist)
+
 
 
 # Generate true parameters

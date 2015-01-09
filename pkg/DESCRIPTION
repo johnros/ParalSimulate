@@ -9,5 +9,6 @@ Description: InformationAndInference
 Depends:
   magrittr, 
   dplyr,
-  parallel
+  parallel,
+  plyr
 License: FreeBSD
