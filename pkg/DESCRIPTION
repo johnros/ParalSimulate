@@ -12,5 +12,6 @@ Depends:
   parallel,
   plyr,
   ggplot2,
-  scales
+  scales, 
+  MASS
 License: FreeBSD

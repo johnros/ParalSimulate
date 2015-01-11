@@ -13,6 +13,9 @@ library(InformationAndInference)
 ```
 
 
+
+## OLS
+
 ```{r MakeConfiguration}
 # Create configurations:
 configurations <- makeConfiguration(reps = 1e1, m = 1e1, p = 5e1, n = c(2e2, 5e2) , kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
@@ -23,7 +26,6 @@ apply(configurations, 1, replicateMSE)
 ```
 
 
-## OLS
 ```{r}
 configurations <- makeConfiguration(
   reps = 1e2,
@@ -46,6 +48,39 @@ stopCluster(cl)
 ```{r plot_1, eval=FALSE, echo=FALSE}
 MSEs.framed <- frameMSEs(MSEs.0, configurations)
 plotMSEs(MSEs.framed, 'test')
+```
+
+
+
+
+## Ridge
+
+```{r MakeConfiguration}
+# Create configurations:
+configurations <- makeConfiguration(reps = 1e1, m = 1e1, p = 5e1, n = c(2e2, 5e2) ,  kappa = 5e-1, lambda = 2, model = my.ols, link = identity, sigma = 1e1, beta=makeBetasDeterministic(p), beta.star = ridgeBeta(beta) ) 
+
+# Testing:
+configurations %>% dim
+apply(configurations, 1, replicateMSE)
+```
+
+
+```{r}
+configurations <- makeConfiguration(
+  reps = 1e2,
+  m = c(1e1, 1e2), 
+  p = c(5e1, 1e2), 
+  n = seq(2e2, 1e3,length.out=5), 
+  kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+
+cl <- makeCluster(30)
+clusterEvalQ(cl, {
+  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
+  library(InformationAndInference)
+  })
+MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
+save(MSEs.0, configurations, file='RData/MSEs.0.RData')
+stopCluster(cl)
 ```
 
 

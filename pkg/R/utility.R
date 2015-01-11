@@ -3,6 +3,11 @@ my.ols <-  list(fitter=function(y, x,...) lm(y~x-1,...),
                 coefs= function(fit) coef(fit),
                 getTrueBeta=function(x) x)
 
+my.ridge <-  list(fitter=function(y, x,...) lm.ridge(y~x-1,...),
+                coefs= function(fit) coef(fit),
+                getTrueBeta=function(x) x)
+
+
 my.huber <- list(fitter=my.huber <- function(y, x,...) rlm(y~x-1,...), 
                  coefs= function(fit) coef(fit),
                  getTrueBeta=function(x) x)
@@ -29,6 +34,15 @@ makeBetas <- function(p){
 }
 ## Testing:
 #makeBetas(100)
+
+
+makeBetasDeterministic <- function(p){
+  beta <- 1:p
+  beta <- beta / sqrt(beta %*% beta)
+  return(beta)
+}
+## Testing:
+#makeBetasDeterministic(100)
 
 
 
@@ -63,6 +77,7 @@ makeConfiguration <- function(reps,
                               p, 
                               n, 
                               kappa, 
+                              lambda,
                               model, 
                               link=identity, 
                               sigma=1, 
@@ -263,3 +278,21 @@ plotMSEs <- function(MSEs.framed,
 # .MSEs <- apply(.configurations, 1, replicateMSE)
 # .MSEs.framed <- frameMSEs(.MSEs, .configurations)
 # plotMSEs(.MSEs.framed, 'test')
+
+
+
+
+## Compute risk minimizer for Ridge problem
+ridgeBeta <- function(beta, lambda, Sigma){
+  if(missing(Sigma)){
+    beta.star <- beta/(1+lambda)
+  }
+  else{
+    p <- length(beta)
+    beta.star <- solve(Sigma+lambda*diag(p)) %*% Sigma %*% beta
+  }
+  return(beta.star)
+}
+## Testing:
+# ridgeBeta(rep(1,10), 2)
+# ridgeBeta(makeBetas(2), 2, matrix(c(10,3,3,2),2,2))
