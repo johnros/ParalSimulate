@@ -17,7 +17,7 @@ library(InformationAndInference)
 ## OLS
 
 ```{r Testing}
-configurations <- makeConfiguration(reps = 2, m = 1e1, p = c(1e1,2e1), n = c(2e2, 5e2) , kappa = 5e-1, model = my.ols, link = identity, sigma = 1e0 ) 
+configurations <- makeConfiguration(reps = 2, m = 1e1, p = c(1e1,2e1), n = c(1e2) , kappa = 5e-1, lambda = 2, model = my.ols, link = identity, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = identity ) 
 configurations %>% dim
 apply(configurations, 1, replicateMSE)
 ```

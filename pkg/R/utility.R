@@ -27,13 +27,13 @@ extractor <- function(x) apply(x, 1, unlist)
 
 
 # Generate true parameters
-makeBetas <- function(p){
+makeBetasRandom <- function(p){
   beta <- rnorm(p)
   beta <- beta / sqrt(beta %*% beta)
   return(beta)
 }
 ## Testing:
-#makeBetas(100)
+# makeBetasRandom(100) 
 
 
 makeBetasDeterministic <- function(p){
@@ -42,7 +42,7 @@ makeBetasDeterministic <- function(p){
   return(beta)
 }
 ## Testing:
-#makeBetasDeterministic(100)
+# makeBetasDeterministic(100) 
 
 
 
@@ -51,17 +51,13 @@ makeTest <- function(reps=1e1,
                      p=5e1, 
                      n=c(1e2,1e3), 
                      kappa=0.1, 
-                     model=my.ols,
-                     beta=makeBetas(p),
-                     beta.star=beta){
+                     model=my.ols){
   .reps <<- reps
   .m <<- m
   .p <<- p
   .n <<- n
   .kappa <<- kappa
   .model <<- model
-  .beta<<- beta
-  .beta.star<<- beta.star
 }
 ## Testing
 # makeTest()
@@ -81,8 +77,8 @@ makeConfiguration <- function(reps,
                               model, 
                               link=identity, 
                               sigma=1, 
-                              beta,
-                              beta.star){
+                              beta.maker,
+                              beta.star.maker){
   
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
@@ -91,25 +87,24 @@ makeConfiguration <- function(reps,
                                       kappa=kappa, 
                                       model=list(model),
                                       link=c(link),
-                                      sigma=sigma,
-                                      beta.maker,
-                                      beta.star.maker)
+                                      sigma=sigma)
+  
   configurations.frame <- configurations.frame %>% 
     filter(p<n & p/n < kappa)
   
-  configurations.frame <- configurations.frame %>% 
-    mutate(N=n*m,
-           beta=beta.maker(p),
-           beta.star=beta.star.maker(beta))
-    
+  configurations.frame %<>% mutate(N=n*m)    
+  configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
+  configurations.frame$beta.star <- lapply(configurations.frame$p, beta.star.maker)
+  
   return(configurations.frame)
 }
 ## Testing:
 # makeTest()
-# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, identity, 1, makeBetas, identity)
+# .configurations <- makeConfiguration(reps = .reps, m = .m, p = .p, n = .n, kappa = .kappa, lambda = 2, model = .model, link = identity, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = identity)
 # .configurations %>% dim
 # .configurations %>% names
-
+# str(.configurations)
+# .configurations$beta
 
 
 
@@ -134,6 +129,7 @@ makeRegressionData <- function(p, N, beta, link, sigma,...){
 # .N <- 1e4
 # .betas <- makeBetas(p = .p)
 # makeRegressionData(.p, .N, .betas, identity, 1)
+# do.call(makeRegressionData, configurations[1,])
 
 
 analyzeParallel <- function(data, m, model, N, p,...){
