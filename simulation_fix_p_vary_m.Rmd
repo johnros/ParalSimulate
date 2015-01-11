@@ -15,7 +15,6 @@ library(InformationAndInference)
 
 
 ## OLS
-
 ```{r Testing}
 configurations <- makeConfiguration(reps = 2, m = 1e1, p = c(1e1,2e1), n = c(1e2) , kappa = 5e-1, lambda = 2, model = my.ols, link = identity, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = identity ) 
 configurations %>% dim
@@ -37,10 +36,12 @@ clusterEvalQ(cl, {
   library(InformationAndInference)
   })
 MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
-save(MSEs.0, configurations, file='RData/MSEs.0.RData')
 stopCluster(cl)
 ```
 
+```{r saving}
+save(MSEs.0, configurations, file='RData/MSEs.0.RData')
+```
 
 ```{r plot_1, eval=FALSE, echo=FALSE}
 MSEs.framed <- frameMSEs(MSEs.0, configurations)
