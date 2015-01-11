@@ -16,22 +16,25 @@ library(InformationAndInference)
 
 ## OLS
 ```{r Testing}
-configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ols, link = identity, sigma = 1e0, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
+configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2, 4e2) , kappa = 1, lambda = 10, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
 configurations %>% dim
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
 MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)
 MSEs.framed.0 %>% select(n, average, std.dev)
-plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,2))
+plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))
 ```
 
 
 ```{r}
 configurations <- makeConfiguration(
-  reps = 1e2,
-  m = c(1e1, 1e2), 
-  p = c(1e1, 5e1), 
-  n = seq(2e2, 1e3,length.out=5), 
-  kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+  reps = 5e1, 
+  m = c(5e0, 5e1), 
+  p = 1e2, 
+  n = c(1.5e2, 2e2), 
+  kappa = 1, 
+  lambda = 10, 
+  model = my.ols, link = identity, sigma = 1e1, 
+  beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
 
 cl <- makeCluster(30)
 clusterEvalQ(cl, {
@@ -55,21 +58,21 @@ plotMSEs(MSEs.framed.0, 'test')
 
 
 ## Ridge
-```{r MakeConfiguration}
+```{r Ridge test}
 # Create configurations:
-configurations <- makeConfiguration(reps = 4e1, m = 1e1, p = 5e1, n = c(1.1e2, 5e2) ,  kappa = 5e-1, lambda = 2, model = my.ridge, link = identity, sigma = 1e1, beta.maker =makeBetasDeterministic, beta.star.maker  = ridgeBeta ) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasDeterministic, beta.star.maker  = ridgeBeta ) 
 
 # Testing:
 configurations %>% dim
 .MSEs.1 <- apply(configurations, 1, replicateMSE)
 MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations)
 MSEs.framed.1 %>% select(n, average, std.dev)
-plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,3))
+plotMSEs(MSEs.framed.1, 'test', y.lim=c(1,4))
 ```
 
 
 
-```{r}
+```{r OLS run}
 configurations <- makeConfiguration(
   reps = 1e2,
   m = c(1e1, 1e2), 
@@ -86,6 +89,64 @@ MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
 save(MSEs.0, configurations, file='RData/MSEs.0.RData')
 stopCluster(cl)
 ```
+
+
+
+## Misspecified
+[TODO: compute squared risk minimizer]
+```{r misspecified test}
+configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ols, link = exp, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
+configurations %>% dim
+.MSEs.2 <- apply(configurations, 1, replicateMSE)
+MSEs.framed.2 <- frameMSEs(.MSEs.2, configurations)
+MSEs.framed.2 %>% select(n, average, std.dev)
+plotMSEs(MSEs.framed.2, 'test', y.lim=c(0.9,3))
+```
+
+
+
+
+
+## Non Linear
+```{r non_linear test}
+configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2, 4e2) , kappa = 1, lambda = 10, model = my.log.link, link = exp, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
+configurations %>% dim
+.MSEs.3 <- apply(configurations, 1, replicateMSE)
+MSEs.framed.3 <- frameMSEs(.MSEs.3, configurations)
+MSEs.framed.3 %>% select(n, average, std.dev)
+plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))
+```
+
+
+```{r}
+configurations <- makeConfiguration(
+  reps = 5e1, 
+  m = c(5e0, 5e1), 
+  p = 1e2, 
+  n = c(1.5e2, 2e2), 
+  kappa = 1, 
+  lambda = 10, 
+  model = my.ols, link = identity, sigma = 1e1, 
+  beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
+
+cl <- makeCluster(30)
+clusterEvalQ(cl, {
+  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
+  library(InformationAndInference)
+  })
+MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
+stopCluster(cl)
+```
+
+```{r saving}
+save(MSEs.0, configurations, file='RData/MSEs.0.RData')
+```
+
+```{r plot_1, eval=FALSE, echo=FALSE}
+MSEs.framed.0 <- frameMSEs(MSEs.0, configurations)
+plotMSEs(MSEs.framed.0, 'test')
+```
+
 
 
 

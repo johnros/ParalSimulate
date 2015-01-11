@@ -5,6 +5,14 @@ my.ols <-  list(fitter=function(y, x,...) lm(y~x-1,...),
 my.ridge <-  list(fitter=function(y, x,...) lm.ridge(y~x-1,...),
                 coefs= function(fit) coef(fit))
 
+my.log.link <- list(fitter=function(y, x,...) {
+  .start <- coef(lm(y~x-1))
+  .control <- glm.control(epsilon=1e-6, maxit = 1e2 )
+  glm(formula = y~x-1, family=gaussian(link='log'),  start=.start,
+      control = .control)
+  },
+  coefs= function(fit) coef(fit))
+
 my.huber <- list(fitter=my.huber <- function(y, x,...) rlm(y~x-1,...), 
                  coefs= function(fit) coef(fit))
 
