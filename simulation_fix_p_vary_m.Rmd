@@ -16,9 +16,12 @@ library(InformationAndInference)
 
 ## OLS
 ```{r Testing}
-configurations <- makeConfiguration(reps = 2, m = 1e1, p = c(1e1,2e1), n = c(1e2) , kappa = 5e-1, lambda = 2, model = my.ols, link = identity, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = identity ) 
+configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ols, link = identity, sigma = 1e0, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
 configurations %>% dim
-apply(configurations, 1, replicateMSE)
+.MSEs.0 <- apply(configurations, 1, replicateMSE)
+MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)
+MSEs.framed.0 %>% select(n, average, std.dev)
+plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,2))
 ```
 
 
@@ -44,23 +47,26 @@ save(MSEs.0, configurations, file='RData/MSEs.0.RData')
 ```
 
 ```{r plot_1, eval=FALSE, echo=FALSE}
-MSEs.framed <- frameMSEs(MSEs.0, configurations)
-plotMSEs(MSEs.framed, 'test')
+MSEs.framed.0 <- frameMSEs(MSEs.0, configurations)
+plotMSEs(MSEs.framed.0, 'test')
 ```
 
 
 
 
 ## Ridge
-
 ```{r MakeConfiguration}
 # Create configurations:
-configurations <- makeConfiguration(reps = 1e1, m = 1e1, p = 5e1, n = c(2e2, 5e2) ,  kappa = 5e-1, lambda = 2, model = my.ols, link = identity, sigma = 1e1,beta.maker =makeBetasDeterministic, beta.star.maker  = ridgeBeta ) 
+configurations <- makeConfiguration(reps = 4e1, m = 1e1, p = 5e1, n = c(1.1e2, 5e2) ,  kappa = 5e-1, lambda = 2, model = my.ridge, link = identity, sigma = 1e1, beta.maker =makeBetasDeterministic, beta.star.maker  = ridgeBeta ) 
 
 # Testing:
 configurations %>% dim
-apply(configurations, 1, replicateMSE)
+.MSEs.1 <- apply(configurations, 1, replicateMSE)
+MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations)
+MSEs.framed.1 %>% select(n, average, std.dev)
+plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,3))
 ```
+
 
 
 ```{r}

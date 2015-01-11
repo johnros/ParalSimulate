@@ -8,10 +8,10 @@ Maintainer: Jonathan Rosenblatt <john.ros.work@gmail.com>
 Description: InformationAndInference
 Depends:
   magrittr (>= 1.5), 
+  MASS,
   dplyr,
   parallel,
   plyr,
   ggplot2,
-  scales, 
-  MASS
+  scales 
 License: FreeBSD

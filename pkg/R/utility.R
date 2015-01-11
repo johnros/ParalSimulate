@@ -1,24 +1,18 @@
 # Make fitting and coef extracting function
 my.ols <-  list(fitter=function(y, x,...) lm(y~x-1,...),
-                coefs= function(fit) coef(fit),
-                getTrueBeta=function(x) x)
+                coefs= function(fit) coef(fit))
 
 my.ridge <-  list(fitter=function(y, x,...) lm.ridge(y~x-1,...),
-                coefs= function(fit) coef(fit),
-                getTrueBeta=function(x) x)
-
+                coefs= function(fit) coef(fit))
 
 my.huber <- list(fitter=my.huber <- function(y, x,...) rlm(y~x-1,...), 
-                 coefs= function(fit) coef(fit),
-                 getTrueBeta=function(x) x)
+                 coefs= function(fit) coef(fit))
 
 my.absolute <- list(fitter=function(y, x,...) rq(y~x-1, method="fn",...),
-                    coefs=function(fit) coef(fit),
-                    getTrueBeta=function(x) x)
+                    coefs=function(fit) coef(fit))
 
 my.logistic <- list(fitter=function(y, x,...) glm(y~x-1, family = binomial,...),
-                    coefs= function(fit) coef(fit),
-                    getTrueBeta=function(x) x)
+                    coefs= function(fit) coef(fit))
 
 
 # Convert a list of lists to a matrix.
@@ -51,17 +45,19 @@ makeTest <- function(reps=1e1,
                      p=5e1, 
                      n=c(1e2,1e3), 
                      kappa=0.1, 
+                     lambda=2,
                      model=my.ols){
   .reps <<- reps
   .m <<- m
   .p <<- p
   .n <<- n
+  .lambda<<- lambda
   .kappa <<- kappa
   .model <<- model
 }
 ## Testing
 # makeTest()
-# .p  
+# .lambda  
 
 
 
@@ -94,11 +90,19 @@ makeConfiguration <- function(reps,
   
   configurations.frame %<>% mutate(N=n*m)    
   configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
-  configurations.frame$beta.star <- lapply(configurations.frame$p, beta.star.maker, lambda=lambda)
+  configurations.frame$beta.star <- lapply(configurations.frame$beta, beta.star.maker, lambda=lambda)
   
   return(configurations.frame)
 }
 ## Testing:
+#   OLS:
+# makeTest()
+# .configurations <- makeConfiguration(reps = .reps, m = .m, p = .p, n = .n, kappa = .kappa, lambda = 2, model = .model, link = identity, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = identity)
+# .configurations %>% dim
+# .configurations %>% names
+# str(.configurations)
+# .configurations$beta
+#   Ridge:
 # makeTest()
 # .configurations <- makeConfiguration(reps = .reps, m = .m, p = .p, n = .n, kappa = .kappa, lambda = 2, model = .model, link = identity, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = identity)
 # .configurations %>% dim
@@ -234,8 +238,7 @@ frameMSEs <- function(MSEs, configurations){
     } %>% 
     as.data.frame
   
-  MSEs.framed <- data.frame(configurations, MSEs.frame) %>%
-    select(-beta, -beta.star)
+  MSEs.framed <- data.frame(configurations, MSEs.frame) 
   MSEs.framed %<>% mutate(arm=2*std.dev/sqrt(n))
   
   return(MSEs.framed)
@@ -256,14 +259,14 @@ plotMSEs <- function(MSEs.framed,
                      y.lab= '', 
                      y.lim=c(1,2)){
   
-  plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=average,colour=m, group=m))+
+  plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=average, colour=m, group=m))+
     geom_point()+
-    geom_segment(aes(xend=n, y=average+arm, yend=average-arm))
+    geom_segment(aes(xend=n, y=average+std.dev, yend=average-std.dev))
   
   plot.1 <- plot.1 +
     labs(title = the.title)+
     ylab(y.lab)+
-    ylim(y.lim)+
+    ylim(y.lim) +
     xlab(expression(n))+
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
@@ -281,6 +284,16 @@ plotMSEs <- function(MSEs.framed,
 
 
 
+## Compute risk minimizer for Ridge problem
+identityBeta <- function(beta, ...){
+  return(beta)
+}
+## Testing:
+# identityBeta(rep(1,10), 2)
+# identityBeta(makeBetasDeterministic(10), 2)
+# identityBeta(makeBetasDeterministic(2), 2, matrix(c(10,3,3,2),2,2))
+
+
 
 ## Compute risk minimizer for Ridge problem
 ridgeBeta <- function(beta, lambda, Sigma){
@@ -295,4 +308,5 @@ ridgeBeta <- function(beta, lambda, Sigma){
 }
 ## Testing:
 # ridgeBeta(rep(1,10), 2)
-# ridgeBeta(makeBetas(2), 2, matrix(c(10,3,3,2),2,2))
+# ridgeBeta(makeBetasDeterministic(10), 2)
+# ridgeBeta(makeBetasDeterministic(2), 2, matrix(c(10,3,3,2),2,2))
