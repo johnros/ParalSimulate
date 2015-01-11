@@ -94,7 +94,7 @@ makeConfiguration <- function(reps,
   
   configurations.frame %<>% mutate(N=n*m)    
   configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
-  configurations.frame$beta.star <- lapply(configurations.frame$p, beta.star.maker)
+  configurations.frame$beta.star <- lapply(configurations.frame$p, beta.star.maker, lambda=lambda)
   
   return(configurations.frame)
 }
