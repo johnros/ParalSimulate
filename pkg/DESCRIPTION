@@ -7,8 +7,10 @@ Author: Jonathan Rosenblatt
 Maintainer: Jonathan Rosenblatt <john.ros.work@gmail.com>
 Description: InformationAndInference
 Depends:
-  magrittr, 
+  magrittr (>= 1.5), 
   dplyr,
   parallel,
-  plyr
+  plyr,
+  ggplot2,
+  scales
 License: FreeBSD

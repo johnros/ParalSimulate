@@ -205,3 +205,61 @@ replicateMSE <- function(configuration){
 # replicateMSE(configuration)
 
 
+## Get MSE results and configuration and return data.frame for plotting.
+frameMSEs <- function(MSEs, configurations){
+  
+  getRatio <- function(x) x[,'ratio']
+  
+  MSEs.list <- lapply(MSEs, extractor)
+  MSEs.frame <- MSEs.list %>% 
+    lapply(getRatio) %>% {
+      average <- sapply(.,mean)
+      std.dev <- sapply(.,sd)
+      cbind(average=average, std.dev=std.dev)
+    } %>% 
+    as.data.frame
+  
+  MSEs.framed <- data.frame(configurations, MSEs.frame) %>%
+    select(-beta, -beta.star)
+  MSEs.framed %<>% mutate(arm=2*std.dev/sqrt(n))
+  
+  return(MSEs.framed)
+}
+## Testing:
+# .configurations <- makeConfiguration(
+#   reps = 1e1, m = 1e1, p = 5e1, 
+#   n = seq(2e2,5e2,length.out=3) , 
+#   kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+# .MSEs <- apply(.configurations, 1, replicateMSE)
+# frameMSEs(.MSEs, .configurations)
+
+
+
+# Plot results of fixed p regime:
+plotMSEs <- function(MSEs.framed, 
+                     the.title, 
+                     y.lab= '', 
+                     y.lim=c(1,2)){
+  
+  plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=average,colour=m, group=m))+
+    geom_point()+
+    geom_segment(aes(xend=n, y=average+arm, yend=average-arm))
+  
+  plot.1 <- plot.1 +
+    labs(title = the.title)+
+    ylab(y.lab)+
+    ylim(y.lim)+
+    xlab(expression(n))+
+    #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
+    theme_bw()+
+    theme(text = element_text(size=20), legend.position = "none") 
+  return(plot.1)  
+}
+## Testing
+# .configurations <- makeConfiguration(
+#   reps = 1e1, m = 1e1, p = 5e1, 
+#   n = seq(1.1e2,3e2,length.out=3) , 
+#   kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+# .MSEs <- apply(.configurations, 1, replicateMSE)
+# .MSEs.framed <- frameMSEs(.MSEs, .configurations)
+# plotMSEs(.MSEs.framed, 'test')
