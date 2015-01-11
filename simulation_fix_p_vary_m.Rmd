@@ -54,7 +54,7 @@ plotMSEs(MSEs.framed, 'test')
 
 ```{r MakeConfiguration}
 # Create configurations:
-configurations <- makeConfiguration(reps = 1e1, m = 1e1, p = 5e1, n = c(2e2, 5e2) ,  kappa = 5e-1, lambda = 2, model = my.ols, link = identity, sigma = 1e1, beta=makeBetasDeterministic(p), beta.star = ridgeBeta(beta) ) 
+configurations <- makeConfiguration(reps = 1e1, m = 1e1, p = 5e1, n = c(2e2, 5e2) ,  kappa = 5e-1, lambda = 2, model = my.ols, link = identity, sigma = 1e1,beta.maker =makeBetasDeterministic, beta.star.maker  = ridgeBeta ) 
 
 # Testing:
 configurations %>% dim
