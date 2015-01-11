@@ -28,8 +28,8 @@ apply(configurations, 1, replicateMSE)
 configurations <- makeConfiguration(
   reps = 1e2,
   m = c(1e1, 1e2), 
-  p = 5e1, 
-  n = seq(2e2,2e3,length.out=10), 
+  p = c(5e1, 1e2), 
+  n = seq(2e2, 1e3,length.out=5), 
   kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
 
 cl <- makeCluster(30)
@@ -38,13 +38,14 @@ clusterEvalQ(cl, {
   library(InformationAndInference)
   })
 MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
+save(MSEs.0, configurations, file='RData/MSEs.0.RData')
 stopCluster(cl)
 ```
 
 
 ```{r plot_1, eval=FALSE, echo=FALSE}
-## TODO: plot results 
-plotMSE_ms(MSEs_ms.0, p, kappas, replications , "Squared")
+MSEs.framed <- frameMSEs(MSEs.0, configurations)
+plotMSEs(MSEs.framed, 'test')
 ```
 
 
