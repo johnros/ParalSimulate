@@ -81,8 +81,8 @@ makeConfiguration <- function(reps,
                               model, 
                               link=identity, 
                               sigma=1, 
-                              beta=makeBetas(p),
-                              beta.star=beta){
+                              beta,
+                              beta.star){
   
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
@@ -92,17 +92,21 @@ makeConfiguration <- function(reps,
                                       model=list(model),
                                       link=c(link),
                                       sigma=sigma,
-                                      beta=list(beta),
-                                      beta.star=list(beta.star))
-  configurations.frame <- configurations.frame %>% mutate(N=n*m)
+                                      beta.maker,
+                                      beta.star.maker)
   configurations.frame <- configurations.frame %>% 
-    filter(p/n < kappa)
- 
+    filter(p<n & p/n < kappa)
+  
+  configurations.frame <- configurations.frame %>% 
+    mutate(N=n*m,
+           beta=beta.maker(p),
+           beta.star=beta.star.maker(beta))
+    
   return(configurations.frame)
 }
 ## Testing:
 # makeTest()
-# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, identity, 1, .beta,.beta.star)
+# .configurations <- makeConfiguration(.reps, .m, .p, .n, .kappa, .model, identity, 1, makeBetas, identity)
 # .configurations %>% dim
 # .configurations %>% names
 
@@ -176,7 +180,7 @@ getErrors <- function(configuration){
   ## Estimate parameters
   ## Compute ground true
   ## Compute errors
-  p <- configuration[['p']]
+#   p <- configuration[['p']]
   data <- do.call(makeRegressionData, configuration)
   coefs <- do.call(analyzeParallel, c(list(data),configuration))
   errors <- list(
