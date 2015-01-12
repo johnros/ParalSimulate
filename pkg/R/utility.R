@@ -240,8 +240,8 @@ frameMSEs <- function(MSEs, configurations){
   MSEs.list <- lapply(MSEs, extractor)
   MSEs.frame <- MSEs.list %>% 
     lapply(getRatio) %>% {
-      average <- sapply(.,mean)
-      std.dev <- sapply(.,sd)
+      average <- sapply(.,mean, na.rm=TRUE)
+      std.dev <- sapply(.,sd, na.rm=TRUE)
       cbind(average=average, std.dev=std.dev)
     } %>% 
     as.data.frame

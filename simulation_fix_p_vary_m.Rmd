@@ -109,12 +109,12 @@ plotMSEs(MSEs.framed.2, 'test', y.lim=c(0.9,3))
 
 ## Non Linear
 ```{r non_linear test}
-configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2, 4e2) , kappa = 1, lambda = 10, model = my.log.link, link = exp, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
+configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2, 4e2) , kappa = 1, lambda = 10, model = my.log.link, link = exp, sigma = 1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
 configurations %>% dim
 .MSEs.3 <- apply(configurations, 1, replicateMSE)
 MSEs.framed.3 <- frameMSEs(.MSEs.3, configurations)
 MSEs.framed.3 %>% select(n, average, std.dev)
-plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))
+plotMSEs(MSEs.framed.3, 'test', y.lim=c(0,100))
 ```
 
 
