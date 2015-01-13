@@ -5,9 +5,9 @@ my.ols <-  list(fitter=function(y, x,...) lm(y~x-1,...),
 my.ridge <-  list(fitter=function(y, x,...) lm.ridge(y~x-1,...),
                 coefs= function(fit) coef(fit))
 
-my.log.link <- list(fitter=function(y, x,...) {
-  .start <- coef(lm(y~x-1))
-  .control <- glm.control(epsilon=1e-6, maxit = 1e2 )
+my.log.link <- list(fitter=function(y, x,beta.star,...) {
+  .start <- beta.star
+  .control <- glm.control(epsilon=1e-4, maxit = 1e2 )
   glm(formula = y~x-1, family=gaussian(link='log'),  start=.start,
       control = .control)
   },
@@ -144,7 +144,7 @@ makeRegressionData <- function(p, N, beta, link, sigma,...){
 # do.call(makeRegressionData, configurations[1,])
 
 
-analyzeParallel <- function(data, m, model, N, p,...){
+analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
   y <- data$y
   X <- data$X
   
@@ -152,7 +152,7 @@ analyzeParallel <- function(data, m, model, N, p,...){
   COEFS <- model$coefs
   
   ## Centralized Solution:
-  the.fit <- FITTER(y=y,x=X)
+  the.fit <- FITTER(y=y,x=X, beta.star)
   center.coefs <- COEFS(the.fit)
   
   ## Parallelized solution:
@@ -165,7 +165,7 @@ analyzeParallel <- function(data, m, model, N, p,...){
   
   machine.wise <-  matrix(NA, ncol = m, nrow = ncol(X))
   for(i in seq_len(m)){
-    .the.fit <- FITTER(y=y[machine.ind==i], x=X[machine.ind==i,])
+    .the.fit <- FITTER(y=y[machine.ind==i], x=X[machine.ind==i,],beta.star)
     .coefs<- COEFS(.the.fit)
     machine.wise[,i] <- .coefs 
   }
@@ -190,7 +190,7 @@ getErrors <- function(configuration){
   ## Compute errors
 #   p <- configuration[['p']]
   data <- do.call(makeRegressionData, configuration)
-  coefs <- do.call(analyzeParallel, c(list(data),configuration))
+  coefs <- do.call(analyzeParallel, c(list(data), configuration))
   errors <- list(
     averaged= coefs$averaged - configuration$beta.star[[1]],
     centralized= coefs$centralized - configuration$beta.star[[1]])  
@@ -242,7 +242,9 @@ frameMSEs <- function(MSEs, configurations){
     lapply(getRatio) %>% {
       average <- sapply(.,mean, na.rm=TRUE)
       std.dev <- sapply(.,sd, na.rm=TRUE)
-      cbind(average=average, std.dev=std.dev)
+      median <- sapply(.,median, na.rm=TRUE)
+      mad <- sapply(.,mad, na.rm=TRUE)
+      cbind(average=average, std.dev=std.dev, median=median, mad=mad)
     } %>% 
     as.data.frame
   
@@ -265,11 +267,20 @@ frameMSEs <- function(MSEs, configurations){
 plotMSEs <- function(MSEs.framed, 
                      the.title, 
                      y.lab= '', 
-                     y.lim=c(1,2)){
+                     y.lim=c(1,2), 
+                     robust=FALSE){
   
-  plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=average, colour=m, group=m))+
-    geom_point()+
-    geom_segment(aes(xend=n, y=average+std.dev, yend=average-std.dev))
+  if(robust){
+    plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=median, colour=m, group=m))+
+      geom_point()+
+      geom_segment(aes(xend=n, y=median+mad, yend=median-mad))
+  }  
+  else{
+    plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=average, colour=m, group=m))+
+      geom_point()+
+      geom_segment(aes(xend=n, y=average+std.dev, yend=average-std.dev))  
+  }
+  
   
   plot.1 <- plot.1 +
     labs(title = the.title)+

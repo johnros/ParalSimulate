@@ -109,12 +109,17 @@ plotMSEs(MSEs.framed.2, 'test', y.lim=c(0.9,3))
 
 ## Non Linear
 ```{r non_linear test}
-configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2, 4e2) , kappa = 1, lambda = 10, model = my.log.link, link = exp, sigma = 1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
+configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2) , kappa = 1, lambda = 10, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = identityBeta) 
 configurations %>% dim
 .MSEs.3 <- apply(configurations, 1, replicateMSE)
+# cl <- makeCluster(3)
+# clusterEvalQ(cl, library(InformationAndInference))
+# .MSEs.3 <- parApply(cl, configurations, 1, replicateMSE)
+# stopCluster(cl)
 MSEs.framed.3 <- frameMSEs(.MSEs.3, configurations)
-MSEs.framed.3 %>% select(n, average, std.dev)
-plotMSEs(MSEs.framed.3, 'test', y.lim=c(0,100))
+MSEs.framed.3 %>% select(n, average, std.dev, median, mad)
+plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,2))
+plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,2), robust = TRUE)
 ```
 
 
