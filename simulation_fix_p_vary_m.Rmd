@@ -15,8 +15,8 @@ library(InformationAndInference)
 
 
 ## OLS
-```{r Testing}
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2, 4e2) , kappa = 1, lambda = 10, model = my.ols, link = identity, sigma = 1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta, data.maker = makeRegressionData) 
+```{r OLS testing}
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta, data.maker = makeRegressionData) 
 configurations %>% dim
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
 MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)
@@ -25,8 +25,8 @@ plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))
 ```
 
 
-```{r}
-configurations <- makeConfiguration(
+```{r OLS run}
+configurations.0 <- makeConfiguration(
   reps = 5e1, 
   m = c(5e0, 5e1), 
   p = 1e2, 
@@ -41,16 +41,16 @@ clusterEvalQ(cl, {
   .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
   library(InformationAndInference)
   })
-MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
+MSEs.0 <- parApply(cl, configurations.0, 1, replicateMSE)
 stopCluster(cl)
 ```
 
 ```{r saving}
-save(MSEs.0, configurations, file='RData/MSEs.0.RData')
+save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
 ```
 
 ```{r plot_1, eval=FALSE, echo=FALSE}
-MSEs.framed.0 <- frameMSEs(MSEs.0, configurations)
+MSEs.framed.0 <- frameMSEs(MSEs.0, configurations.0)
 plotMSEs(MSEs.framed.0, 'test')
 ```
 
@@ -60,9 +60,11 @@ plotMSEs(MSEs.framed.0, 'test')
 ## Ridge
 ```{r Ridge test}
 # Create configurations:
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ridge, link = identity, sigma = 1, beta.maker=makeBetasDeterministic, beta.star.maker  = ridgeBeta, data.maker = makeRegressionData ) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 2e2) , kappa = 1, lambda = 1e2, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasRandom, beta.star.maker  = ridgeBeta, data.maker = makeRegressionData ) 
 configurations %>% dim
+
 .MSEs.1 <- apply(configurations, 1, replicateMSE)
+
 MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations)
 MSEs.framed.1 %>% select(n, average, std.dev, median, mad)
 plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,4))
@@ -71,7 +73,7 @@ plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,4))
 
 
 ```{r ridge run}
-configurations <- makeConfiguration(
+sconfigurations.1 <- makeConfiguration(
   reps = 1e2,
   m = c(1e1, 1e2), 
   p = c(5e1, 1e2), 
@@ -83,15 +85,15 @@ clusterEvalQ(cl, {
   .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
   library(InformationAndInference)
   })
-MSEs.0 <- parApply(cl, configurations, 1, replicateMSE)
-save(MSEs.0, configurations, file='RData/MSEs.0.RData')
+MSEs.1 <- parApply(cl, configurations.1, 1, replicateMSE)
+save(MSEs.1, configurations.1, file='RData/MSEs.1.RData')
 stopCluster(cl)
 ```
 
 
 
 ## Misspecified
-[TODO: compute squared risk minimizer]
+## TODO: compute squared risk minimizer
 ```{r misspecified test}
 configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ols, link = exp, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
 configurations %>% dim
@@ -107,7 +109,7 @@ plotMSEs(MSEs.framed.2, 'test', y.lim=c(0.9,3))
 
 ## Non Linear
 ```{r nonlinear test}
-configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2) , kappa = 1, lambda = 10, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = identityBeta) 
+configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2) , kappa = 1, lambda = 10, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = identityBeta, data.maker = makeRegressionData) 
 configurations %>% dim
 .MSEs.3 <- apply(configurations, 1, replicateMSE)
 # cl <- makeCluster(3)
@@ -122,22 +124,24 @@ plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,2), robust = TRUE)
 
 
 ```{r nonlinear run}
-configurations <- makeConfiguration(reps = 1e2, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2, 3e2, 4e2) , kappa = 1, lambda = NA, model = my.log.link, link = exp, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = identityBeta) 
-cl <- makeCluster(min(30, nrow(configurations)))
+configurations.3 <- makeConfiguration(reps = 1e2, m = c(5e0, 5e1), p = 5e1, n = seq(1e2, 2e2, length.out=5), kappa = 1, lambda = NA, model = my.log.link, link = exp, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = identityBeta) 
+cl <- makeCluster(min(30, nrow(configurations.3)))
 clusterEvalQ(cl, {
   .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
   library(InformationAndInference)
   })
-MSEs.3 <- parApply(cl, configurations, 1, replicateMSE)
+MSEs.3 <- parApply(cl, configurations.3, 1, replicateMSE)
 stopCluster(cl)
 ```
 
 ```{r nonlinear save}
-save(MSEs.3, configurations, file='RData/MSEs.3.RData')
+save(MSEs.3, configurations.3, file='RData/MSEs.3.RData')
 ```
 
 ```{r nonlinear plot, eval=FALSE, echo=FALSE}
-MSEs.framed.3 <- frameMSEs(MSEs.3, configurations)
+load(file='RData/MSEs.3.RData')
+MSEs.framed.3 <- frameMSEs(MSEs.3, configurations.3)
+MSEs.framed.3 %>% select(n, average, std.dev, median, mad) %>% head
 plotMSEs(MSEs.framed.3, 'test', robust=TRUE)
 ```
 
@@ -146,22 +150,22 @@ plotMSEs(MSEs.framed.3, 'test', robust=TRUE)
 
 ## Logistic Regression
 ```{r logistic test}
-configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2) , kappa = 1, lambda = 10, model = my.log.link, link = id, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = identityBeta) 
+configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 2e1, n = c(1e2, 2e2,4e2) , kappa = 1, lambda = 10, model = my.logistic, link = sigmoid, sigma = 1e1, beta.maker =makeBetasDeterministic, beta.star.maker = identityBeta, data.maker = makeClassificationData) 
 configurations %>% dim
-.MSEs.3 <- apply(configurations, 1, replicateMSE)
+.MSEs.4 <- apply(configurations, 1, replicateMSE)
 # cl <- makeCluster(3)
 # clusterEvalQ(cl, library(InformationAndInference))
 # .MSEs.3 <- parApply(cl, configurations, 1, replicateMSE)
 # stopCluster(cl)
-MSEs.framed.3 <- frameMSEs(.MSEs.3, configurations)
-MSEs.framed.3 %>% select(n, average, std.dev, median, mad)
-plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,2))
-plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,2), robust = TRUE)
+MSEs.framed.4 <- frameMSEs(.MSEs.4, configurations)
+MSEs.framed.4 %>% select(n, average, std.dev, median, mad)
+plotMSEs(MSEs.framed.4, 'test', y.lim=c(0.8,2))
+plotMSEs(MSEs.framed.4, 'test', y.lim=c(0.8,2), robust = TRUE)
 ```
 
 
 ```{r logistic run}
-configurations.4 <- makeConfiguration(reps = 1e2, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2, 3e2, 4e2) , kappa = 1, lambda = NA, model = my.log.link, link = exp, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = identityBeta) 
+configurations.4 <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 2e1, n = c(1e2, 2e2,4e2) , kappa = 1, lambda = 10, model = my.logistic, link = sigmoid, sigma = 1e1, beta.maker =makeBetasDeterministic, beta.star.maker = identityBeta, data.maker = makeClassificationData) 
 cl <- makeCluster(min(30, nrow(configurations)))
 clusterEvalQ(cl, {
   .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
@@ -172,7 +176,7 @@ stopCluster(cl)
 ```
 
 ```{r logistic save}
-save(MSEs.4, configurations.4, file='RData/MSEs.3.RData')
+save(MSEs.4, configurations.4, file='RData/MSEs.4.RData')
 ```
 
 ```{r logistic plot, eval=FALSE, echo=FALSE}

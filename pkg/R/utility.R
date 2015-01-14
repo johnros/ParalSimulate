@@ -2,7 +2,7 @@
 my.ols <-  list(fitter=function(y, x,...) lm(y~x-1),
                 coefs= function(fit) coef(fit))
 
-my.ridge <-  list(fitter=function(y, x,...) lm.ridge(y~x-1,...),
+my.ridge <-  list(fitter=function(y, x,...) lm.ridge(y~x-1),
                 coefs= function(fit) coef(fit))
 
 my.log.link <- list(fitter=function(y, x,beta.star,...) {
@@ -13,7 +13,7 @@ my.log.link <- list(fitter=function(y, x,beta.star,...) {
   },
   coefs= function(fit) coef(fit))
 
-my.logistic <- list(fitter=function(y, x,...) glm(y~x-1, family = binomial,...),
+my.logistic <- list(fitter=function(y, x,...) glm(y~x-1, family = binomial),
                     coefs= function(fit) coef(fit))
 
 
@@ -29,4 +29,3 @@ my.absolute <- list(fitter=function(y, x,...) rq(y~x-1, method="fn",...),
 extractor <- function(x) apply(x, 1, unlist)
 
 sigmoid <- function(x) 1/(1 + exp(-x))
-
