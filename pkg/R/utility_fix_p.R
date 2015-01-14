@@ -46,7 +46,6 @@ makeConfiguration <- function(reps,
                               m, 
                               p, 
                               n, 
-                              kappa, 
                               lambda,
                               model, 
                               link=identity, 
@@ -59,14 +58,13 @@ makeConfiguration <- function(reps,
                                       m=m, 
                                       p=p, 
                                       n=n, 
-                                      kappa=kappa, 
                                       model=list(model),
                                       link=c(link),
                                       sigma=sigma, 
                                       data.maker=c(data.maker))
   
-  configurations.frame <- configurations.frame %>% 
-    filter(p<n & p/n < kappa)
+  configurations.frame %<>% 
+    filter(p<n & p/n < 1)
   
   configurations.frame %<>% mutate(N=n*m)    
   configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
@@ -128,8 +126,8 @@ analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
   center.coefs <- COEFS(the.fit)
   
   ## Parallelized solution:
-  machine.ind <- sample(1:m, size = N, replace = TRUE)
-  
+  machine.ind <- rep(1:m, times = N/m)[sample(1:N)]
+    
   # Check if there are enough observations per machine
   .min <- machine.ind %>% table %>% min
   if(.min < p) stop('Not enough observations per machine')

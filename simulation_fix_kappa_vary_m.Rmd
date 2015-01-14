@@ -16,25 +16,17 @@ library(InformationAndInference)
 
 ## OLS
 ```{r OLS testing}
-configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2, 4e2) , kappa = 1, lambda = 10, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
+configurations <- makeConfiguration_fixKappa(reps = 5e1, m = c(5e0, 5e1), n = c(1.5e2, 2e2, 4e2) , kappa = c(0.1,0.5,0.9), lambda = 10, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta, data.maker = makeRegressionData) 
 configurations %>% dim
-.MSEs.0 <- apply(configurations, 1, replicateMSE_fixKappa)
+.MSEs.0 <- apply(configurations, 1, replicateMSE)
 MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)
 MSEs.framed.0 %>% select(n, average, std.dev)
-plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))
+plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,2),robust = TRUE)
 ```
 
 
 ```{r}
-configurations <- makeConfiguration(
-  reps = 5e1, 
-  m = c(5e0, 5e1), 
-  p = 1e2, 
-  n = c(1.5e2, 2e2), 
-  kappa = 1, 
-  lambda = 10, 
-  model = my.ols, link = identity, sigma = 1e1, 
-  beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta) 
+configurations <- makeConfiguration_fixKappa(reps = 5e1, m = c(5e0, 5e1), n = c(1.5e2, 2e2, 4e2) , kappa = c(0.1,0.5,0.9), lambda = 10, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta, data.maker = makeRegressionData) 
 
 cl <- makeCluster(30)
 clusterEvalQ(cl, {
@@ -54,3 +46,37 @@ MSEs.framed.0 <- frameMSEs(MSEs.0, configurations)
 plotMSEs(MSEs.framed.0, 'test')
 ```
 
+
+
+## Ridge
+```{r Ridge test}
+# Create configurations:
+configurations <- makeConfiguration_fixKappa(reps = 2e1, m = c(5e0, 1e2), n = c(1.5e2, 2e2,4e2) , kappa = c(0.1, 0.8), lambda = 1e2, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasRandom, beta.star.maker  = ridgeBeta, data.maker = makeRegressionData ) 
+configurations %>% dim
+
+.MSEs.1 <- apply(configurations, 1, replicateMSE)
+
+MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations)
+MSEs.framed.1 %>% select(n, average, std.dev, median, mad)
+plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,6), robust=TRUE)
+```
+
+
+
+```{r ridge run}
+sconfigurations.1 <- makeConfiguration(
+  reps = 1e2,
+  m = c(1e1, 1e2), 
+  p = c(5e1, 1e2), 
+  n = seq(2e2, 1e3,length.out=5), 
+  kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+
+cl <- makeCluster(30)
+clusterEvalQ(cl, {
+  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
+  library(InformationAndInference)
+  })
+MSEs.1 <- parApply(cl, configurations.1, 1, replicateMSE)
+save(MSEs.1, configurations.1, file='RData/MSEs.1.RData')
+stopCluster(cl)
+```
