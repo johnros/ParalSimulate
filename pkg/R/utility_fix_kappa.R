@@ -63,32 +63,29 @@ makeConfiguration_fixKappa <- function(reps,
 ##TODO: write frameMSEs_fixKappa
 ## Get MSE results and configuration and return data.frame for plotting.
 frameMSEs_fixKappa <- function(MSEs, configurations){
-  
-  getRatio <- function(x) x[,'ratio']
+  getMSERatio <- function(x){
+    getRatio <- function(y) y[['averaged']]/y[['centralized']]
+    ratio <- x %>% colMeans %>% getRatio
+  }
   
   MSEs.list <- lapply(MSEs, extractor)
   MSEs.frame <- MSEs.list %>% 
-    lapply(getRatio) %>% {
-      average <- sapply(.,mean, na.rm=TRUE)
-      std.dev <- sapply(.,sd, na.rm=TRUE)
-      median <- sapply(.,median, na.rm=TRUE)
-      mad <- sapply(.,mad, na.rm=TRUE)
-      cbind(average=average, std.dev=std.dev, median=median, mad=mad)
-    } %>% 
-    as.data.frame
+    sapply(getMSERatio) %>%
+    as.data.frame %>%
+    setNames('average')
   
   MSEs.framed <- data.frame(configurations, MSEs.frame) 
-  MSEs.framed %<>% mutate(arm=2*std.dev/sqrt(n))
   
   return(MSEs.framed)
 }
 ## Testing:
-# .configurations <- makeConfiguration(
-#   reps = 1e1, m = 1e1, p = 5e1, 
-#   n = seq(2e2,5e2,length.out=3) , 
-#   kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+# configurations <- makeConfiguration_fixKappa(reps = 2, m = c(5e0, 1e2), n = c(1.5e2, 1e3) , kappa = 0.1, lambda = NA, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasRandom, beta.star.maker = identityBeta, data.maker = makeRegressionData, truth.fun = truthOLS) 
 # .MSEs <- apply(.configurations, 1, replicateMSE)
-# frameMSEs(.MSEs, .configurations)
+# str(.MSEs)
+# .frame <- frameMSEs_fixKappa(.MSEs, .configurations)
+
+
+
 
 
 # Plot results of fixed p regime:
@@ -127,5 +124,5 @@ plotMSEs_fixKappa <- function(MSEs.framed,
 #   n = seq(1.1e2,3e2,length.out=3) , 
 #   kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
 # .MSEs <- apply(.configurations, 1, replicateMSE)
-# .MSEs.framed <- frameMSEs(.MSEs, .configurations)
-# plotMSEs(.MSEs.framed, 'test')
+.MSEs.framed <- frameMSEs_fixKappa(.MSEs, .configurations)
+ plotMSEs_fixKappa(.MSEs.framed, 'test')
