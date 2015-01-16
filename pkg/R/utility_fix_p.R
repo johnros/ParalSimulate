@@ -152,13 +152,6 @@ analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
 
 # Get single configuration, make data and return errors for parallelized and distributed:
 getErrors <- function(configuration){
-  # Sketch: 
-  ## Generate parameters
-  ## Generate data
-  ## Estimate parameters
-  ## Compute ground true
-  ## Compute errors
-  #   p <- configuration[['p']]
   data.maker <- configuration[['data.maker']]
   data <- do.call(data.maker, configuration)
   coefs <- do.call(analyzeParallel, c(list(data=data), configuration))
@@ -190,7 +183,7 @@ errorFun <- function(errors){
 
 
 
-# Repeat estimation for a given configuration
+# Get configuration and return MSE and ratio of each replication
 replicateMSE <- function(configuration){
   MSEs <- replicate(configuration$replications,{
     errors <- getErrors(configuration)
@@ -199,8 +192,8 @@ replicateMSE <- function(configuration){
   return(MSEs)
 }
 ## Testing:
-# configuration <- .configurations[1,]
-# replicateMSE(configuration)
+# .configuration <- .configurations[1,,drop=FALSE]
+# apply(.configuration, 1, replicateMSE)
 
 
 ## Get MSE results and configuration and return data.frame for plotting.
@@ -242,16 +235,14 @@ plotMSEs <- function(MSEs.framed,
                      robust=FALSE){
   
   if(robust){
-    plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=median, colour=m, group=m))+
-      geom_point()+
-      geom_segment(aes(xend=n, y=median+mad, yend=median-mad))
-  }  
-  else{
-    plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=average, colour=m, group=m))+
-      geom_point()+
-      geom_segment(aes(xend=n, y=average+std.dev, yend=average-std.dev))  
+    MSEs.framed %<>% mutate(center=median, arm=mad)
+  }  else{
+    MSEs.framed %<>% mutate(center=average, arm=std.dev)
   }
-  
+
+  plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m, group=m))+
+    geom_point()+
+    geom_segment(aes(xend=n, y=center+arm, yend=center-arm))  
   
   plot.1 <- plot.1 +
     labs(title = the.title)+

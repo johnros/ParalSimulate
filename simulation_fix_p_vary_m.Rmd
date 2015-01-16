@@ -16,7 +16,7 @@ library(InformationAndInference)
 
 ## OLS
 ```{r OLS testing}
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta, data.maker = makeRegressionData) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2), lambda = 10, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = identityBeta, data.maker = makeRegressionData) 
 configurations %>% dim
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
 MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)
