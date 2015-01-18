@@ -25,6 +25,38 @@ my.absolute <- list(fitter=function(y, x,...) rq(y~x-1, method="fn",...),
 
 
 
+## make beta.star functions
+## Compute risk minimizer for Ridge problem
+BetaStarIdentity <- function(beta, ...){
+  return(beta)
+}
+## Testing:
+# identityBeta(rep(1,10), 2)
+# identityBeta(makeBetasDeterministic(10), 2)
+# identityBeta(makeBetasDeterministic(2), 2, matrix(c(10,3,3,2),2,2))
+
+
+
+## Compute risk minimizer for Ridge problem
+BetaStarRidge <- function(beta, lambda, Sigma){
+  if(missing(Sigma)){
+    beta.star <- beta/(1+lambda)
+  }
+  else{
+    p <- length(beta)
+    beta.star <- solve(Sigma+lambda*diag(p)) %*% Sigma %*% beta
+  }
+  return(beta.star)
+}
+## Testing:
+# ridgeBeta(rep(1,10), 2)
+# ridgeBeta(makeBetasDeterministic(10), 2)
+# ridgeBeta(makeBetasDeterministic(2), 2, matrix(c(10,3,3,2),2,2))
+
+
+
+
+
 # Convert a list of lists to a matrix.
 extractor <- function(x) apply(x, 1, unlist)
 
