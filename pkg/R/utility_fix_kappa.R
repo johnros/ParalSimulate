@@ -8,7 +8,7 @@ makeConfiguration_fixKappa <- function(reps,
                                        m, 
                                        n, 
                                        kappa, 
-                                       lambda,
+                                       lambda=NA,
                                        model, 
                                        link=identity, 
                                        sigma=1, 
@@ -20,8 +20,7 @@ makeConfiguration_fixKappa <- function(reps,
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
                                       kappa=kappa, 
-                                      n=n, 
-                                      kappa=kappa, 
+                                      n=n,                           
                                       model=list(model),
                                       link=c(link),
                                       sigma=sigma, 
@@ -30,7 +29,7 @@ makeConfiguration_fixKappa <- function(reps,
   
   
   configurations.frame %<>% 
-    mutate(p=floor(n*kappa), N=n*m) 
+    mutate(p=ceiling(n*kappa), N=n*m) 
   
   if(!missing(truth.fun)) {
     configurations.frame %<>% 
@@ -67,8 +66,3 @@ makeConfiguration_fixKappa <- function(reps,
 
 
 
-# For each configuration, average MSEs, and get ratio between algorithms
-getMSERatio <- function(x){
-  getRatio <- function(y) y[['averaged']]/y[['centralized']]
-  ratio <- x %>% colMeans %>% getRatio
-}

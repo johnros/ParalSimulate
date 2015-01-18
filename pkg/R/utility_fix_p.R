@@ -122,7 +122,7 @@ analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
   COEFS <- model$coefs
   
   ## Centralized Solution:
-  the.fit <- FITTER(y=y,x=X,beta.star=beta.star)
+  the.fit <- FITTER(y=y, x=X, beta.star=beta.star)
   center.coefs <- COEFS(the.fit)
   
   ## Parallelized solution:
@@ -156,8 +156,8 @@ getErrors <- function(configuration){
   data <- do.call(data.maker, configuration)
   coefs <- do.call(analyzeParallel, c(list(data=data), configuration))
   errors <- list(
-    averaged= coefs$averaged - configuration$beta.star[[1]],
-    centralized= coefs$centralized - configuration$beta.star[[1]])  
+    averaged= coefs$averaged - configuration$beta.star,
+    centralized= coefs$centralized - configuration$beta.star)  
   return(errors)      
 }
 ## Testing:
