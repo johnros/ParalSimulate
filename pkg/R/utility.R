@@ -39,6 +39,8 @@ BetaStarIdentity <- function(beta, ...){
 
 ## Compute risk minimizer for Ridge problem
 BetaStarRidge <- function(beta, lambda, Sigma){
+  stopifnot(!is.na(lambda))
+  
   if(missing(Sigma)){
     beta.star <- beta/(1+lambda)
   }
