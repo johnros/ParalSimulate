@@ -213,7 +213,7 @@ frameMSEs <- function(MSEs, configurations){
     as.data.frame
   
   MSEs.framed <- data.frame(configurations, MSEs.frame) 
-  MSEs.framed %<>% mutate(arm=2*std.dev/sqrt(n))
+  MSEs.framed %<>% mutate(m=as.factor(m))
   
   return(MSEs.framed)
 }
@@ -232,7 +232,8 @@ plotMSEs <- function(MSEs.framed,
                      the.title, 
                      y.lab= '', 
                      y.lim=c(1,2), 
-                     robust=FALSE){
+                     robust=FALSE, 
+                     legend.position="none"){
   
   if(robust){
     MSEs.framed %<>% mutate(center=median, arm=mad)
@@ -251,7 +252,7 @@ plotMSEs <- function(MSEs.framed,
     xlab(expression(n))+
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
-    theme(text = element_text(size=20), legend.position = "none") 
+    theme(text = element_text(size=20), legend.position = legend.position) 
   return(plot.1)  
 }
 ## Testing
