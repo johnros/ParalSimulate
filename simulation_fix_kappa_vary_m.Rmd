@@ -133,7 +133,7 @@ configurations %>% dim
 # stopCluster(cl)
 MSEs.framed.4 <- frameMSEs_fixKappa(.MSEs.4, configurations)
 MSEs.framed.4 %>% select(n, p, m, N, average)
-plotMSEs(MSEs.framed.4, 'test', y.lim=c(0.8,40), robust = TRUE)
+plotMSEs_fixKappa(MSEs.framed.4, 'test', y.lim=c(0.8,40), robust = TRUE)
 ```
 
 
