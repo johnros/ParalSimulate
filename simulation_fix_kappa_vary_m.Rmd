@@ -84,16 +84,16 @@ stopCluster(cl)
 
 ## Non Linear
 ```{r nonlinear test}
-configurations <- makeConfiguration_fixKappa(reps = 1e1, m = c(5e0, 5e1), kappa = 0.5, n = c(2e2, 4e2), lambda = NA, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData) 
+configurations <- makeConfiguration_fixKappa(reps = 1e1, m = c(5e0, 2e1), kappa = 0.5, n = c(2e2, 4e2), lambda = NA, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData) 
 configurations %>% dim
 .MSEs.3 <- apply(configurations, 1, replicateMSE)
 # cl <- makeCluster(3)
 # clusterEvalQ(cl, library(InformationAndInference))
 # .MSEs.3 <- parApply(cl, configurations, 1, replicateMSE)
 # stopCluster(cl)
-MSEs.framed.3 <- frameMSEs(.MSEs.3, configurations)
-MSEs.framed.3 %>% select(n, average, std.dev, median, mad)
-plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,20))
+MSEs.framed.3 <- frameMSEs_fixKappa(.MSEs.3, configurations)
+MSEs.framed.3 %>% select(n, average, p, m, kappa)
+plotMSEs_fixKappa(MSEs.framed.3, 'test', y.lim=c(0.8,20))
 ```
 
 
@@ -101,7 +101,6 @@ plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,20))
 configurations.3 <- makeConfiguration(reps = 1e2, m = c(5e0, 5e1), p = 5e1, n = seq(1e2, 2e2, length.out=5), kappa = 1, lambda = NA, model = my.log.link, link = exp, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity) 
 cl <- makeCluster(min(30, nrow(configurations.3)))
 clusterEvalQ(cl, {
-  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
   library(InformationAndInference)
   })
 MSEs.3 <- parApply(cl, configurations.3, 1, replicateMSE)
@@ -118,3 +117,44 @@ MSEs.framed.3 <- frameMSEs(MSEs.3, configurations.3)
 MSEs.framed.3 %>% select(n, average, std.dev, median, mad) %>% head
 plotMSEs(MSEs.framed.3, 'test', robust=TRUE)
 ```
+
+
+
+
+## Logistic Regression
+```{r logistic test}
+configurations <- makeConfiguration_fixKappa(reps = 1e1, m = c(5e0, 2e1), n = seq(1e2, 5e2, length.out = 2), kappa=0.1, model = my.logistic, link = sigmoid, sigma = 1e1, beta.maker =makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeClassificationData) 
+configurations %>% dim
+.MSEs.4 <- apply(configurations, 1, replicateMSE)
+# cl <- makeCluster(3)
+# clusterEvalQ(cl, library(InformationAndInference))
+# .MSEs.4 <- parApply(cl, configurations, 1, replicateMSE)
+# stopCluster(cl)
+MSEs.framed.4 <- frameMSEs_fixKappa(.MSEs.4, configurations)
+MSEs.framed.4 %>% select(n, p, m, N, average)
+plotMSEs(MSEs.framed.4, 'test', y.lim=c(0.8,40), robust = TRUE)
+```
+
+
+
+```{r logistic run}
+configurations.4<- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 1e2, n = seq(1e2, 1e3, length.out = 4), model = my.logistic, link = sigmoid, sigma = 1e1, beta.maker =makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeClassificationData) 
+cl <- makeCluster(min(30, nrow(configurations.4)))
+clusterEvalQ(cl, {
+  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
+  library(InformationAndInference)
+  })
+MSEs.4 <- parApply(cl, configurations.4, 1, replicateMSE)
+stopCluster(cl)
+```
+
+```{r logistic save}
+save(MSEs.4, configurations.4, file='RData/MSEs.4.RData')
+```
+
+```{r logistic plot, eval=FALSE, echo=FALSE}
+MSEs.framed.4 <- frameMSEs(MSEs.4, configurations.4)
+plotMSEs(MSEs.framed.4, 'test', robust=TRUE)
+```
+
+

@@ -135,7 +135,6 @@ plotMSEs_fixKappa <- function(MSEs.framed,
   return(plot.1)  
 }
 ## Testing
-## TODO: why loss approximation inexact?
 # .configurations <- makeConfiguration_fixKappa(reps=2e1, m=c(5e0, 1e1), n=seq(2e2, 3e2, length.out=2) , kappa=0.5, model=my.ols, link=identity, sigma=1, beta.maker=makeBetasRandom, beta.star.maker=BetaStarIdentity,  data.maker=makeRegressionData, truth.fun=truthOLS) 
 # .MSEs <- apply(.configurations, 1, replicateMSE)
 # # save(.MSEs, .configurations, file='RData/18.1.2015.RData')
