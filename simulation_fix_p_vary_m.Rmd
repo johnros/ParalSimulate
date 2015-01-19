@@ -98,6 +98,7 @@ save(MSEs.1, configurations.1, file='RData/MSEs.1.RData')
 
 
 ## Non Linear
+[TODO: fix non linear least squares]
 ```{r nonlinear test}
 configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2), lambda = 10, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData) 
 configurations %>% dim
@@ -162,23 +163,27 @@ plotMSEs(MSEs.framed.4, 'test', y.lim=c(0.8,40), robust = TRUE)
 
 ```{r logistic run}
 configurations.4<- makeConfiguration(
-  reps = 1e2, m = c(5e0, 5e1), p = 1e2, n = seq(1e2, 1e3, length.out = 4), model = my.logistic, link = sigmoid, sigma = 1e1, beta.maker =makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeClassificationData) 
+  reps = 1e2, 
+  m = .m, 
+  p = .p, 
+  n = .n, 
+  model = my.logistic, link = sigmoid, sigma = 1e1, 
+  beta.maker =makeBetasRandom, beta.star.maker = BetaStarIdentity, 
+  data.maker = makeClassificationData) 
+
 cl <- makeCluster(min(30, nrow(configurations.4)))
-clusterEvalQ(cl, {
-  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
-  library(InformationAndInference)
-  })
+clusterEvalQ(cl, library(InformationAndInference))
 MSEs.4 <- parApply(cl, configurations.4, 1, replicateMSE)
 stopCluster(cl)
-```
-
-```{r logistic save}
-save(MSEs.4, configurations.4, file='RData/MSEs.4.RData')
 ```
 
 ```{r logistic plot, eval=FALSE, echo=FALSE}
 MSEs.framed.4 <- frameMSEs(MSEs.4, configurations.4)
 plotMSEs(MSEs.framed.4, 'test', robust=TRUE)
+```
+
+```{r logistic save}
+save(MSEs.4, configurations.4, file='RData/MSEs.4.RData')
 ```
 
 
