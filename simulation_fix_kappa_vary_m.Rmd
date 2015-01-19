@@ -37,7 +37,8 @@ configurations.00 <- makeConfiguration_fixKappa(
   lambda = NA, 
   sigma = .sigma, 
   model = my.ols, link = identity, beta.maker = makeBetasDeterministic, 
-  beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData) 
+  beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData,
+  truth.fun=truthOLS) 
 
 # cl <- makeCluster(30)
 # clusterEvalQ(cl, library(InformationAndInference))
@@ -47,7 +48,7 @@ MSEs.00 <- parApply(cl, configurations.00, 1, replicateMSE)
 
 
 ```{r OLS plot, eval=FALSE, echo=FALSE}
-MSEs.framed.00 <- frameMSEs(MSEs.00, configurations.00)
+MSEs.framed.00 <- frameMSEs_fixKappa(MSEs.00, configurations.00)
 plotMSEs_fixKappa(MSEs.framed.00, 'test', legend.position='right')
 ```
 
