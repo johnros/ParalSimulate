@@ -29,30 +29,31 @@ plotMSEs_fixKappa(MSEs.framed.0, 'test', y.lim=c(0.9,2))
 
 
 ```{r  OLS run}
-configurations.0 <- makeConfiguration_fixKappa(
+configurations.01 <- makeConfiguration_fixKappa(
   reps = 5e1, 
   m = .m, 
   n = .n , 
   kappa = .kappa, 
   lambda = NA, 
   sigma = .sigma, 
-  model = my.ols, link = identity, beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData) 
+  model = my.ols, link = identity, beta.maker = makeBetasDeterministic, 
+  beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData) 
 
 # cl <- makeCluster(30)
 # clusterEvalQ(cl, library(InformationAndInference))
-MSEs.0 <- parApply(cl, configurations.0, 1, replicateMSE)
+MSEs.01 <- parApply(cl, configurations.01, 1, replicateMSE)
 # stopCluster(cl)
 ```
 
-```{r OLS saving}
-save(MSEs.0, configurations, file='RData/MSEs.0.RData')
-``
 
 ```{r OLS plot, eval=FALSE, echo=FALSE}
-MSEs.framed.0 <- frameMSEs(MSEs.0, configurations)
-plotMSEs(MSEs.framed.0, 'test')
+MSEs.framed.01 <- frameMSEs(MSEs.01, configurations.01)
+plotMSEs_fixKappa(MSEs.framed.01, 'test')
 ```
 
+```{r OLS saving}
+save(MSEs.01, configurations.01, file='RData/MSEs.01.RData')
+```
 
 
 
