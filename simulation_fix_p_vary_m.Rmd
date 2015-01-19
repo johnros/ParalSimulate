@@ -7,7 +7,6 @@ output: pdf_document
 
 ## Initializing and testing
 ```{r Initializing}
-## for hezi-rack: 
 library(InformationAndInference)
 .m <- c(1e1, 2e1, 4e1)
 .p <- 2e1
@@ -117,7 +116,7 @@ plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,2), robust = TRUE)
 
 ```{r nonlinear run}
 configurations.3 <- makeConfiguration(
-  reps = 2e2, 
+  reps = 5e1, 
   m = .m, 
   p = .p, 
   n = .n, 
@@ -169,7 +168,7 @@ configurations.4<- makeConfiguration(
   p = .p, 
   n = .n, 
   model = my.logistic, link = sigmoid, sigma = 1e1, 
-  beta.maker =makeBetasRandom, beta.star.maker = BetaStarIdentity, 
+  beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
   data.maker = makeClassificationData) 
 
 # cl <- makeCluster(min(30, nrow(configurations.4)))

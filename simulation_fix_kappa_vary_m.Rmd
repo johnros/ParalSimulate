@@ -8,8 +8,11 @@ output: html_document
 ## Initializing and testing
 ```{r Initializing}
 ## for hezi-rack: 
-# .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
 library(InformationAndInference)
+.m <- c(1e1, 2e1, 4e1)
+.kappa <- 0.1
+.n <- seq(4e1, 4e3, length.out=6)
+.sigma <- 1e1
 ```
 
 
