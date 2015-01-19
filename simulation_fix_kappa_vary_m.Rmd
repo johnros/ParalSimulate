@@ -29,7 +29,7 @@ plotMSEs_fixKappa(MSEs.framed.0, 'test', y.lim=c(0.9,2))
 
 
 ```{r  OLS run}
-configurations.01 <- makeConfiguration_fixKappa(
+configurations.00 <- makeConfiguration_fixKappa(
   reps = 5e1, 
   m = .m, 
   n = .n , 
@@ -41,18 +41,18 @@ configurations.01 <- makeConfiguration_fixKappa(
 
 # cl <- makeCluster(30)
 # clusterEvalQ(cl, library(InformationAndInference))
-MSEs.01 <- parApply(cl, configurations.01, 1, replicateMSE)
+MSEs.00 <- parApply(cl, configurations.00, 1, replicateMSE)
 # stopCluster(cl)
 ```
 
 
 ```{r OLS plot, eval=FALSE, echo=FALSE}
-MSEs.framed.01 <- frameMSEs(MSEs.01, configurations.01)
-plotMSEs_fixKappa(MSEs.framed.01, 'test', legend.position='right')
+MSEs.framed.00 <- frameMSEs(MSEs.00, configurations.00)
+plotMSEs_fixKappa(MSEs.framed.00, 'test', legend.position='right')
 ```
 
 ```{r OLS saving}
-save(MSEs.01, configurations.01, file='RData/MSEs.01.RData')
+save(MSEs.00, configurations.00, file='RData/MSEs.00.RData')
 ```
 
 
