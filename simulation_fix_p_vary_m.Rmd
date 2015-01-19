@@ -11,7 +11,7 @@ output: pdf_document
 library(InformationAndInference)
 .m <- c(1e1, 2e1, 4e1)
 .p <- 2e1
-.n <- seq(4e1, 5e2, length.out=5)
+.n <- seq(4e1, 1e3, length.out=5)
 .sigma <- 1e1
 ```
 
@@ -41,15 +41,14 @@ MSEs.0 <- parApply(cl, configurations.0, 1, replicateMSE)
 stopCluster(cl)
 ```
 
-```{r OLS saving}
-save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
-```
-
 ```{r OLS plot, eval=FALSE, echo=FALSE}
 MSEs.framed.0 <- frameMSEs(MSEs.0, configurations.0)
 plotMSEs(MSEs.framed.0, 'test', robust=TRUE)
 ```
 
+```{r OLS saving}
+save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
+```
 
 
 
@@ -69,7 +68,7 @@ plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,4))
 
 
 ```{r ridge run}
-sconfigurations.1 <- makeConfiguration(
+configurations.1 <- makeConfiguration(
   reps = 5e1,
   m = .m, 
   p = .p, 
@@ -91,18 +90,10 @@ MSEs.framed.1 <- frameMSEs(MSEs.1, configurations.1)
 plotMSEs(MSEs.framed.1, 'test', robust=TRUE)
 ```
 
-## Misspecified
-## TODO: compute squared risk minimizer
-```{r misspecified test}
-configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ols, link = exp, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity) 
-configurations %>% dim
-.MSEs.2 <- apply(configurations, 1, replicateMSE)
-MSEs.framed.2 <- frameMSEs(.MSEs.2, configurations)
-MSEs.framed.2 %>% select(n, average, std.dev)
-plotMSEs(MSEs.framed.2, 'test', y.lim=c(0.9,3))
+
+```{r Ridge saving}
+save(MSEs.1, configurations.1, file='RData/MSEs.1.RData')
 ```
-
-
 
 
 
@@ -123,27 +114,33 @@ plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,2), robust = TRUE)
 
 
 ```{r nonlinear run}
-configurations.3 <- makeConfiguration(reps = 1e2, m = c(5e0, 5e1), p = 5e1, n = seq(1e2, 2e2, length.out=5), kappa = 1, lambda = NA, model = my.log.link, link = exp, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity) 
+configurations.3 <- makeConfiguration(
+  reps = 2e2, 
+  m = .m, 
+  p = .p, 
+  n = .n, 
+  lambda = NA, 
+  model = my.log.link, link = exp, sigma = 1, 
+  beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
+  data.maker=makeRegressionData) 
+                  
 cl <- makeCluster(min(30, nrow(configurations.3)))
-clusterEvalQ(cl, {
-  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
-  library(InformationAndInference)
-  })
+clusterEvalQ(cl, library(InformationAndInference))
 MSEs.3 <- parApply(cl, configurations.3, 1, replicateMSE)
 stopCluster(cl)
 ```
 
-```{r nonlinear save}
-save(MSEs.3, configurations.3, file='RData/MSEs.3.RData')
-```
 
 ```{r nonlinear plot, eval=FALSE, echo=FALSE}
-load(file='RData/MSEs.3.RData')
+# load(file='RData/MSEs.3.RData')
 MSEs.framed.3 <- frameMSEs(MSEs.3, configurations.3)
 MSEs.framed.3 %>% select(n, average, std.dev, median, mad) %>% head
 plotMSEs(MSEs.framed.3, 'test', robust=TRUE)
 ```
 
+```{r nonlinear save}
+save(MSEs.3, configurations.3, file='RData/MSEs.3.RData')
+```
 
 
 
@@ -164,7 +161,8 @@ plotMSEs(MSEs.framed.4, 'test', y.lim=c(0.8,40), robust = TRUE)
 
 
 ```{r logistic run}
-configurations.4<- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 1e2, n = seq(1e2, 1e3, length.out = 4), model = my.logistic, link = sigmoid, sigma = 1e1, beta.maker =makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeClassificationData) 
+configurations.4<- makeConfiguration(
+  reps = 1e2, m = c(5e0, 5e1), p = 1e2, n = seq(1e2, 1e3, length.out = 4), model = my.logistic, link = sigmoid, sigma = 1e1, beta.maker =makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeClassificationData) 
 cl <- makeCluster(min(30, nrow(configurations.4)))
 clusterEvalQ(cl, {
   .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
@@ -185,128 +183,4 @@ plotMSEs(MSEs.framed.4, 'test', robust=TRUE)
 
 
 
-
-
-
-## Huber Loss
-```{r Huber, eval=FALSE, echo=FALSE}
-for(i in 1:4) {
-  compareParallelizeRegression_ms(p, kappa =2^-i, ms, my.huber, coefs.huber)
-  }
-```
-
-
-Now computing the ratio of $l_2$ norm of errors between estimtors:
-```{r}
-.getMSE <- function(kappa) getMSERegression_ms(
-  replications, kappa, p, ms, my.huber, coefs.huber)
-# MSEs.2 <- kappas %>% lapply(.getMSE)
-
-cl <- makeCluster(detectCores()-1)
-clusterEvalQ(cl, {
-  source('libraries.R')
-  source('utility.R')
-  source('utility_fixed_p_vary_m.R')
-  })
-exporting <- c('p', 'ms','kappas','replications', '.getMSE', 
-               'my.huber', 'coefs.huber')
-clusterExport(cl, exporting)
-MSEs_ms.1 <- parLapplyLB(cl, kappas, .getMSE)
-stopCluster(cl)
-```
-
-```{r plot_2, eval=FALSE, echo=FALSE}
-plotMSE_ms(MSEs_ms.1, p, kappas, "Huber")
-```
-
-
-
-## Absolute loss regression:
-```{r Absolute_loss, eval=FALSE, echo=FALSE}
-for(i in 1:4) {
-  compareParallelizeRegression_ms(p, kappa =2^-i, ms, 
-                                  my.absolute, coefs.absolute)
-  }
-```
-
-
-Now computing the ratio of MSEs between estimtors:
-```{r, cache=TRUE}
-.getMSE <- function(kappa) getMSERegression_ms(
-  replications, kappa, p, ms, my.absolute, coefs.absolute)
-# MSEs.3 <- kappas %>% lapply(.getMSE)
-
-cl <- makeCluster(detectCores()-1)
-clusterEvalQ(cl, {
-  source('libraries.R')
-  source('utility.R')
-  source('utility_fixed_p_vary_m.R')
-  })
-exporting <- c('p', 'ms','kappas','replications', '.getMSE',
-               'my.absolute', 'coefs.absolute')
-clusterExport(cl, exporting )
-MSEs_ms.3 <- parLapplyLB(cl, kappas, .getMSE)
-stopCluster(cl)
-```
-
-```{r plot_3, eval=FALSE, echo=FALSE}
-plotMSE_ms(MSEs_ms.3, p, kappas, "Absolute")
-```
-
-
-
-
-
-
-
-```{r all_plots}
-#save.image(file = 'RData_files/classic_asymptotic_image.RData')
-#load(file = 'RData_files/classic_asymptotic_image.RData')
-
-plot.1 <- plotMSE_ms(MSEs_ms.0, p, kappas , "(a) Squared")
-plot.2 <- plotMSE_ms(MSEs_ms.1, p, kappas, "(b) Huber")
-plot.3 <- plotMSE_ms(MSEs_ms.3, p, kappas, "(c) Absolute")
-plot.4 <- plotMSE_ms(MSEs_ms.5, p, kappas, "(d) Logistic", y.lim = c(1,20))
-
-# directory <- "~/Dropbox/Boaz Shared/Parallelize/Simulation/Output/"
-# the.file <-paste(directory, "clasic_asymptotics_1.pdf", sep='')
-# pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
-grid.arrange(plot.1, plot.2, plot.3, plot.4, ncol=2)
-# dev.off()
-```
-
-
-## Misspecified
-```{r misspecified, eval=FALSE, echo=FALSE}
-# link <- function(x) tanh(x+10)/10
-# for(i in 1:4) {
-#   compareParallelizeRegression_ms(p , kappa =2^-i, ms, 
-#                                   my.ols, coefs.ols, 
-#                                   link=link, sigma = 0 )
-#   }
-```
-
-
-Now computing the ratio of $l_2$ norm of errors between estimtors:
-```{r, eval=FALSE, echo=FALSE}
-.getMSE <- function(kappa) getMSERegression_ms(replications, kappa, p, ms, my.ols, coefs.ols, link, sigma=10)
-## MSEs_ms.0 <- kappas %>% lapply(.getMSE)
-```
-
-```{r, eval=FALSE, echo=FALSE}
-# cl <- makeCluster(detectCores()-1)
-# clusterEvalQ(cl, {
-#   source('utility.R')
-#   source('utility_vary_m.R.R')  
-#   })
-# exporting <- c('p', 'ms','kappas','replications', '.getMSE', 'my.ols', 'coefs.ols', 'link')
-# clusterExport(cl, exporting )
-# MSEs_ms_misspecified.0 <- parLapplyLB(cl, kappas, .getMSE)
-# stopCluster(cl)
-```
-
-
-```{r , eval=FALSE, echo=FALSE}
-# plotMSE_ms(MSEs_ms_misspecified.0, p, kappas , "Squared")
-```
 
