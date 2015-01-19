@@ -1,0 +1,135 @@
+## Misspecified
+## TODO: compute squared risk minimizer
+```{r misspecified test}
+configurations <- makeConfiguration(reps = 5e1, m = c(5e0, 5e1), p = 1e2, n = c(1.5e2, 2e2) , kappa = 1, lambda = 10, model = my.ols, link = exp, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity) 
+configurations %>% dim
+.MSEs.2 <- apply(configurations, 1, replicateMSE)
+MSEs.framed.2 <- frameMSEs(.MSEs.2, configurations)
+MSEs.framed.2 %>% select(n, average, std.dev)
+plotMSEs(MSEs.framed.2, 'test', y.lim=c(0.9,3))
+```
+
+
+
+## Huber Loss
+```{r Huber, eval=FALSE, echo=FALSE}
+for(i in 1:4) {
+  compareParallelizeRegression_ms(p, kappa =2^-i, ms, my.huber, coefs.huber)
+  }
+```
+
+
+Now computing the ratio of $l_2$ norm of errors between estimtors:
+```{r}
+.getMSE <- function(kappa) getMSERegression_ms(
+  replications, kappa, p, ms, my.huber, coefs.huber)
+# MSEs.2 <- kappas %>% lapply(.getMSE)
+
+cl <- makeCluster(detectCores()-1)
+clusterEvalQ(cl, {
+  source('libraries.R')
+  source('utility.R')
+  source('utility_fixed_p_vary_m.R')
+  })
+exporting <- c('p', 'ms','kappas','replications', '.getMSE', 
+               'my.huber', 'coefs.huber')
+clusterExport(cl, exporting)
+MSEs_ms.1 <- parLapplyLB(cl, kappas, .getMSE)
+stopCluster(cl)
+```
+
+```{r plot_2, eval=FALSE, echo=FALSE}
+plotMSE_ms(MSEs_ms.1, p, kappas, "Huber")
+```
+
+
+
+## Absolute loss regression:
+```{r Absolute_loss, eval=FALSE, echo=FALSE}
+for(i in 1:4) {
+  compareParallelizeRegression_ms(p, kappa =2^-i, ms, 
+                                  my.absolute, coefs.absolute)
+  }
+```
+
+
+Now computing the ratio of MSEs between estimtors:
+```{r, cache=TRUE}
+.getMSE <- function(kappa) getMSERegression_ms(
+  replications, kappa, p, ms, my.absolute, coefs.absolute)
+# MSEs.3 <- kappas %>% lapply(.getMSE)
+
+cl <- makeCluster(detectCores()-1)
+clusterEvalQ(cl, {
+  source('libraries.R')
+  source('utility.R')
+  source('utility_fixed_p_vary_m.R')
+  })
+exporting <- c('p', 'ms','kappas','replications', '.getMSE',
+               'my.absolute', 'coefs.absolute')
+clusterExport(cl, exporting )
+MSEs_ms.3 <- parLapplyLB(cl, kappas, .getMSE)
+stopCluster(cl)
+```
+
+```{r plot_3, eval=FALSE, echo=FALSE}
+plotMSE_ms(MSEs_ms.3, p, kappas, "Absolute")
+```
+
+
+
+
+
+
+
+```{r all_plots}
+#save.image(file = 'RData_files/classic_asymptotic_image.RData')
+#load(file = 'RData_files/classic_asymptotic_image.RData')
+
+plot.1 <- plotMSE_ms(MSEs_ms.0, p, kappas , "(a) Squared")
+plot.2 <- plotMSE_ms(MSEs_ms.1, p, kappas, "(b) Huber")
+plot.3 <- plotMSE_ms(MSEs_ms.3, p, kappas, "(c) Absolute")
+plot.4 <- plotMSE_ms(MSEs_ms.5, p, kappas, "(d) Logistic", y.lim = c(1,20))
+
+# directory <- "~/Dropbox/Boaz Shared/Parallelize/Simulation/Output/"
+# the.file <-paste(directory, "clasic_asymptotics_1.pdf", sep='')
+# pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
+grid.arrange(plot.1, plot.2, plot.3, plot.4, ncol=2)
+# dev.off()
+```
+
+
+## Misspecified
+```{r misspecified, eval=FALSE, echo=FALSE}
+# link <- function(x) tanh(x+10)/10
+# for(i in 1:4) {
+#   compareParallelizeRegression_ms(p , kappa =2^-i, ms, 
+#                                   my.ols, coefs.ols, 
+#                                   link=link, sigma = 0 )
+#   }
+```
+
+
+Now computing the ratio of $l_2$ norm of errors between estimtors:
+```{r, eval=FALSE, echo=FALSE}
+.getMSE <- function(kappa) getMSERegression_ms(replications, kappa, p, ms, my.ols, coefs.ols, link, sigma=10)
+## MSEs_ms.0 <- kappas %>% lapply(.getMSE)
+```
+
+```{r, eval=FALSE, echo=FALSE}
+# cl <- makeCluster(detectCores()-1)
+# clusterEvalQ(cl, {
+#   source('utility.R')
+#   source('utility_vary_m.R.R')  
+#   })
+# exporting <- c('p', 'ms','kappas','replications', '.getMSE', 'my.ols', 'coefs.ols', 'link')
+# clusterExport(cl, exporting )
+# MSEs_ms_misspecified.0 <- parLapplyLB(cl, kappas, .getMSE)
+# stopCluster(cl)
+```
+
+
+```{r , eval=FALSE, echo=FALSE}
+# plotMSE_ms(MSEs_ms_misspecified.0, p, kappas , "Squared")
+```
+
