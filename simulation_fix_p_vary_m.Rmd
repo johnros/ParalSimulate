@@ -8,8 +8,11 @@ output: pdf_document
 ## Initializing and testing
 ```{r Initializing}
 ## for hezi-rack: 
-# .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
 library(InformationAndInference)
+.m <- c(1e1, 2e1, 4e1)
+.p <- 2e1
+.n <- seq(4e1, 5e2, length.out=5)
+.sigma <- 1e1
 ```
 
 
@@ -27,20 +30,13 @@ plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))
 
 ```{r OLS run}
 configurations.0 <- makeConfiguration(
-  reps = 5e1, 
-  m = c(5e0, 5e1), 
-  p = 1e2, 
-  n = c(1.5e2, 2e2), 
-  kappa = 1, 
-  lambda = 10, 
-  model = my.ols, link = identity, sigma = 1e1, 
-  beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity) 
+  reps = 5e1, m = .m, p = .p, n = .n, lambda = NA, 
+  model = my.ols, link = identity, sigma = .sigma, 
+  beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
+  data.maker=makeRegressionData) 
 
-cl <- makeCluster(30)
-clusterEvalQ(cl, {
-  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
-  library(InformationAndInference)
-  })
+cl <- makeCluster(min(30, nrow(configurations.0)))
+clusterEvalQ(cl, library(InformationAndInference))
 MSEs.0 <- parApply(cl, configurations.0, 1, replicateMSE)
 stopCluster(cl)
 ```
@@ -49,9 +45,9 @@ stopCluster(cl)
 save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
 ```
 
-```{r plot_1, eval=FALSE, echo=FALSE}
+```{r OLS plot, eval=FALSE, echo=FALSE}
 MSEs.framed.0 <- frameMSEs(MSEs.0, configurations.0)
-plotMSEs(MSEs.framed.0, 'test')
+plotMSEs(MSEs.framed.0, 'test', robust=TRUE)
 ```
 
 
@@ -74,23 +70,26 @@ plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,4))
 
 ```{r ridge run}
 sconfigurations.1 <- makeConfiguration(
-  reps = 1e2,
-  m = c(1e1, 1e2), 
-  p = c(5e1, 1e2), 
-  n = seq(2e2, 1e3,length.out=5), 
-  kappa = 5e-1, model = my.ols, link = identity, sigma = 1e1 ) 
+  reps = 5e1,
+  m = .m, 
+  p = .p, 
+  n = .n, 
+  lambda=2,
+  model = my.ridge, link = identity, sigma = .sigma, 
+  beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarRidge,
+  data.maker=makeRegressionData) 
 
-cl <- makeCluster(30)
-clusterEvalQ(cl, {
-  .libPaths('~/R/x86_64-unknown-linux-gnu-library/')
-  library(InformationAndInference)
-  })
+cl <- makeCluster(min(30, nrow(configurations.1))
+clusterEvalQ(cl, library(InformationAndInference))
 MSEs.1 <- parApply(cl, configurations.1, 1, replicateMSE)
-save(MSEs.1, configurations.1, file='RData/MSEs.1.RData')
 stopCluster(cl)
 ```
 
 
+```{r Ridge plot, eval=FALSE, echo=FALSE}
+MSEs.framed.1 <- frameMSEs(MSEs.1, configurations.1)
+plotMSEs(MSEs.framed.1, 'test', robust=TRUE)
+```
 
 ## Misspecified
 ## TODO: compute squared risk minimizer
