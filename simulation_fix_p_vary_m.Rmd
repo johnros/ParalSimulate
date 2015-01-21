@@ -12,6 +12,7 @@ library(InformationAndInference)
 .p <- 2e1
 .n <- seq(4e1, 4e3, length.out=6)
 .sigma <- 1e1
+.ylim <- c(0,4)
 ```
 
 
@@ -189,3 +190,17 @@ save(MSEs.4, configurations.4, file='RData/MSEs.4.RData')
 
 
 
+```{r all_plots}
+load(file = 'RData/MSEs.0.RData');load(file = 'RData/MSEs.1.RData');load(file = 'RData/MSEs.3.RData');load(file = 'RData/MSEs.4.RData')
+
+plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', robust=TRUE, legend.position='none', y.lim=.ylim)
+plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', robust=TRUE, legend.position='none', y.lim=.ylim)
+plot.3 <- plotMSEs(MSEs.framed.3, '(c) Non-Linear Least Squares', robust=TRUE, legend.position='none', y.lim=.ylim)
+plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic Regression', robust=TRUE, legend.position='none', y.lim=.ylim)
+
+directory <- "~/workspace/ParalSimulate/output/"
+the.file <-paste(directory, "classic_asymptotics_1.pdf", sep='')
+pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
+grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
+dev.off()
+```
