@@ -20,7 +20,8 @@ makeConfiguration_fixKappa <- function(reps,
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
                                       kappa=kappa, 
-                                      n=n,                           
+                                      n=n,
+                                      lambda=lambda,
                                       model=list(model),
                                       link=c(link),
                                       sigma=sigma, 
@@ -37,7 +38,9 @@ makeConfiguration_fixKappa <- function(reps,
   }
     
   configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
-  configurations.frame$beta.star <- lapply(configurations.frame$beta, beta.star.maker, lambda=lambda)
+  configurations.frame$beta.star <- beta.star.maker %>% 
+    mapply(beta=configurations.frame$beta, 
+           lambda=configurations.frame$lambda)
   
   return(configurations.frame)
 }
