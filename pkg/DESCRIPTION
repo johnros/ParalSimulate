@@ -13,5 +13,6 @@ Depends:
   parallel,
   plyr,
   ggplot2,
-  scales 
+  scales,
+  grid
 License: FreeBSD

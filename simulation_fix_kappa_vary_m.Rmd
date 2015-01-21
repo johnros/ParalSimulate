@@ -7,12 +7,12 @@ output: html_document
 
 ## Initializing and testing
 ```{r Initializing}
-## for hezi-rack: 
 library(InformationAndInference)
 .m <- c(1e1, 2e1, 4e1)
 .kappa <- 0.1
-.n <- seq(4e1, 4e3, length.out=6)
+.n <- seq(4e1, 1e3, length.out=6)
 .sigma <- 1e1
+.ylim <- c(1,6)
 ```
 
 
@@ -49,7 +49,8 @@ MSEs.00 <- parApply(cl, configurations.00, 1, replicateMSE)
 
 ```{r OLS plot, eval=FALSE, echo=FALSE}
 MSEs.framed.00 <- frameMSEs_fixKappa(MSEs.00, configurations.00)
-plotMSEs_fixKappa(MSEs.framed.00, 'test', legend.position='right')
+plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, 'OLS', legend.position='right', y.lim=.ylim)
+plot.00
 ```
 
 ```{r OLS saving}
@@ -90,7 +91,8 @@ MSEs.10 <- parApply(cl, configurations.10, 1, replicateMSE)
 
 ```{r Ridge plot, eval=FALSE, echo=FALSE}
 MSEs.framed.10 <- frameMSEs_fixKappa(MSEs.10, configurations.10)
-plotMSEs_fixKappa(MSEs.framed.10, 'test', robust=TRUE, legend.position='right')
+plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, 'Ridge', legend.position='right', y.lim=.ylim)
+plot.10
 ```
 
 
@@ -117,7 +119,7 @@ plotMSEs_fixKappa(MSEs.framed.3, 'test', y.lim=c(0.8,20))
 
 
 ```{r nonlinear run}
-configurations.30 <- makeConfiguration(
+configurations.30 <- makeConfiguration_fixKappa(
   reps = 5e1, 
   m = .m, 
   kappa = .kappa, 
@@ -127,8 +129,8 @@ configurations.30 <- makeConfiguration(
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
   data.maker=makeRegressionData) 
                   
-# cl <- makeCluster(min(30, nrow(configurations.30)))
-# clusterEvalQ(cl, library(InformationAndInference))
+cl <- makeCluster(min(30, nrow(configurations.30)))
+clusterEvalQ(cl, library(InformationAndInference))
 MSEs.30 <- parApply(cl, configurations.30, 1, replicateMSE)
 # stopCluster(cl)
 ```
@@ -136,9 +138,10 @@ MSEs.30 <- parApply(cl, configurations.30, 1, replicateMSE)
 
 ```{r nonlinear plot, eval=FALSE, echo=FALSE}
 # load(file='RData/MSEs.30.RData')
-MSEs.framed.30 <- frameMSEs(MSEs.30, configurations.30)
+MSEs.framed.30 <- frameMSEs_fixKappa(MSEs.30, configurations.30)
 MSEs.framed.30 %>% select(n, average) %>% head
-plotMSEs(MSEs.framed.30, 'test', robust=TRUE, legend.position='right')
+plot.30 <- plotMSEs_fixKappa(MSEs.framed.30, 'Non-Linear Least Squares', legend.position='right', y.lim=.ylim )
+plot.30
 ```
 
 ```{r nonlinear save}
@@ -163,12 +166,12 @@ plotMSEs_fixKappa(MSEs.framed.4, 'test', y.lim=c(0.8,40), robust = TRUE)
 
 
 ```{r logistic run}
-configurations.40<- makeConfiguration(
+configurations.40<- makeConfiguration_fixKappa(
   reps = 1e2, 
   m = .m, 
   kappa = .kappa, 
   n = .n, 
-  model = my.logistic, link = sigmoid, sigma = 1e1, 
+  model = my.logistic, link = sigmoid, sigma = .sigma, 
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
   data.maker = makeClassificationData) 
 
@@ -179,11 +182,31 @@ MSEs.40 <- parApply(cl, configurations.40, 1, replicateMSE)
 ```
 
 ```{r logistic plot, eval=FALSE, echo=FALSE}
-MSEs.framed.40 <- frameMSEs(MSEs.40, configurations.40)
-plotMSEs(MSEs.framed.4, 'test', robust=TRUE, legend.position='right')
+MSEs.framed.40 <- frameMSEs_fixKappa(MSEs.40, configurations.40)
+plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, 'Logistic', legend.position='right', y.lim=.ylim)
+plot.40
 ```
 
 ```{r logistic save}
 save(MSEs.40, configurations.40, file='RData/MSEs.40.RData')
 ```
+
+```{r all_plots}
+load(file = 'RData/MSEs.00.RData')
+load(file = 'RData/MSEs.10.RData')
+load(file = 'RData/MSEs.30.RData')
+load(file = 'RData/MSEs.40.RData')
+
+plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, '(a) OLS', legend.position='right', y.lim=.ylim)
+plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, '(b) Ridge', legend.position='right', y.lim=.ylim)
+plot.30 <- plotMSEs_fixKappa(MSEs.framed.30, '(c) Non-Linear Least Squares', legend.position='right', y.lim=.ylim )
+plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, '(d) Logistic', legend.position='right', y.lim=.ylim)
+
+directory <- "~/workspace/ParalSimulate/output/"
+the.file <-paste(directory, "highdim_asymptotics_1.pdf", sep='')
+pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
+grid.arrange(plot.00, plot.10, plot.30, plot.40, ncol=2)
+dev.off()
+```
+
 
