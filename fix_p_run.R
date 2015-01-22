@@ -14,7 +14,7 @@ configurations.0 <- makeConfiguration(
   data.maker=makeRegressionData) 
 ## Ridge
 configurations.1 <- makeConfiguration(
-  reps = 1e2,
+  reps = 2e1,
   m = .m, 
   p = .p, 
   n = .n, 

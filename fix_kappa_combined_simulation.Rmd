@@ -1,0 +1,50 @@
+---
+title: "Parallelization Simulation"
+author: "Jonathan Rosenblatt"
+date: "1/1/2015"
+output: pdf_document
+---
+
+```{r run simulation}
+source('fix_kappa_run.R')
+```
+
+```{r split results}
+# load(file='RData/MSEs_fix_kappa.1.RData') 
+
+MSEs %>% length
+MSEs.framed.fix.kappa <- frameMSEs_fixKappa(MSEs.fix.kappa, configurations.fix.kappa)
+
+ols.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) identical(x, my.ols)) 
+ridge.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) identical(x, my.ridge))
+nls.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) identical(x, my.log.link)) 
+logistic.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) identical(x, my.logistic)) 
+
+
+MSEs.framed.00 <- MSEs.framed.fix.kappa[ols.ind,]
+MSEs.framed.10 <- MSEs.framed.fix.kappa[ridge.ind,]
+MSEs.framed.30 <- MSEs.framed.fix.kappa[nls.ind,]
+MSEs.framed.40 <- MSEs.framed.fix.kappa[logistic.ind,]
+```
+
+
+```{r all_plots}
+.ylim <- c(0.5,3)
+.jitter <- 100
+plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, '(a) OLS', legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, '(b) Ridge', legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.30 <- plotMSEs_fixKappa(MSEs.framed.30, '(c) Non-Linear Least Squares', legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, '(d) Logistic Regression', legend.position='none', y.lim=.ylim, jitter=.jitter)
+
+grid.arrange(plot.00, plot.10, plot.30, plot.40, ncol=2)
+```
+
+
+```{r export plot}
+directory <- "~/workspace/ParalSimulate/output/"
+the.file <-paste(directory, "highdim_asymptotics_1.pdf", sep='')
+pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
+grid.arrange(plot.00, plot.10, plot.30, plot.40, ncol=2)
+dev.off()
+```
+
