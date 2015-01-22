@@ -50,7 +50,7 @@ cl <- makeCluster(30)
 clusterEvalQ(cl, library(InformationAndInference))
 MSEs <- parApply(cl, configurations, 1, replicateMSE)
 stopCluster(cl)
-save(MSEs, configurations, file='RData/MSEs.RData')
+save(MSEs, configurations, file='RData/MSEs_fix_p.1.RData')
 
 
 ##TODO: adapt analysis to unified MSEs object.
