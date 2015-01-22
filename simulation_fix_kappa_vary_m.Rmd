@@ -30,7 +30,7 @@ plotMSEs_fixKappa(MSEs.framed.0, 'test', y.lim=c(0.9,2))
 
 ```{r  OLS run}
 configurations.00 <- makeConfiguration_fixKappa(
-  reps = 5e1, 
+  reps = 1e2, 
   m = .m, 
   n = .n , 
   kappa = .kappa, 
@@ -206,12 +206,11 @@ MSEs.40 <- parApply(cl, configurations.40, 1, replicateMSE)
 
 ```{r logistic plot, eval=FALSE, echo=FALSE}
 MSEs.framed.40 <- frameMSEs_fixKappa(MSEs.40, configurations.40)
-plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, 'Logistic', legend.position='right', y.lim=.ylim)
-plot.40
+plotMSEs_fixKappa(MSEs.framed.40, 'Logistic', legend.position='right', y.lim=c(1,15))
 ```
 
 ```{r logistic save}
-save(MSEs.40, configurations.40, file='RData/MSEs.40.RData')
+save(MSEs.40, configurations.40, file='RData/MSEs.40.1.RData')
 ```
 
 
@@ -221,12 +220,15 @@ TODO:
 - Why less machines is more accurate for Ridge?!?
 
 ```{r all_plots}
-load(file = 'RData/MSEs.00.RData');load(file = 'RData/MSEs.10.RData');load(file = 'RData/MSEs.30.RData');load(file = 'RData/MSEs.40.RData')
+load(file = 'RData/MSEs.00.RData')
+load(file = 'RData/MSEs.10.RData')
+load(file = 'RData/MSEs.30.RData')
+load(file = 'RData/MSEs.40.RData')
 
-plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, '(a) OLS', legend.position='none', y.lim=.ylim)
-plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, '(b) Ridge', legend.position='none', y.lim=.ylim)
+plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, '(a) OLS', legend.position='none', y.lim=c(1,1.5))
+plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, '(b) Ridge', legend.position='none', y.lim=c(1,1.5))
 plot.30 <- plotMSEs_fixKappa(MSEs.framed.30, '(c) Non-Linear Least Squares', legend.position='none', y.lim=.ylim )
-plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, '(d) Logistic', legend.position='none', y.lim=.ylim)
+plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, '(d) Logistic', legend.position='none', y.lim=c(1,15))
 
 directory <- "~/workspace/ParalSimulate/output/"
 the.file <-paste(directory, "highdim_asymptotics_1.pdf", sep='')
