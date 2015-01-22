@@ -1,20 +1,20 @@
 library(InformationAndInference)
-.m <- c(1e1, 2e1, 4e1)
-.p <- 2e1
-.n <- seq(4e1, 4e3, length.out=6)
+.m <- c(1e1, 2e1, 4e1, 1e2)
+.p <- 5e1
+.n <- seq(4e1, 1e3, length.out=6)
 .sigma <- 1e1
-
 
 
 ## OLS
 configurations.0 <- makeConfiguration(
-  reps = 5e1, m = .m, p = .p, n = .n, lambda = NA, 
+  reps = 2e1, 
+  m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, link = identity, sigma = .sigma, 
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
   data.maker=makeRegressionData) 
 ## Ridge
 configurations.1 <- makeConfiguration(
-  reps = 5e1,
+  reps = 1e2,
   m = .m, 
   p = .p, 
   n = .n, 
@@ -24,7 +24,7 @@ configurations.1 <- makeConfiguration(
   data.maker=makeRegressionData) 
 ## Non Linear
 configurations.3 <- makeConfiguration(
-  reps = 5e1, 
+  reps = 5e2, 
   m = .m, 
   p = .p, 
   n = .n, 
@@ -34,7 +34,7 @@ configurations.3 <- makeConfiguration(
   data.maker=makeRegressionData) 
 ## Logistic Regression
 configurations.4<- makeConfiguration(
-  reps = 1e2, 
+  reps = 2e2, 
   m = .m, 
   p = .p, 
   n = .n, 
@@ -44,9 +44,12 @@ configurations.4<- makeConfiguration(
 
 configurations <- rbind(
   configurations.0, configurations.1, 
-  configurations.2, configurations.3, configurations.4)
+  configurations.3, configurations.4)
 
-cl <- makeCluster(30)
+
+
+
+cl <- makeCluster(35)
 clusterEvalQ(cl, library(InformationAndInference))
 MSEs <- parApply(cl, configurations, 1, replicateMSE)
 stopCluster(cl)

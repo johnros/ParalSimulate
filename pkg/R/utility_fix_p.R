@@ -233,14 +233,17 @@ plotMSEs <- function(MSEs.framed,
                      y.lab= '', 
                      y.lim=c(1,2), 
                      robust=FALSE, 
-                     legend.position="none"){
+                     legend.position="none",
+                     jitter=0){
   
   if(robust){
     MSEs.framed %<>% mutate(center=median, arm=mad)
   }  else{
     MSEs.framed %<>% mutate(center=average, arm=std.dev)
   }
-
+  
+  MSEs.framed %<>% mutate(n=n+runif(nrow(MSEs.framed),-jitter,jitter))
+  
   plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m, group=m))+
     geom_point()+
     geom_segment(aes(xend=n, y=center+arm, yend=center-arm))  

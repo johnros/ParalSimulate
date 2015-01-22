@@ -1,0 +1,49 @@
+---
+title: "Parallelization Simulation"
+author: "Jonathan Rosenblatt"
+date: "1/1/2015"
+output: pdf_document
+---
+
+```{r run simulation}
+# source('fix_p_run.R')
+```
+
+```{r split results}
+# load(file='RData/MSEs_fix_p.1.RData') 
+
+MSEs %>% length
+MSEs.framed <- frameMSEs(MSEs, configurations)
+
+ols.ind <- sapply(MSEs.framed$model, function(x) identical(x, my.ols)) 
+ridge.ind <- sapply(MSEs.framed$model, function(x) identical(x, my.ridge))
+nls.ind <- sapply(MSEs.framed$model, function(x) identical(x, my.log.link)) 
+logistic.ind <- sapply(MSEs.framed$model, function(x) identical(x, my.logistic)) 
+
+
+MSEs.framed.0 <- MSEs.framed[ols.ind,]
+MSEs.framed.1 <- MSEs.framed[ridge.ind,]
+MSEs.framed.3 <- MSEs.framed[nls.ind,]
+MSEs.framed.4 <- MSEs.framed[logistic.ind,]
+```
+
+
+```{r all_plots}
+.ylim <- c(0.5,3)
+.jitter <- 100
+plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.3 <- plotMSEs(MSEs.framed.3, '(c) Non-Linear Least Squares', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic Regression', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
+grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
+```
+
+
+```{r export plot}
+directory <- "~/workspace/ParalSimulate/output/"
+the.file <-paste(directory, "classic_asymptotics_1.pdf", sep='')
+pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
+grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
+dev.off()
+```
+
