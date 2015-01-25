@@ -7,7 +7,7 @@ library(InformationAndInference)
 
 ## OLS
 configurations.0 <- makeConfiguration(
-  reps = 2e1, 
+  reps = 1e2, 
   m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, link = identity, sigma = .sigma, 
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
