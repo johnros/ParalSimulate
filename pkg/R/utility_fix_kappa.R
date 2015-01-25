@@ -102,10 +102,6 @@ frameMSEs_fixKappa <- function(MSEs, configurations){
     as.data.frame %>%
     setNames('average')
   
-  MSEs.frame.parallel <- MSEs.list %>% 
-    sapply(getMSEParallel) %>%
-    as.data.frame %>%
-    setNames('parallel')
   
   MSEs.framed <- data.frame(configurations, MSEs.frame, MSEs.frame.parallel) 
   MSEs.framed %<>% mutate(m=as.factor(m))

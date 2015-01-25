@@ -214,9 +214,13 @@ frameMSEs <- function(MSEs, configurations){
     } %>% 
     as.data.frame
   
-  MSEs.framed <- data.frame(configurations, MSEs.frame) 
-  MSEs.framed %<>% mutate(m=as.factor(m))
+  MSEs.frame.parallel <- MSEs.list %>% 
+    sapply(getMSEParallel) %>%
+    as.data.frame %>%
+    setNames('parallel')
   
+  MSEs.framed <- data.frame(configurations, MSEs.frame, MSEs.frame.parallel) 
+    
   return(MSEs.framed)
 }
 ## Testing:
@@ -245,7 +249,8 @@ plotMSEs <- function(MSEs.framed,
     MSEs.framed %<>% mutate(center=average, arm=std.dev)
   }
   
-  MSEs.framed %<>% mutate(n=n+runif(nrow(MSEs.framed),-jitter,jitter))
+    MSEs.framed %<>% mutate(n=n+runif(nrow(MSEs.framed),-jitter,jitter),
+                            m=as.factor(m))
   
   plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m, group=m))+
     geom_point()+
@@ -293,3 +298,34 @@ makeClassificationData <- function(p, N, betas, link,...){
 # .betas <- makeBetasRandom(.p)
 # .classification.data <- makeClassificationData(.p, .N, .betas, sigmoid)
 # .classification.data$y
+
+
+
+# Plot results for choosing m:
+plotMSEs2 <- function(MSEs.framed, 
+                      the.title, 
+                      y.lab= '', 
+                      y.lim=c(1,2), 
+                      robust=FALSE, 
+                      legend.position="none",
+                      jitter=0, 
+                      line=TRUE){
+  
+  MSEs.framed %<>% mutate(center=parallel, arm=0, n=as.factor(n))
+  plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=N, group=N))+
+    geom_point()  
+    
+  if(line){
+    plot.1 <- plot.1 + geom_line()
+  }
+  
+  plot.1 <- plot.1 +
+    labs(title = the.title)+
+    ylab(y.lab)+
+    xlab(expression(m))+
+    #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
+    theme_bw()+
+    theme(text = element_text(size=20), legend.position = legend.position) 
+}
+## Testing:
+

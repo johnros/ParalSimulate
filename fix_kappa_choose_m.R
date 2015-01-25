@@ -16,6 +16,7 @@ configurations.000 <- makeConfiguration(
   name='ols') 
 
 nrow(configurations.000)
+configurations.000 %<>% filter(N==.N)
 
 cl <- makeCluster(35)
 clusterEvalQ(cl, library(InformationAndInference))
