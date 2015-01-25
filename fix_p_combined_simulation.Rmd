@@ -30,7 +30,7 @@ MSEs.framed.4 <- MSEs.framed[logistic.ind,]
 
 ```{r all_plots}
 .ylim <- c(0.5,3)
-.jitter <- 100
+.jitter <- 10
 plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
 plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
 plot.3 <- plotMSEs(MSEs.framed.3, '(c) Non-Linear Least Squares', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)

@@ -1,7 +1,7 @@
 library(InformationAndInference)
 .m <- c(1e1, 2e1, 4e1, 1e2)
 .kappa <- 0.2
-.n <- seq(4e1, 1e3, length.out=6)
+.n <- seq(4e1, 4e3, length.out=6)
 .sigma <- 1e1
 file.ending <- 2
 

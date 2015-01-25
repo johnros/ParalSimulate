@@ -10,15 +10,19 @@ source('fix_kappa_run.R')
 ```
 
 ```{r split results}
-# load(file='RData/MSEs_fix_kappa.1.RData') 
+# load(file='RData/MSEs_fix_kappa.2.RData') 
 
-MSEs %>% length
+MSEs.fix.kappa %>% length
 MSEs.framed.fix.kappa <- frameMSEs_fixKappa(MSEs.fix.kappa, configurations.fix.kappa)
 
-ols.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) identical(x, my.ols)) 
-ridge.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) identical(x, my.ridge))
-nls.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) identical(x, my.log.link)) 
-logistic.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) identical(x, my.logistic)) 
+
+ols.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) isTRUE(all.equal(x, my.ols))) 
+ols.ind %>% table
+ridge.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) isTRUE(all.equal(x, my.ridge)))
+nls.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) isTRUE(all.equal(x, my.log.link)))
+logistic.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) isTRUE(all.equal(x, my.logistic)))
+
+
 
 
 MSEs.framed.00 <- MSEs.framed.fix.kappa[ols.ind,]
@@ -29,12 +33,14 @@ MSEs.framed.40 <- MSEs.framed.fix.kappa[logistic.ind,]
 
 
 ```{r all_plots}
-.ylim <- c(0.5,3)
+.ylim <- c(0.5,1.5)
+.ylim2 <- c(0.5,30)
+
 .jitter <- 100
-plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, '(a) OLS', legend.position='none', y.lim=.ylim, jitter=.jitter)
-plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, '(b) Ridge', legend.position='none', y.lim=.ylim, jitter=.jitter)
-plot.30 <- plotMSEs_fixKappa(MSEs.framed.30, '(c) Non-Linear Least Squares', legend.position='none', y.lim=.ylim, jitter=.jitter)
-plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, '(d) Logistic Regression', legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, '(a) OLS', legend.position='none', y.lim=.ylim)
+plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, '(b) Ridge', legend.position='none', y.lim=.ylim)
+plot.30 <- plotMSEs_fixKappa(MSEs.framed.30, '(c) Non-Linear Least Squares', legend.position='none', y.lim=.ylim2)
+plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, '(d) Logistic Regression', legend.position='right', y.lim=.ylim2)
 
 grid.arrange(plot.00, plot.10, plot.30, plot.40, ncol=2)
 ```
