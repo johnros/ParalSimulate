@@ -309,11 +309,18 @@ plotMSEs2 <- function(MSEs.framed,
                       robust=FALSE, 
                       legend.position="none",
                       jitter=0, 
-                      line=TRUE){
+                      line=TRUE, 
+                      fix){
   
   MSEs.framed %<>% mutate(center=parallel, arm=0, n=as.factor(n))
-  plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=N, group=N))+
-    geom_point()  
+  if(fix=='N'){
+    plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=N, group=N))+
+      geom_point()
+  }
+  if(fix=='n'){
+    plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=n, group=n))+
+      geom_point()
+  }
     
   if(line){
     plot.1 <- plot.1 + geom_line()

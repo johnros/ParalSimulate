@@ -31,7 +31,6 @@ MSEs.framed.0 <- MSEs.framed[ols.ind,]
 MSEs.framed.1 <- MSEs.framed[ridge.ind,]
 MSEs.framed.3 <- MSEs.framed[nls.ind,]
 MSEs.framed.4 <- MSEs.framed[logistic.ind,]
-
 ```
 
 

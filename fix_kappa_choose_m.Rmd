@@ -4,13 +4,14 @@ author: "Jonathan Rosenblatt"
 date: "1/1/2015"
 output: pdf_document
 ---
-```{r}
+## Fix N
+```{r fix N simulate}
 # source('fix_kappa_choose_m.R')
 ```
 
 
 
-```{r frame and plot}
+```{r fix N frame and plot}
 # load('RData/MSEs_choose_m.1.RData')
 MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
 MSEs.framed.000 %<>% filter(N==.N)
@@ -19,12 +20,31 @@ plot.000 <- plotMSEs2(MSEs.framed.000, '(a) OLS', robust=NA, legend.position='ri
 plot.000
 ```
 
-```{r export plot}
+```{r fix N export plot}
 directory <- "~/workspace/ParalSimulate/output/"
 the.file <-paste(directory, "choose_m_1.pdf", sep='')
 pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
 plot.000
 dev.off()
+```
 
+
+
+## Fix n:
+```{r fix n split results}
+# load(file='RData/MSEs_fix_p.1.RData') 
+
+MSEs.framed <- frameMSEs(MSEs, configurations)
+
+ols.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.ols))) 
+
+configurations[ols.ind,'name'] <- 'ols'
+
+MSEs.framed.0 <- MSEs.framed[ols.ind,]
+```
+
+```{r fix n plot}
+plot.001 <- plotMSEs2(MSEs.framed.0, '(a) OLS', robust=NA, legend.position='right', y.lim=c(0,3), jitter=0, line=TRUE)
+plot.001
 ```
 
