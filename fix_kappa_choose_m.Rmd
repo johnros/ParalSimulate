@@ -1,0 +1,35 @@
+---
+title: "Fix kappa choose m"
+author: "Jonathan Rosenblatt"
+date: "1/1/2015"
+output: pdf_document
+---
+```{r}
+# source('fix_kappa_choose_m.R')
+```
+
+
+
+```{r as function of m}
+MSEs.framed <-MSEs.framed.00 
+the.title <- 'OLS'
+y.lab <- 'MSE'
+
+MSEs.framed %<>% mutate(center=parallel, arm=0, n=as.factor(n))
+plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=n, group=n))+
+  geom_point()+
+  geom_line()  
+
+  plot.1 <- plot.1 +
+    labs(title = the.title)+
+    ylab(y.lab)+
+    xlab(expression(m))+
+    #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
+    theme_bw()+
+    theme(text = element_text(size=20), legend.position = legend.position) 
+
+  if(line){
+    plot.1 <- plot.1 + geom_line()
+  }
+```
+

@@ -82,6 +82,14 @@ getMSERatio <- function(x){
 # .configurations <- makeConfiguration_fixKappa(reps=2e1, m=c(5e0, 1e1), n=seq(1e2,2e2,length.out=2) , kappa=0.5, model=my.ols, link=identity, sigma=1, beta.maker=makeBetasRandom, beta.star.maker=BetaStarIdentity,  data.maker=makeRegressionData, truth.fun=truthOLS) 
 # .MSEs <- apply(.configurations, 1, replicateMSE)
 
+# For each configuration, aaverage MSEs
+getMSEParallel <- function(x){
+  getParallel <- function(y) y[['averaged']]
+  ratio <- x %>% colMeans %>% getParallel
+  return(ratio)
+}
+## Testing:
+
 
 
 
@@ -94,7 +102,12 @@ frameMSEs_fixKappa <- function(MSEs, configurations){
     as.data.frame %>%
     setNames('average')
   
-  MSEs.framed <- data.frame(configurations, MSEs.frame) 
+  MSEs.frame.parallel <- MSEs.list %>% 
+    sapply(getMSEParallel) %>%
+    as.data.frame %>%
+    setNames('parallel')
+  
+  MSEs.framed <- data.frame(configurations, MSEs.frame, MSEs.frame.parallel) 
   MSEs.framed %<>% mutate(m=as.factor(m))
   
   return(MSEs.framed)
@@ -108,9 +121,10 @@ frameMSEs_fixKappa <- function(MSEs, configurations){
 # .MSEs.framed %>% select(kappa, n, m, p, truth, average)
 
 
-
-
-
+# Exctract configuration subset for each model
+getModel <- function(x,model){
+  sapply(x$model, function(x) isTRUE(all.equal(x, model))) 
+}
 
 # Plot results of fixed p regime:
 plotMSEs_fixKappa <- function(MSEs.framed, 
