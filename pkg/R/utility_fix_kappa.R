@@ -116,7 +116,8 @@ plotMSEs_fixKappa <- function(MSEs.framed,
                               y.lab='', 
                               y.lim=c(1,2), 
                               robust=FALSE,
-                              legend.position='none'){
+                              legend.position='none',
+                              line=TRUE){
   if(robust){
     MSEs.framed %<>% mutate(center=median, arm=0)
   }  else{
@@ -137,6 +138,10 @@ plotMSEs_fixKappa <- function(MSEs.framed,
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
     theme(text = element_text(size=20), legend.position = legend.position) 
+
+  if(line){
+    plot.1 <- plot.1 + geom_line()
+  }
   return(plot.1)  
 }
 ## Testing

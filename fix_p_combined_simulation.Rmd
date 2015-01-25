@@ -15,10 +15,11 @@ output: pdf_document
 MSEs %>% length
 MSEs.framed <- frameMSEs(MSEs, configurations)
 
-ols.ind <- sapply(MSEs.framed$model, function(x) identical(x, my.ols)) 
-ridge.ind <- sapply(MSEs.framed$model, function(x) identical(x, my.ridge))
-nls.ind <- sapply(MSEs.framed$model, function(x) identical(x, my.log.link)) 
-logistic.ind <- sapply(MSEs.framed$model, function(x) identical(x, my.logistic)) 
+ols.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.ols))) 
+ols.ind %>% table
+ridge.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.ridge)))
+nls.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.log.link)))
+logistic.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.logistic)))
 
 
 MSEs.framed.0 <- MSEs.framed[ols.ind,]
@@ -29,12 +30,14 @@ MSEs.framed.4 <- MSEs.framed[logistic.ind,]
 
 
 ```{r all_plots}
-.ylim <- c(0.5,3)
+.ylim <- c(0.5,1.5)
+.ylim2 <- c(0.5,5)
 .jitter <- 10
 plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
 plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
-plot.3 <- plotMSEs(MSEs.framed.3, '(c) Non-Linear Least Squares', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
-plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic Regression', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.3 <- plotMSEs(MSEs.framed.3, '(c) Non-Linear Least Squares', robust=TRUE, legend.position='none', y.lim=.ylim2, jitter=.jitter)
+plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic Regression', robust=TRUE, legend.position='right', y.lim=.ylim2, jitter=.jitter)
+
 grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
 ```
 
