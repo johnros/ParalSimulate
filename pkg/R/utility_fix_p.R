@@ -312,19 +312,30 @@ plotMSEs2 <- function(MSEs.framed,
                       line=TRUE, 
                       fix){
   
-  MSEs.framed %<>% mutate(center=parallel, arm=0, n=as.factor(n))
+  MSEs.framed %<>% mutate(center=parallel, 
+                          arm=0, 
+                          n=as.factor(n),
+                          N=as.factor(N),
+                          p=as.factor(p))
+  
   if(fix=='N'){
-    plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=N, group=N))+
-      geom_point()
+    plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=N, group=N))
   }
   if(fix=='n'){
-    plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=n, group=n))+
-      geom_point()
+    plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=n, group=n))
+  }
+  if(fix=='p'){
+    plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=p, group=p))
+  }
+  if(fix=='Np'){
+    plot.1 <- ggplot(data = MSEs.framed, 
+                     aes(x=m, y=center, 
+                         colour=p,
+                         shape = N,
+                         group=interaction(N, p)))
   }
     
-  if(line){
-    plot.1 <- plot.1 + geom_line()
-  }
+  plot.1 <- plot.1 + geom_line() + geom_point()
   
   plot.1 <- plot.1 +
     labs(title = the.title)+

@@ -214,11 +214,6 @@ save(MSEs.40, configurations.40, file='RData/MSEs.40.1.RData')
 ```
 
 
-TODO: 
-- Why is logistic regression so good? Probably easy kappa. 
-- What is the effect of lambda in Ridge? (minor)
-- Why less machines is more accurate for Ridge?!?
-
 ```{r all_plots}
 load(file = 'RData/MSEs.00.RData')
 load(file = 'RData/MSEs.10.RData')

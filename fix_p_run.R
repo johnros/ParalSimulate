@@ -60,18 +60,4 @@ stopCluster(cl)
 save(MSEs, configurations, file='RData/MSEs_fix_p.1.RData')
 
 
-##TODO: adapt analysis to unified MSEs object.
-# MSEs.framed.0 <- frameMSEs(MSEs.0, configurations.0)
-# plotMSEs(MSEs.framed.0, 'test', robust=TRUE, legend.position='right')
-# 
-# 
-# MSEs.framed.1 <- frameMSEs(MSEs.1, configurations.1)
-# plotMSEs(MSEs.framed.1, 'test', robust=TRUE, legend.position='right')
-# 
-# MSEs.framed.3 <- frameMSEs(MSEs.3, configurations.3)
-# MSEs.framed.3 %>% select(n, average, std.dev, median, mad) %>% head
-# plotMSEs(MSEs.framed.3, 'test', robust=TRUE, legend.position='right')
-# 
-# MSEs.framed.4 <- frameMSEs(MSEs.4, configurations.4)
-# plotMSEs(MSEs.framed.4, 'test', robust=TRUE, legend.position='right')
 

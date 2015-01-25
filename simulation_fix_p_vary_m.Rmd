@@ -98,7 +98,6 @@ save(MSEs.1, configurations.1, file='RData/MSEs.1.RData')
 
 
 ## Non Linear
-[TODO: fix non linear least squares]
 ```{r nonlinear test}
 configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2), lambda = 10, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData) 
 configurations %>% dim
