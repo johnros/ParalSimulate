@@ -52,7 +52,8 @@ makeConfiguration <- function(reps,
                               sigma=1, 
                               beta.maker,
                               beta.star.maker, 
-                              data.maker){
+                              data.maker,
+                              name){
   
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
@@ -61,7 +62,8 @@ makeConfiguration <- function(reps,
                                       model=list(model),
                                       link=c(link),
                                       sigma=sigma, 
-                                      data.maker=c(data.maker))
+                                      data.maker=c(data.maker),
+                                      name)
   
   configurations.frame %<>% 
     filter(p<n & p/n < 1)

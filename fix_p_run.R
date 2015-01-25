@@ -11,7 +11,8 @@ configurations.0 <- makeConfiguration(
   m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, link = identity, sigma = .sigma, 
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
-  data.maker=makeRegressionData) 
+  data.maker=makeRegressionData,
+  name='ols') 
 ## Ridge
 configurations.1 <- makeConfiguration(
   reps = 2e1,
@@ -21,7 +22,8 @@ configurations.1 <- makeConfiguration(
   lambda=2,
   model = my.ridge, link = identity, sigma = .sigma, 
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarRidge,
-  data.maker=makeRegressionData) 
+  data.maker=makeRegressionData,
+  name='ridge') 
 ## Non Linear
 configurations.3 <- makeConfiguration(
   reps = 5e2, 
@@ -31,7 +33,8 @@ configurations.3 <- makeConfiguration(
   lambda = NA, 
   model = my.log.link, link = exp, sigma = 1, 
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
-  data.maker=makeRegressionData) 
+  data.maker=makeRegressionData,
+  name='non-linear') 
 ## Logistic Regression
 configurations.4<- makeConfiguration(
   reps = 2e2, 
@@ -40,7 +43,8 @@ configurations.4<- makeConfiguration(
   n = .n, 
   model = my.logistic, link = sigmoid, sigma = 1e1, 
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
-  data.maker = makeClassificationData) 
+  data.maker = makeClassificationData,
+  name='logistic') 
 
 configurations <- rbind(
   configurations.0, configurations.1, 

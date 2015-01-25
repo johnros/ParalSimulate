@@ -21,11 +21,17 @@ ridge.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.ridge)
 nls.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.log.link)))
 logistic.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.logistic)))
 
+configurations[ols.ind,'name'] <- 'ols'
+configurations[ridge.ind,'name'] <- 'ridge'
+configurations[nls.ind,'name'] <- 'non-linear'
+configurations[logistic.ind,'name'] <- 'logistic'
+
 
 MSEs.framed.0 <- MSEs.framed[ols.ind,]
 MSEs.framed.1 <- MSEs.framed[ridge.ind,]
 MSEs.framed.3 <- MSEs.framed[nls.ind,]
 MSEs.framed.4 <- MSEs.framed[logistic.ind,]
+
 ```
 
 
@@ -48,5 +54,22 @@ the.file <-paste(directory, "classic_asymptotics_1.pdf", sep='')
 pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
 grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
 dev.off()
+```
+
+```{r export data}
+flat <- lapply(MSEs, t) %>% do.call(rbind,.)
+
+selected.configurations <- configurations %>% select(name,n,p,m,N,sigma)
+
+repeated.configurations <- NULL
+for(i in 1:nrow(configurations) ){
+  repeated.configurations <- rbind(
+    repeated.configurations, 
+    rep.row(selected.configurations[i,], configurations$replications[i]))
+}
+MSEs.boaz <- cbind(repeated.configurations, flat) 
+head(MSEs.boaz)
+
+write.csv(MSEs.boaz %>% as.matrix, file='output/fix_p_raw.csv',col.names=TRUE)
 ```
 

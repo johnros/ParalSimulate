@@ -22,7 +22,10 @@ ridge.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) isTRUE(all.equal(x,
 nls.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) isTRUE(all.equal(x, my.log.link)))
 logistic.ind <- sapply(MSEs.framed.fix.kappa$model, function(x) isTRUE(all.equal(x, my.logistic)))
 
-
+configurations.fix.kappa[ols.ind,'name'] <- 'ols'
+configurations.fix.kappa[ridge.ind,'name'] <- 'ridge'
+configurations.fix.kappa[nls.ind,'name'] <- 'non-linear'
+configurations.fix.kappa[logistic.ind,'name'] <- 'logistic'
 
 
 MSEs.framed.00 <- MSEs.framed.fix.kappa[ols.ind,]
@@ -52,5 +55,26 @@ the.file <-paste(directory, "highdim_asymptotics_1.pdf", sep='')
 pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
 grid.arrange(plot.00, plot.10, plot.30, plot.40, ncol=2)
 dev.off()
+```
+
+
+```{r export data}
+flat.fix.kappa <- lapply(MSEs.fix.kappa, t) %>% do.call(rbind,.)
+
+selected.configurations.fix.kappa <- configurations.fix.kappa %>% select(name,n,p,m,N,kappa,sigma)
+
+repeated.configurations.fix.kappa <- NULL
+for(i in 1:nrow(configurations.fix.kappa) ){
+  repeated.configurations.fix.kappa <- rbind(
+    repeated.configurations.fix.kappa, 
+    rep.row(selected.configurations.fix.kappa[i,], 
+            configurations.fix.kappa$replications[i]))
+}
+MSEs.boaz.fix.kappa <- cbind(repeated.configurations.fix.kappa, flat.fix.kappa) 
+head(MSEs.boaz.fix.kappa)
+
+write.csv(MSEs.boaz.fix.kappa %>% as.matrix, file='output/fix_kappa_raw.csv',col.names=TRUE)
+```
+
 ```
 

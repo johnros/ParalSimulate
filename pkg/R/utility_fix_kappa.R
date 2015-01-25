@@ -15,7 +15,8 @@ makeConfiguration_fixKappa <- function(reps,
                                        beta.maker,
                                        beta.star.maker, 
                                        data.maker, 
-                                       truth.fun){
+                                       truth.fun,
+                                       name){
   
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
@@ -26,7 +27,8 @@ makeConfiguration_fixKappa <- function(reps,
                                       link=c(link),
                                       sigma=sigma, 
                                       data.maker=c(data.maker),
-                                      truth=NA)
+                                      truth=NA,
+                                      name)
   
   
   configurations.frame %<>% 

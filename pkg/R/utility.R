@@ -1,3 +1,13 @@
+rep.row<-function(x,n){
+  result <- matrix(rep(c(x),each=n),nrow=n)
+  result %<>% as.data.frame 
+  names(result) <- names(x)
+  return(result)
+}
+
+
+
+
 # Make fitting and coef extracting function
 my.ols <-  list(fitter=function(y, x,...) lm(y~x-1),
                 coefs= function(fit) coef(fit))
