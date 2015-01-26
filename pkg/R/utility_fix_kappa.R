@@ -82,14 +82,26 @@ getMSERatio <- function(x){
 # .configurations <- makeConfiguration_fixKappa(reps=2e1, m=c(5e0, 1e1), n=seq(1e2,2e2,length.out=2) , kappa=0.5, model=my.ols, link=identity, sigma=1, beta.maker=makeBetasRandom, beta.star.maker=BetaStarIdentity,  data.maker=makeRegressionData, truth.fun=truthOLS) 
 # .MSEs <- apply(.configurations, 1, replicateMSE)
 
+
+
+
 # For each configuration, aaverage MSEs
 getMSEParallel <- function(x){
   getParallel <- function(y) y[['MSE.averaged']]
-  ratio <- x %>% colMeans %>% getParallel
-  return(ratio)
+  MSE <- x %>% colMeans %>% getParallel
+  return(MSE)
 }
 ## Testing:
 
+
+
+
+getBiasParallel <- function(x){
+  getParallel <- function(y) y[['bias.averaged']]
+  bias <- x %>% colMeans %>% getParallel
+  return(bias)
+}
+## Testing:
 
 
 
