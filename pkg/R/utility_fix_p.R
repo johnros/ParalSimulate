@@ -188,13 +188,22 @@ frameMSEs <- function(MSEs, configurations){
       cbind(average=average, std.dev=std.dev, median=median, mad=mad)
     } %>% 
     as.data.frame
-  
+
+    
   MSEs.frame.parallel <- MSEs.list %>% 
     sapply(getMSEParallel) %>%
     as.data.frame %>%
-    setNames('parallel')
+    setNames('parallel.MSE')
   
-  MSEs.framed <- data.frame(configurations, MSEs.frame, MSEs.frame.parallel) 
+  bias.frame.parallel <- MSEs.list %>% 
+    sapply(getBiasParallel) %>%
+    as.data.frame %>%
+    setNames('parallel.bias')
+  
+  MSEs.framed <- data.frame(configurations, 
+                            MSEs.frame, 
+                            MSEs.frame.parallel,
+                            bias.frame.parallel) 
     
   return(MSEs.framed)
 }
@@ -285,13 +294,21 @@ plotMSEs2 <- function(MSEs.framed,
                       legend.position="none",
                       jitter=0, 
                       line=TRUE, 
-                      fix){
+                      fix,
+                      center){
   
-  MSEs.framed %<>% mutate(center=parallel, 
-                          arm=0, 
+  MSEs.framed %<>% mutate(arm=0, 
                           n=as.factor(n),
                           N=as.factor(N),
                           p=as.factor(p))
+  
+  if(center=='MSE'){
+    MSEs.framed %<>% mutate(center=parallel.mse)  
+  }
+  if(center=='bias'){
+    MSEs.framed %<>% mutate(center=parallel.bias)  
+  }
+  
   
   if(fix=='N'){
     plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=N, group=N))

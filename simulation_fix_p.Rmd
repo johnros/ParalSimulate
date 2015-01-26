@@ -22,7 +22,7 @@ configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 5e1), p = 1e2, n = c(
 configurations %>% dim
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
 MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)
-MSEs.framed.0 %>% select(n, average, std.dev)
+MSEs.framed.0 %>% select(n, average, std.dev, parallel.MSE, parallel.bias)
 plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))
 ```
 
