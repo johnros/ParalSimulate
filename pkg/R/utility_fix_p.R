@@ -170,31 +170,7 @@ getErrors <- function(configuration){
 # plot(averaged~centralized, data=.errors)
 
 
-# Compute sum of squares 
-SSQ <- function(x) x^2 %>% sum
 
-# Compute the squared error of estimates
-errorFun <- function(errors){
-  MSEs <- lapply(errors, SSQ)
-  ratio <- with(MSEs, averaged/centralized)
-  result <- c(list(ratio=ratio), MSEs )
-}
-## Testing:
-# errorFun(.errors)
-
-
-
-# Get configuration and return MSE and ratio of each replication
-replicateMSE <- function(configuration){
-  MSEs <- replicate(configuration$replications,{
-    errors <- getErrors(configuration)
-    errorFun(errors)
-  })
-  return(MSEs)
-}
-## Testing:
-# .configuration <- .configurations[1,,drop=FALSE]
-# apply(.configuration, 1, replicateMSE)
 
 
 ## Get MSE results and configuration and return data.frame for plotting.
