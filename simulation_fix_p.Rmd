@@ -11,6 +11,7 @@ output: pdf_document
 .p <- 5e1
 .n <- seq(4e1, 1e3, length.out=6)
 .sigma <- 1e1
+library(InformationAndInference)
 ```
 
 

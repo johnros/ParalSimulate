@@ -10,7 +10,7 @@
 # For large p, MSE should be linear. 
 # For small p, MSE can be non linear.
 .sigma <- 1e1
-.N <- 1e5
+.N <- 5e4
 (.m <- seq.int(1e1, 1e2, by=5) )
 (.n <- (.N/.m))
 .kappa <- 0.9
@@ -22,8 +22,11 @@
 configurations.000 <- makeConfiguration(
   reps = 1e2, 
   m = .m, p = .p, n = .n, lambda = NA, 
-  model = my.ols, link = identity, sigma = .sigma, 
-  beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
+  model = my.ols, 
+  link = identity, 
+  sigma = .sigma, 
+  beta.maker = makeBetasDeterministic, 
+  beta.star.maker = BetaStarIdentity,
   data.maker=makeRegressionData,
   name='ols') 
 configurations.000 %>% select(N) %>% round(-3) %>% table
@@ -35,6 +38,8 @@ cl <- makeCluster(35)
 clusterEvalQ(cl, library(InformationAndInference))
 
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
+attr(MSEs.000, "createdAt") <- Sys.time()
+
 save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.2.RData')
 
 
@@ -44,7 +49,9 @@ save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.2.RData')
 configurations.001 <- makeConfiguration(
   reps = 1e2, 
   m = .m, p = .p, n = .n, lambda = .lambda, 
-  model = my.ridge, link = identity, sigma = .sigma, 
+  model = my.ridge, 
+  link = identity, 
+  sigma = .sigma, 
   beta.maker = makeBetasDeterministic, 
   beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
@@ -52,6 +59,7 @@ configurations.001 <- makeConfiguration(
 configurations.001 %<>% filter(round(N,-2) ==.N)
 
 MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
+attr(MSEs.001, "createdAt") <- Sys.time()
 save(MSEs.001, configurations.001, file='RData/MSEs_choose_m_ridge.2.RData')
 
 stopCluster(cl)
