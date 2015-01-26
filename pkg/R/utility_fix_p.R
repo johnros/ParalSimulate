@@ -65,8 +65,7 @@ makeConfiguration <- function(reps,
                                       data.maker=c(data.maker),
                                       name)
   
-  configurations.frame %<>% 
-    filter(p<n & p/n < 1)
+  configurations.frame %<>% filter(p<n)
   
   configurations.frame %<>% mutate(N=n*m)    
   configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
