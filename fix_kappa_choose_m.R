@@ -9,6 +9,7 @@
 # Possible a single plot, Fixing N, m on the x, and different p. 
 # For large p, MSE should be linear. 
 # For small p, MSE can be non linear.
+library(InformationAndInference)
 .sigma <- 1e1
 .N <- 5e4
 (.m <- seq.int(1e1, 1e2, by=5) )
@@ -20,7 +21,7 @@
 
 ## OLS
 configurations.000 <- makeConfiguration(
-  reps = 1e2, 
+  reps = 1e1, 
   m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, 
   link = identity, 
@@ -32,11 +33,14 @@ configurations.000 <- makeConfiguration(
 configurations.000 %>% select(N) %>% round(-3) %>% table
 configurations.000 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.000)
-configurations.000 %>% select(m,p,N) %>% table 
+
+MSEs.000 <- apply(configurations.000, 1, replicateMSE)
+attr(MSEs.000, "createdAt") <- Sys.time()
+
+
 
 cl <- makeCluster(35)
 clusterEvalQ(cl, library(InformationAndInference))
-
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
 
