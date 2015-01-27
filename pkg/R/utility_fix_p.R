@@ -11,7 +11,7 @@ makeBetasRandom <- function(p){
 makeBetasDeterministic <- function(p){
   beta <- 1:p
   beta <- beta / sqrt(beta %*% beta)
-  return(beta)
+  return(beta)
 }
 ## Testing:
 # makeBetasDeterministic(100) 
@@ -136,7 +136,7 @@ analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
   
   machine.wise <-  matrix(NA, ncol = m, nrow = ncol(X))
   for(i in seq_len(m)){
-    .the.fit <- FITTER(y=y[machine.ind==i], x=X[machine.ind==i,],beta.star=beta.star)
+    .the.fit <- FITTER(y=y[machine.ind==i], x=X[machine.ind==i,], beta.star=beta.star)
     .coefs<- COEFS(.the.fit)
     machine.wise[,i] <- .coefs 
   }

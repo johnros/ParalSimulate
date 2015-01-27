@@ -13,7 +13,7 @@ library(InformationAndInference)
 .sigma <- 1e1
 .N <- 5e4
 (.m <- seq.int(1e1, 1e2, by=5) )
-(.n <- (.N/.m))
+(.n <- round(.N/.m))
 .kappa <- 0.9
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
 
@@ -21,7 +21,7 @@ library(InformationAndInference)
 
 ## OLS
 configurations.000 <- makeConfiguration(
-  reps = 1e1, 
+  reps = 2, 
   m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, 
   link = identity, 
