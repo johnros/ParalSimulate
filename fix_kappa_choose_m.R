@@ -21,7 +21,7 @@ library(InformationAndInference)
 
 ## OLS
 configurations.000 <- makeConfiguration(
-  reps = 2, 
+  reps = 1e2, 
   m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, 
   link = identity, 
@@ -34,10 +34,8 @@ configurations.000 %>% select(N) %>% round(-3) %>% table
 configurations.000 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.000)
 
-MSEs.000 <- apply(configurations.000, 1, replicateMSE)
-attr(MSEs.000, "createdAt") <- Sys.time()
-
-
+# MSEs.000 <- apply(configurations.000, 1, replicateMSE)
+# attr(MSEs.000, "createdAt") <- Sys.time()
 
 cl <- makeCluster(35)
 clusterEvalQ(cl, library(InformationAndInference))
