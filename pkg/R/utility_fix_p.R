@@ -11,7 +11,7 @@ makeBetasRandom <- function(p){
 makeBetasDeterministic <- function(p){
   beta <- 1:p
   beta <- beta / sqrt(beta %*% beta)
-  return(beta)
+  return(beta)
 }
 ## Testing:
 # makeBetasDeterministic(100) 
