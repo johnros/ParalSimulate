@@ -289,7 +289,7 @@ makeClassificationData <- function(p, N, betas, link,...){
 plotMSEs2 <- function(MSEs.framed, 
                       the.title, 
                       y.lab= '', 
-                      y.lim=c(1,2), 
+                      y.lim, 
                       robust=FALSE, 
                       legend.position="none",
                       jitter=0, 
@@ -327,7 +327,9 @@ plotMSEs2 <- function(MSEs.framed,
                          shape = N,
                          group=interaction(N, p)))
   }
-    
+  
+  if(!missing(y.lim)) plot.1 <- plot.1 + ylim(y.lim)
+  
   plot.1 <- plot.1 + geom_line() + geom_point()
   
   plot.1 <- plot.1 +
@@ -337,6 +339,8 @@ plotMSEs2 <- function(MSEs.framed,
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
     theme(text = element_text(size=20), legend.position = legend.position) 
+  
+  return(plot.1)  
 }
 ## Testing:
 
