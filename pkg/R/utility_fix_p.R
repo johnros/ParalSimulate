@@ -295,15 +295,16 @@ plotMSEs2 <- function(MSEs.framed,
                       jitter=0, 
                       line=TRUE, 
                       fix,
-                      center){
+                      center,
+                      rounding=-2){
   
   MSEs.framed %<>% mutate(arm=0, 
                           n=as.factor(n),
-                          N=as.factor(N),
+                          N=as.factor(round(N,rounding)),
                           p=as.factor(p))
   
   if(center=='MSE'){
-    MSEs.framed %<>% mutate(center=parallel.mse)  
+    MSEs.framed %<>% mutate(center=parallel.MSE)  
   }
   if(center=='bias'){
     MSEs.framed %<>% mutate(center=parallel.bias)  
