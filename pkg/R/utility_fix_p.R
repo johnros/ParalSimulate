@@ -170,11 +170,13 @@ getErrors <- function(configuration){
 # plot(averaged~centralized, data=.errors)
 
 # Compute the bias from the output ot replicateMSE (complicated structure!)
-getBias <- function(x) {x['errors',] %>%
-                          lapply(function(x) x[['averaged']]) %>% 
-                          do.call(cbind,.) %>% 
-                          rowMeans %>% 
-                          SSQ
+getBias <- function(x) {
+  x['errors',] %>%
+    lapply(function(x) x[['averaged']]) %>% 
+    do.call(cbind,.) %>% 
+    rowMeans %>% 
+    SSQ %>%
+    sqrt
 }
 
 
