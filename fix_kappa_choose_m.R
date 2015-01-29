@@ -59,7 +59,10 @@ configurations.001 <- makeConfiguration(
   data.maker=makeRegressionData,
   name='ridge') 
 configurations.001 %<>% filter(round(N,-2) ==.N)
+nrow(configurations.001)
 
+cl <- makeCluster(35)
+clusterEvalQ(cl, library(InformationAndInference))
 MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
 attr(MSEs.001, "createdAt") <- Sys.time()
 save(MSEs.001, configurations.001, file='RData/MSEs_choose_m_ridge.2.RData')
