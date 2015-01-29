@@ -47,6 +47,11 @@ BetaStarIdentity <- function(beta, ...){
 
 
 
+
+
+
+
+
 ## Compute risk minimizer for Ridge problem
 BetaStarRidge <- function(beta, lambda, Sigma){
   stopifnot(!is.na(lambda))
@@ -68,12 +73,6 @@ BetaStarRidge <- function(beta, lambda, Sigma){
 
 
 
-# A function used by frameMSEs and frameMSEs_fixKappa
-cleanMSEs <- function(x) {
-  x[!rownames(x)=='errors',] %>% 
-    apply(1, unlist)
-}
-
 
 
 # The logistic CDF as link for logistic regression
@@ -87,6 +86,31 @@ sigmoid <- function(x) 1/(1 + exp(-x))
 SSQ <- function(x) x^2 %>% sum
 
 
+
+
+makePerformance <- function(){
+  result <- list(bias=list(fix.p=NA, high.dim=NA),
+                 MSE=list(fix.p=NA, high.dim=NA))
+  return(result)
+}
+##Testing:
+# makePerformance()
+
+
+
+
+# The norm of the parallelization in Ridge 
+biasRidgeFixp <- function(lambda, p, N, m, beta.norm=1, ...){
+  beta.norm * m/N * ((p+2+lambda)/(1+lambda)^2 + 1) * (lambda/(1+lambda))
+}
+## Testing:
+# biasRidgeFixp(lambda = 2, p = 50, N = 5e4, m = 1e2)
+
+
+
+
+
+
 # Compute the squared error of estimates
 errorFun <- function(errors){
   MSEs <- lapply(errors, SSQ)
@@ -95,6 +119,9 @@ errorFun <- function(errors){
 }
 ## Testing:
 # errorFun(.errors)
+
+
+
 
 
 
@@ -115,3 +142,14 @@ replicateMSE <- function(configuration){
 # .configurations <- makeConfiguration(reps = .reps, m = .m, p = .p, n = .n, lambda = 2, model = .model, link = identity, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData, name='ols')
 # .configuration <- .configurations[1,,drop=FALSE]
 # apply(.configuration, 1, replicateMSE)
+
+
+
+
+
+
+# A function used by frameMSEs and frameMSEs_fixKappa
+cleanMSEs <- function(x) {
+  x[!rownames(x)=='errors',] %>% 
+    apply(1, unlist)
+}
