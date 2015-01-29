@@ -83,14 +83,12 @@ sigmoid <- function(x) 1/(1 + exp(-x))
 # Compute sum of squares 
 SSQ <- function(x) x^2 %>% sum
 
-my.bias <- function(x) sum(x)
 
 # Compute the squared error of estimates
 errorFun <- function(errors){
   MSEs <- lapply(errors, SSQ)
-  biases <- lapply(errors, my.bias)
   ratio <- with(MSEs, averaged/centralized)
-  result <- c(list(ratio=ratio), MSE=MSEs, bias=biases )
+  result <- c(list(ratio=ratio), MSE=MSEs, errors=list(errors) )
 }
 ## Testing:
 # errorFun(.errors)
