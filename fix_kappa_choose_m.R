@@ -16,12 +16,13 @@ library(InformationAndInference)
 (.n <- round(.N/.m))
 .kappa <- 0.9
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
+.reps <- 1e1
 
 
 
 ## OLS
 configurations.000 <- makeConfiguration(
-  reps = 1e2, 
+  reps = .reps, 
   m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, 
   link = identity, 
@@ -49,7 +50,7 @@ save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.2.RData')
 ## Ridge
 .lambda <- 2
 configurations.001 <- makeConfiguration(
-  reps = 1e2, 
+  reps = .reps, 
   m = .m, p = .p, n = .n, lambda = .lambda, 
   model = my.ridge, 
   link = identity, 
@@ -61,8 +62,8 @@ configurations.001 <- makeConfiguration(
 configurations.001 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.001)
 
-cl <- makeCluster(35)
-clusterEvalQ(cl, library(InformationAndInference))
+# cl <- makeCluster(35)
+# clusterEvalQ(cl, library(InformationAndInference))
 MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
 attr(MSEs.001, "createdAt") <- Sys.time()
 save(MSEs.001, configurations.001, file='RData/MSEs_choose_m_ridge.2.RData')
