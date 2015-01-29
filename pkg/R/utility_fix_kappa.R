@@ -97,8 +97,8 @@ getMSEParallel <- function(x){
 
 
 getBiasParallel <- function(x){
-  getParallel <- function(y) y[['bias.averaged']]
-  bias <- x %>% colMeans %>% getParallel
+  getBias <- function(y) y[['bias.averaged']]
+  bias <- x %>% colMeans %>% getBias
   return(bias)
 }
 ## Testing:
