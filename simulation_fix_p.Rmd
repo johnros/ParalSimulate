@@ -20,8 +20,6 @@ library(InformationAndInference)
 ```{r OLS testing}
 configurations <- makeConfiguration(reps = 2, m = 95, p = 50, n = .n, lambda = NA, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData, name='ols') 
 configurations %>% dim
-configurations %<>% filter(round(N,-3) ==.N)
-configurations %>% dim
 
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
 MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)

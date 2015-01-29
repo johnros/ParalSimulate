@@ -9,9 +9,9 @@ makeBetasRandom <- function(p){
 
 
 makeBetasDeterministic <- function(p){
-  beta <- 1:p
+  beta <-  1:p
   beta <- beta / sqrt(beta %*% beta)
-  return(beta)
+  return(beta)
 }
 ## Testing:
 # makeBetasDeterministic(100) 
@@ -169,18 +169,27 @@ getErrors <- function(configuration){
 # .errors <- getErrors( .configurations[1,])
 # plot(averaged~centralized, data=.errors)
 
+# Compute the bias from the output ot replicateMSE (complicated structure!)
+getBias <- function(x) {x['errors',] %>%
+                          lapply(function(x) x[['averaged']]) %>% 
+                          do.call(cbind,.) %>% 
+                          rowMeans %>% 
+                          SSQ
+}
 
 
 
-
-## Get MSE results and configuration and return data.frame for plotting.
+## Get errors (MSE and bias) for each configuration and return data.frame.
 frameMSEs <- function(MSEs, configurations){
   
-  getRatio <- function(x) x[,'ratio']
+  # Frame bias
+  bias.frame.parallel <- sapply(MSEs, getBias)
+      
+  # Frame MSE
+  MSEs.list <- lapply(MSEs, cleanMSEs)
   
-  MSEs.list <- lapply(MSEs, extractor)
   MSEs.frame <- MSEs.list %>% 
-    lapply(getRatio) %>% {
+    lapply(function(x) x[,'ratio']) %>% {
       average <- sapply(.,mean, na.rm=TRUE)
       std.dev <- sapply(.,sd, na.rm=TRUE)
       median <- sapply(.,median, na.rm=TRUE)
@@ -195,15 +204,10 @@ frameMSEs <- function(MSEs, configurations){
     as.data.frame %>%
     setNames('parallel.MSE')
   
-  bias.frame.parallel <- MSEs.list %>% 
-    sapply(getBiasParallel) %>%
-    as.data.frame %>%
-    setNames('parallel.bias')
-  
   MSEs.framed <- data.frame(configurations, 
                             MSEs.frame, 
                             MSEs.frame.parallel,
-                            bias.frame.parallel) 
+                            parallel.bias=bias.frame.parallel) 
     
   return(MSEs.framed)
 }

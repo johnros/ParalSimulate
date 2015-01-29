@@ -96,19 +96,14 @@ getMSEParallel <- function(x){
 
 
 
-getBiasParallel <- function(x){
-  getBias <- function(y) y[['bias.averaged']]
-  bias <- x %>% colMeans %>% getBias
-  return(bias)
-}
-## Testing:
 
 
 
 ## Get MSE results and configuration and return data.frame for plotting.
 frameMSEs_fixKappa <- function(MSEs, configurations){
   
-  MSEs.list <- lapply(MSEs, extractor)
+  MSEs.list <- lapply(MSEs, cleanMSEs)
+  
   MSEs.frame <- MSEs.list %>% 
     sapply(getMSERatio) %>%
     as.data.frame %>%

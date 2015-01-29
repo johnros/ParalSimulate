@@ -68,9 +68,12 @@ BetaStarRidge <- function(beta, lambda, Sigma){
 
 
 
+# A function used by frameMSEs and frameMSEs_fixKappa
+cleanMSEs <- function(x) {
+  x[!rownames(x)=='errors',] %>% 
+    apply(1, unlist)
+}
 
-# Convert a list of lists to a matrix.
-extractor <- function(x) apply(x, 1, unlist)
 
 
 # The logistic CDF as link for logistic regression
@@ -108,5 +111,7 @@ replicateMSE <- function(configuration){
   return(MSEs)
 }
 ## Testing:
+# makeTest()
+# .configurations <- makeConfiguration(reps = .reps, m = .m, p = .p, n = .n, lambda = 2, model = .model, link = identity, sigma = 1, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData, name='ols')
 # .configuration <- .configurations[1,,drop=FALSE]
 # apply(.configuration, 1, replicateMSE)
