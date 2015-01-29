@@ -1,16 +1,16 @@
 # Generate true parameters
-makeBetasRandom <- function(p){
+makeBetasRandom <- function(p, beta.norm=1){
   beta <- rnorm(p)
-  beta <- beta / sqrt(beta %*% beta)
+  beta <- beta / sqrt(beta %*% beta) * beta.norm
   return(beta)
 }
 ## Testing:
 # makeBetasRandom(100) 
 
 
-makeBetasDeterministic <- function(p){
+makeBetasDeterministic <- function(p, beta.norm=1){
   beta <-  1:p
-  beta <- beta / sqrt(beta %*% beta)
+  beta <- beta / sqrt(beta %*% beta) * beta.norm
   return(beta)
 }
 ## Testing:
@@ -53,7 +53,12 @@ makeConfiguration <- function(reps,
                               beta.maker,
                               beta.star.maker, 
                               data.maker,
-                              name){
+                              name,
+                              bias.fun.highdim=NA_fun,
+                              bias.fun.fixp=NA_fun,
+                              mse.fun.highdim=NA_fun,
+                              mse.fun.fixp=NA_fun){
+  
   
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
@@ -70,6 +75,15 @@ makeConfiguration <- function(reps,
   configurations.frame %<>% mutate(N=n*m)    
   configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
   configurations.frame$beta.star <- lapply(configurations.frame$beta, beta.star.maker, lambda=lambda)
+  
+  # Add theoretical performances
+  configurations.frame %<>% 
+    mutate(
+      mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m),
+      mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m),
+      bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m),
+      bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m),
+    )    
   
   return(configurations.frame)
 }
@@ -302,7 +316,12 @@ plotMSEs2 <- function(MSEs.framed,
                       line=TRUE, 
                       fix,
                       center,
-                      rounding=-2){
+                      rounding=-2, 
+                      bias.fixp=FALSE,
+                      bias.highdim=FALSE,
+                      mse.fixp=FALSE,
+                      mse.highdim=FALSE){
+
   
   MSEs.framed %<>% mutate(arm=0, 
                           n=as.factor(n),
@@ -315,8 +334,7 @@ plotMSEs2 <- function(MSEs.framed,
   if(center=='bias'){
     MSEs.framed %<>% mutate(center=parallel.bias)  
   }
-  
-  
+      
   if(fix=='N'){
     plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=N, group=N))
   }
@@ -334,17 +352,35 @@ plotMSEs2 <- function(MSEs.framed,
                          group=interaction(N, p)))
   }
   
-  if(!missing(y.lim)) plot.1 <- plot.1 + ylim(y.lim)
+  if(!missing(y.lim)) {
+    plot.1 <- plot.1 + ylim(y.lim)
+  }
   
-  plot.1 <- plot.1 + geom_line() + geom_point()
   
-  plot.1 <- plot.1 +
+  # Actual plotting
+  plot.1 <- plot.1 + 
+    geom_line() + 
+    geom_point() +
     labs(title = the.title)+
     ylab(y.lab)+
     xlab(expression(m))+
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
     theme(text = element_text(size=20), legend.position = legend.position) 
+  
+  if(bias.fixp){
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=bias.fixp),lty=2)
+  }
+  if(bias.highdim){
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=bias.highdim), lty=2)
+  }
+  if(mse.fixp){
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=mse.fixp), lty=2)
+  }
+  if(mse.highdim){
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=mse.highdim), lty=2)
+  }
+  
   
   return(plot.1)  
 }

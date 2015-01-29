@@ -1,3 +1,6 @@
+NA_fun <- function(...) NA
+
+
 rep.row<-function(x,n){
   result <- matrix(rep(c(x),each=n),nrow=n)
   result %<>% as.data.frame 
@@ -100,12 +103,32 @@ makePerformance <- function(){
 
 
 # The norm of the parallelization in Ridge 
-biasRidgeFixp <- function(lambda, p, N, m, beta.norm=1, ...){
+biasRidge_Fixp <- function(lambda, p, N, m, beta.norm=1, ...){
   beta.norm * m/N * ((p+2+lambda)/(1+lambda)^2 + 1) * (lambda/(1+lambda))
 }
 ## Testing:
 # biasRidgeFixp(lambda = 2, p = 50, N = 5e4, m = 1e2)
 
+# The norm of the parallelization in Ridge 
+biasRidge_HighDim <- function(lambda, p, N, m, beta.norm=1, ...){
+  # TODO
+}
+## Testing:
+# biasRidge_HighDim(lambda = 2, p = 50, N = 5e4, m = 1e2)
+
+
+# The norm of the parallelization in OLS 
+biasOLS_Fixp <- function(...){
+  0
+}
+## Testing:
+# biasOLSFixp(lambda = 2, p = 50, N = 5e4, m = 1e2)
+
+biasOLS_HighDim <- function(...){
+  0
+}
+## Testing:
+# biasOLS_HighDim(lambda = 2, p = 50, N = 5e4, m = 1e2)
 
 
 

@@ -12,7 +12,7 @@
 library(InformationAndInference)
 .sigma <- 1e1
 .N <- 5e4
-(.m <- seq.int(1e1, 1e2, by=5) )
+(.m <- seq.int(1e1, 1e2, by=10) )
 (.n <- round(.N/.m))
 .kappa <- 0.9
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
@@ -30,7 +30,9 @@ configurations.000 <- makeConfiguration(
   beta.maker = makeBetasDeterministic, 
   beta.star.maker = BetaStarIdentity,
   data.maker=makeRegressionData,
-  name='ols') 
+  name='ols', 
+  bias.fun.highdim = biasOLS_HighDim, 
+  bias.fun.fixp = biasOLS_Fixp) 
 configurations.000 %>% select(N) %>% round(-3) %>% table
 configurations.000 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.000)
@@ -58,7 +60,8 @@ configurations.001 <- makeConfiguration(
   beta.maker = makeBetasDeterministic, 
   beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
-  name='ridge') 
+  name='ridge',
+  bias.fun.fixp = biasRidge_Fixp) 
 configurations.001 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.001)
 
