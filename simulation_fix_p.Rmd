@@ -24,6 +24,7 @@ configurations$bias.highdim
 configurations$bias.fixp
 
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
+
 MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)
 MSEs.framed.0 %>% select(n, average, std.dev, parallel.MSE, parallel.bias)
 plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))

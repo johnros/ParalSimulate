@@ -183,8 +183,14 @@ getErrors <- function(configuration){
 # .errors <- getErrors( .configurations[1,])
 # plot(averaged~centralized, data=.errors)
 
+
+
 # Compute the bias from the output ot replicateMSE (complicated structure!)
-getBias <- function(x) {
+getBiasNorm <- function(x) {
+  # Sketch:
+  ## Extract erros of averaged estimate in each replication
+  ## Get bias by average coordinate-wise over replications
+  ## Compute l_2 norm of bias
   x['errors',] %>%
     lapply(function(x) x[['averaged']]) %>% 
     do.call(cbind,.) %>% 
@@ -192,20 +198,21 @@ getBias <- function(x) {
     SSQ %>%
     sqrt
 }
+## Testing
 
 
 
 ## Get errors (MSE and bias) for each configuration and return data.frame.
 frameMSEs <- function(MSEs, configurations){
   
-  # Frame bias
-  bias.frame.parallel <- sapply(MSEs, getBias)
+  # Compute norm of bias
+  bias.frame.parallel <- sapply(MSEs, getBiasNorm)
       
-  # Frame MSE
+  # Frame MSE of each configuration
   MSEs.list <- lapply(MSEs, cleanMSEs)
   
-  MSEs.frame <- MSEs.list %>% 
-    lapply(function(x) x[,'ratio']) %>% {
+  ratios.frame <- MSEs.list %>% 
+    lapply(function(x) x['ratio',]) %>% {
       average <- sapply(.,mean, na.rm=TRUE)
       std.dev <- sapply(.,sd, na.rm=TRUE)
       median <- sapply(.,median, na.rm=TRUE)
@@ -221,7 +228,7 @@ frameMSEs <- function(MSEs, configurations){
     setNames('parallel.MSE')
   
   MSEs.framed <- data.frame(configurations, 
-                            MSEs.frame, 
+                            ratios.frame, 
                             MSEs.frame.parallel,
                             parallel.bias=bias.frame.parallel) 
     

@@ -73,9 +73,7 @@ makeConfiguration_fixKappa <- function(reps,
 
 # For each configuration, average MSEs, and get ratio between algorithms
 getMSERatio <- function(x){
-  
-  getRatio <- function(y) y[['MSE.averaged']]/y[['MSE.centralized']]
-  ratio <- x %>% colMeans %>% getRatio
+  ratio <- x %>% colMeans %>% (function(y) y[['MSE.averaged']]/y[['MSE.centralized']])
   return(ratio)
 }
 ## Testing:
@@ -87,9 +85,7 @@ getMSERatio <- function(x){
 
 # For each configuration, aaverage MSEs
 getMSEParallel <- function(x){
-  getParallel <- function(y) y[['MSE.averaged']]
-  MSE <- x %>% colMeans %>% getParallel
-  return(MSE)
+  x %>% rowMeans %>% (function(y) {y[['MSE.averaged']]})
 }
 ## Testing:
 
@@ -104,8 +100,9 @@ frameMSEs_fixKappa <- function(MSEs, configurations){
   
   MSEs.list <- lapply(MSEs, cleanMSEs)
   
+  ratio <- function(x) x %>% rowMeans %>% (function(y) y[['MSE.averaged']]/y[['MSE.centralized']])
   MSEs.frame <- MSEs.list %>% 
-    sapply(getMSERatio) %>%
+    sapply(ratio) %>%
     as.data.frame %>%
     setNames('average')
   

@@ -134,11 +134,15 @@ biasOLS_HighDim <- function(...){
 
 
 
-# Compute the squared error of estimates
+# Compute statistics of errors in each replication
 errorFun <- function(errors){
+  # Get squared norm of error
   MSEs <- lapply(errors, SSQ)
+  # Compute the ratio of squared norms
   ratio <- with(MSEs, averaged/centralized)
-  result <- c(list(ratio=ratio), MSE=MSEs, errors=list(errors) )
+  # Returns error summary and raw error
+  result <- c(list(ratio=ratio), 
+              MSE=MSEs )
 }
 ## Testing:
 # errorFun(.errors)
@@ -155,8 +159,10 @@ errorFun <- function(errors){
 # Get configuration and return MSE and ratio of each replication
 replicateMSE <- function(configuration){
   MSEs <- replicate(configuration$replications,{
+    # get the estimation errors of centralized and parallelized
     errors <- getErrors(configuration)
-    errorFun(errors)
+    # Return raw errors with statistic
+    list(errorFun(errors), errors=errors)
   })
   return(MSEs)
 }
@@ -174,5 +180,6 @@ replicateMSE <- function(configuration){
 # A function used by frameMSEs and frameMSEs_fixKappa
 cleanMSEs <- function(x) {
   x[!rownames(x)=='errors',] %>% 
-    apply(1, unlist)
+    do.call(cbind,.) %>%
+    apply(2,unlist)
 }
