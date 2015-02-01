@@ -16,7 +16,7 @@ library(InformationAndInference)
 (.n <- round(.N/.m))
 .kappa <- 0.9
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
-.reps <- 1e1
+.reps <- 1e2
 
 
 
@@ -40,7 +40,7 @@ nrow(configurations.000)
 # MSEs.000 <- apply(configurations.000, 1, replicateMSE)
 # attr(MSEs.000, "createdAt") <- Sys.time()
 
-cl <- makeCluster(3, renice='-1', methods=FALSE)
+cl <- makeCluster(3, methods=FALSE)
 clusterEvalQ(cl, library(InformationAndInference))
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
