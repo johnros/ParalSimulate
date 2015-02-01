@@ -107,7 +107,7 @@ biasRidge_Fixp <- function(lambda, p, N, m, beta.norm=1, ...){
   beta.norm * m/N * ((p+2+lambda)/(1+lambda)^2 + 1) * (lambda/(1+lambda))
 }
 ## Testing:
-# biasRidgeFixp(lambda = 2, p = 50, N = 5e4, m = 1e2)
+biasRidge_Fixp(lambda = 2, p = 5e3, N = 5e4, m = 1e1)
 
 # The norm of the parallelization in Ridge 
 biasRidge_HighDim <- function(lambda, p, N, m, beta.norm=1, ...){

@@ -8,6 +8,7 @@ output: pdf_document
 
 ```{r fix N simulate}
 # source('fix_kappa_choose_m.R')
+
 ```
 
 

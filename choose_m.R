@@ -10,7 +10,7 @@
 # For large p, MSE should be linear. 
 # For small p, MSE can be non linear.
 library(InformationAndInference)
-.sigma <- 1e1
+.sigma <- 2e1
 .N <- 5e4
 (.m <- seq.int(1e1, 1e2, by=10) )
 (.n <- round(.N/.m))
@@ -40,7 +40,7 @@ nrow(configurations.000)
 # MSEs.000 <- apply(configurations.000, 1, replicateMSE)
 # attr(MSEs.000, "createdAt") <- Sys.time()
 
-cl <- makeCluster(35)
+cl <- makeCluster(3, renice='-1', methods=FALSE)
 clusterEvalQ(cl, library(InformationAndInference))
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
@@ -50,7 +50,7 @@ save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.2.RData')
 
 
 ## Ridge
-.lambda <- 2
+.lambda <- 1
 configurations.001 <- makeConfiguration(
   reps = .reps, 
   m = .m, p = .p, n = .n, lambda = .lambda, 
