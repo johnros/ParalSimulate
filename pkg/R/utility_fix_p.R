@@ -79,10 +79,10 @@ makeConfiguration <- function(reps,
   # Add theoretical performances
   configurations.frame %<>% 
     mutate(
-      mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m),
-      mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m),
-      bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m),
-      bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m),
+      mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta),
+      mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta),
+      bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta),
+      bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta),
     )    
   
   return(configurations.frame)
@@ -187,14 +187,7 @@ getErrors <- function(configuration){
 
 # Compute the bias from the output ot replicateMSE (complicated structure!)
 getBiasNorm <- function(x) {
-  # Sketch:
-  ## Extract erros of averaged estimate in each replication
-  ## Get bias by average coordinate-wise over replications
-  ## Compute l_2 norm of bias
-  x['errors',] %>%
-    lapply(function(x) x[['averaged']]) %>% 
-    do.call(cbind,.) %>% 
-    rowMeans %>% 
+  getBias(x) %>% 
     SSQ %>%
     sqrt
 }
@@ -202,11 +195,25 @@ getBiasNorm <- function(x) {
 
 
 
+# Compute the parallelizastion bias from many replications
+getBias <- function(x){
+  x['errors',] %>%
+    lapply(function(x) x[['averaged']]) %>% 
+    do.call(cbind,.)
+}
+
+
+
+
 ## Get errors (MSE and bias) for each configuration and return data.frame.
 frameMSEs <- function(MSEs, configurations){
   
   # Compute norm of bias
-  bias.frame.parallel <- sapply(MSEs, getBiasNorm)
+  parallel.bias <- lapply(MSEs, getBias)
+  
+  bias.norm <- parallel.bias %>% sapply( function(x) {x %>% SSQ %>% sqrt})
+      
+  bias.mean <- parallel.bias %>% sapply( function(x) {x %>% mean})
       
   # Frame MSE of each configuration
   MSEs.list <- lapply(MSEs, cleanMSEs)
@@ -230,7 +237,8 @@ frameMSEs <- function(MSEs, configurations){
   MSEs.framed <- data.frame(configurations, 
                             ratios.frame, 
                             MSEs.frame.parallel,
-                            parallel.bias=bias.frame.parallel) 
+                            bias.norm=bias.norm,
+                            bias.mean=bias.mean) 
     
   return(MSEs.framed)
 }
@@ -338,8 +346,11 @@ plotMSEs2 <- function(MSEs.framed,
   if(center=='MSE'){
     MSEs.framed %<>% mutate(center=parallel.MSE)  
   }
-  if(center=='bias'){
-    MSEs.framed %<>% mutate(center=parallel.bias)  
+  if(center=='bias.mean'){
+    MSEs.framed %<>% mutate(center=bias.mean)  
+  }
+  if(center=='bias.norm'){
+    MSEs.framed %<>% mutate(center=bias.norm)  
   }
       
   if(fix=='N'){

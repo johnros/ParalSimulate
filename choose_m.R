@@ -61,7 +61,7 @@ configurations.001 <- makeConfiguration(
   beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
   name='ridge',
-  bias.fun.fixp = biasRidge_Fixp) 
+  bias.fun.fixp = biasMeanRidge_Fixp)  ##TODO: compute true mean
 configurations.001 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.001)
 
