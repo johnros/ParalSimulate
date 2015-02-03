@@ -28,6 +28,7 @@ configurations.000 <- makeConfiguration(
   link = identity, 
   sigma = .sigma, 
   beta.maker = makeBetasDeterministic, 
+  beta.norm=1e1,
   beta.star.maker = BetaStarIdentity,
   data.maker=makeRegressionData,
   name='ols', 
@@ -40,13 +41,13 @@ nrow(configurations.000)
 # MSEs.000 <- apply(configurations.000, 1, replicateMSE)
 # attr(MSEs.000, "createdAt") <- Sys.time()
 
-cl <- makeCluster(35, methods=FALSE)
+cl <- makeCluster(3, methods=FALSE)
 clusterEvalQ(cl, library(InformationAndInference))
 
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
 
-save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.2.RData')
+save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.3.RData')
 
 
 
@@ -59,15 +60,16 @@ configurations.001 <- makeConfiguration(
   link = identity, 
   sigma = .sigma, 
   beta.maker = makeBetasDeterministic, 
+  beta.norm=1e1, 
   beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
   name='ridge',
-  bias.fun.fixp = biasMeanRidge_Fixp)  ##TODO: fix mean computing functions
+  bias.fun.fixp = biasMeanRidge_Fixp)  
 configurations.001 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.001)
 
-# cl <- makeCluster(35)
-# clusterEvalQ(cl, library(InformationAndInference))
+cl <- makeCluster(3)
+clusterEvalQ(cl, library(InformationAndInference))
 MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
 attr(MSEs.001, "createdAt") <- Sys.time()
 save(MSEs.001, configurations.001, file='RData/MSEs_choose_m_ridge.2.RData')

@@ -103,7 +103,7 @@ makePerformance <- function(){
 
 
 # The norm of the parallelization in Ridge 
-biasNormRidge_Fixp <- function(lambda, p, N, m, beta.norm=1, ...){
+biasNormRidge_Fixp <- function(lambda, p, N, m, beta.norm, ...){
   beta.norm * m/N * lambda/(1+lambda) * ((p+2+lambda)/(1+lambda)^2 + 1) 
 }
 ## Testing:
@@ -119,7 +119,7 @@ biasMeanRidge_Fixp <- function(lambda, p, N, m, beta, ...){
 
 
 # The norm of the parallelization in Ridge 
-biasNormRidge_HighDim <- function(lambda, p, N, m, beta.norm=1, ...){
+biasNormRidge_HighDim <- function(lambda, p, N, m, beta.norm, ...){
   # TODO
 }
 ## Testing:

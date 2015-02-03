@@ -1,5 +1,5 @@
 # Generate true parameters
-makeBetasRandom <- function(p, beta.norm=1){
+makeBetasRandom <- function(p, beta.norm){
   beta <- rnorm(p)
   beta <- beta / sqrt(beta %*% beta) * beta.norm
   return(beta)
@@ -8,7 +8,7 @@ makeBetasRandom <- function(p, beta.norm=1){
 # makeBetasRandom(100) 
 
 
-makeBetasDeterministic <- function(p, beta.norm=1){
+makeBetasDeterministic <- function(p, beta.norm){
   beta <-  1:p
   beta <- beta / sqrt(beta %*% beta) * beta.norm
   return(beta)
@@ -51,6 +51,7 @@ makeConfiguration <- function(reps,
                               link=identity, 
                               sigma=1, 
                               beta.maker,
+                              beta.norm=1,
                               beta.star.maker, 
                               data.maker,
                               name,
@@ -73,16 +74,16 @@ makeConfiguration <- function(reps,
   configurations.frame %<>% filter(p<n)
   
   configurations.frame %<>% mutate(N=n*m)    
-  configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
+  configurations.frame$beta <- lapply(configurations.frame$p, beta.maker, beta.norm=beta.norm)
   configurations.frame$beta.star <- lapply(configurations.frame$beta, beta.star.maker, lambda=lambda)
   
   # Add theoretical performances
   configurations.frame %<>% 
     mutate(
-      mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta),
-      mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta),
-      bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta),
-      bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta),
+      mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+      mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+      bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+      bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
     )    
   
   return(configurations.frame)
