@@ -54,11 +54,7 @@ makeConfiguration <- function(reps,
                               beta.norm=1,
                               beta.star.maker, 
                               data.maker,
-                              name,
-                              bias.fun.highdim=NA_fun,
-                              bias.fun.fixp=NA_fun,
-                              mse.fun.highdim=NA_fun,
-                              mse.fun.fixp=NA_fun){
+                              name){
   
   
   configurations.frame <- expand.grid(replications=reps, 
@@ -69,7 +65,8 @@ makeConfiguration <- function(reps,
                                       link=c(link),
                                       sigma=sigma, 
                                       data.maker=c(data.maker),
-                                      name)
+                                      lambda=lambda,
+                                      name=name)
   
   configurations.frame %<>% filter(p<n)
   
@@ -78,13 +75,6 @@ makeConfiguration <- function(reps,
   configurations.frame$beta.star <- lapply(configurations.frame$beta, beta.star.maker, lambda=lambda)
   
   # Add theoretical performances
-  configurations.frame %<>% 
-    mutate(
-      mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
-      mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
-      bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
-      bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
-    )    
   
   return(configurations.frame)
 }
@@ -138,7 +128,7 @@ analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
   COEFS <- model$coefs
   
   ## Centralized Solution:
-  the.fit <- FITTER(y=y, x=X, beta.star=beta.star)
+  the.fit <- FITTER(y=y, x=X, beta.star=beta.star,...)
   center.coefs <- COEFS(the.fit)
   
   ## Parallelized solution:
@@ -151,7 +141,7 @@ analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
   
   machine.wise <-  matrix(NA, ncol = m, nrow = ncol(X))
   for(i in seq_len(m)){
-    .the.fit <- FITTER(y=y[machine.ind==i], x=X[machine.ind==i,], beta.star=beta.star)
+    .the.fit <- FITTER(y=y[machine.ind==i], x=X[machine.ind==i,], beta.star=beta.star,...)
     .coefs<- COEFS(.the.fit)
     machine.wise[,i] <- .coefs 
   }
@@ -207,7 +197,11 @@ getBias <- function(x){
 
 
 ## Get errors (MSE and bias) for each configuration and return data.frame.
-frameMSEs <- function(MSEs, configurations){
+frameMSEs <- function(MSEs, configurations,
+                      bias.fun.highdim=NA_fun,
+                      bias.fun.fixp=NA_fun,
+                      mse.fun.highdim=NA_fun,
+                      mse.fun.fixp=NA_fun){
   
   # Compute norm of bias
   parallel.bias <- lapply(MSEs, getBias)
@@ -234,6 +228,16 @@ frameMSEs <- function(MSEs, configurations){
     sapply(getMSEParallel) %>%
     as.data.frame %>%
     setNames('parallel.MSE')
+
+  configurations %<>% 
+    mutate(
+      mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+      mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+      bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+      bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+    )    
+  
+  
   
   MSEs.framed <- data.frame(configurations, 
                             ratios.frame, 

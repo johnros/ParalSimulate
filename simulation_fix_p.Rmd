@@ -59,13 +59,12 @@ save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
 ## Ridge
 ```{r Ridge test}
 # Create configurations:
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 2e2) , lambda = 1e2, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasRandom, beta.star.maker  = BetaStarRidge, data.maker = makeRegressionData, name='ridge', bias.fun.fixp = biasRidge_Fixp ) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 2e2) , lambda = 1e2, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasRandom, beta.star.maker  = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
 configurations %>% dim
-configurations$bias.fixp
-
+  
 .MSEs.1 <- apply(configurations, 1, replicateMSE)
 
-MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations)
+MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations, bias.fun.fixp = biasMeanRidge_Fixp)
 MSEs.framed.1 %>% select(n, average, std.dev, median, mad)
 plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,4))
 ```

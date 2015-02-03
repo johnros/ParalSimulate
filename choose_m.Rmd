@@ -15,12 +15,14 @@ output: pdf_document
 
 ```{r OLS fix N frame and plot}
 # load('RData/MSEs_choose_m.3.RData')
-MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
+MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000, 
+                             bias.fun.highdim = biasOLS_HighDim,
+                             bias.fun.fixp = biasOLS_Fixp)
 
 plot.000 <- plotMSEs2(MSEs.framed.000, '(a) OLS MSE', robust=NA, legend.position='right', y.lim=c(-1,20), jitter=0, line=TRUE, fix='Np', center='MSE', bias.fixp = FALSE)
 plot.000
 
-plot.0001 <- plotMSEs2(MSEs.framed.000, '(b) OLS Bias', robust=NA, legend.position='right', y.lim=c(0,0.1), jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
+plot.0001 <- plotMSEs2(MSEs.framed.000, '(b) OLS Bias', robust=NA, legend.position='right', y.lim=c(-0.1,1), jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
 plot.0001
 ```
 
@@ -28,12 +30,13 @@ plot.0001
 
 ```{r Ridge fix N frame and plot}
 # load('RData/MSEs_choose_m_ridge.2.RData')
-MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001)
+MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001,
+                            bias.fun.fixp = biasMeanRidge_Fixp)
 
 plot.0010 <- plotMSEs2(MSEs.framed.001, '(c) Ridge MSE', robust=NA, legend.position='right', y.lim=c(-1,100), jitter=0, line=TRUE, fix='Np', center='MSE')
 plot.0010
 
-plot.0011 <- plotMSEs2(MSEs.framed.001, '(d) Ridge bias', robust=NA, legend.position='right', y.lim=c(0,1), jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
+plot.0011 <- plotMSEs2(MSEs.framed.001, '(d) Ridge bias', robust=NA, legend.position='right', y.lim=c(-0.1,1), jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
 plot.0011
 ```
 
