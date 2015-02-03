@@ -40,8 +40,9 @@ nrow(configurations.000)
 # MSEs.000 <- apply(configurations.000, 1, replicateMSE)
 # attr(MSEs.000, "createdAt") <- Sys.time()
 
-cl <- makeCluster(3, methods=FALSE)
+cl <- makeCluster(35, methods=FALSE)
 clusterEvalQ(cl, library(InformationAndInference))
+
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
 
