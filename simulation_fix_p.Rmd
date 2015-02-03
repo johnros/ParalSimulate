@@ -59,7 +59,7 @@ save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
 ## Ridge
 ```{r Ridge test}
 # Create configurations:
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 2e2) , lambda = 1e2, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasRandom, beta.star.maker  = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 2e2) , lambda = 0, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasRandom, beta.star.maker  = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
 configurations %>% dim
   
 .MSEs.1 <- apply(configurations, 1, replicateMSE)

@@ -33,6 +33,7 @@ plot.0001
 MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001,
                             bias.fun.fixp = biasMeanRidge_Fixp)
 
+
 plot.0010 <- plotMSEs2(MSEs.framed.001, '(c) Ridge MSE', robust=NA, legend.position='right', y.lim=c(-1,100), jitter=0, line=TRUE, fix='Np', center='MSE')
 plot.0010
 

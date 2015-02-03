@@ -55,7 +55,8 @@ save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.3.RData')
 .lambda <- 1
 configurations.001 <- makeConfiguration(
   reps = .reps, 
-  m = .m, p = .p, n = .n, lambda = .lambda, 
+  m = .m, p = .p, n = .n, 
+  lambda = .lambda, 
   model = my.ridge, 
   link = identity, 
   sigma = .sigma, 

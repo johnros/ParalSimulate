@@ -1,3 +1,31 @@
+# Make fitting and coef extracting function
+my.ols <-  list(fitter=function(y, x,...) lm(y~x-1),
+                coefs= function(fit) coef(fit))
+
+my.ridge <- list(fitter=function(y, x, lambda, ...) lm.ridge(y~x-1, lambda=lambda),
+                 coefs= function(fit) coef(fit))
+
+my.log.link <- list(fitter=function(y, x,beta.star,...) {
+  .start <- beta.star
+  .control <- glm.control(epsilon=1e-4, maxit = 1e2 )
+  glm(formula = y~x-1, family=gaussian(link='log'),  start=.start,
+      control = .control)
+},
+coefs= function(fit) coef(fit))
+
+my.logistic <- list(fitter=function(y, x,...) glm(y~x-1, family = binomial),
+                    coefs= function(fit) coef(fit))
+
+
+my.huber <- list(fitter=my.huber <- function(y, x,...) rlm(y~x-1,...), 
+                 coefs= function(fit) coef(fit))
+
+my.absolute <- list(fitter=function(y, x,...) rq(y~x-1, method="fn",...),
+                    coefs=function(fit) coef(fit))
+
+
+
+
 NA_fun <- function(...) NA
 
 
@@ -9,32 +37,6 @@ rep.row<-function(x,n){
 }
 
 
-
-
-# Make fitting and coef extracting function
-my.ols <-  list(fitter=function(y, x,...) lm(y~x-1),
-                coefs= function(fit) coef(fit))
-
-my.ridge <- list(fitter=function(y, x, lambda, ...) lm.ridge(y~x-1, lambda=lambda),
-                coefs= function(fit) coef(fit))
-
-my.log.link <- list(fitter=function(y, x,beta.star,...) {
-  .start <- beta.star
-  .control <- glm.control(epsilon=1e-4, maxit = 1e2 )
-  glm(formula = y~x-1, family=gaussian(link='log'),  start=.start,
-      control = .control)
-  },
-  coefs= function(fit) coef(fit))
-
-my.logistic <- list(fitter=function(y, x,...) glm(y~x-1, family = binomial),
-                    coefs= function(fit) coef(fit))
-
-
-my.huber <- list(fitter=my.huber <- function(y, x,...) rlm(y~x-1,...), 
-                 coefs= function(fit) coef(fit))
-
-my.absolute <- list(fitter=function(y, x,...) rq(y~x-1, method="fn",...),
-                    coefs=function(fit) coef(fit))
 
 
 
@@ -107,7 +109,8 @@ biasNormRidge_Fixp <- function(lambda, p, N, m, beta.norm, ...){
   beta.norm * m/N * lambda/(1+lambda) * ((p+2+lambda)/(1+lambda)^2 + 1) 
 }
 ## Testing:
-# biasNormRidge_Fixp(lambda = 2, p = 5e3, N = 5e4, m = 1e1)
+# biasNormRidge_Fixp(lambda = 2, p = 5e3, N = 5e4, m = 1e1, beta.norm = 1)
+# biasNormRidge_Fixp(lambda = 0, p = 5e3, N = 5e4, m = 1e1, beta.norm = 1)
 
 
 biasMeanRidge_Fixp <- function(lambda, p, N, m, beta, ...){
