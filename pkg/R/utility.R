@@ -111,6 +111,7 @@ biasNormRidge_Fixp <- function(lambda, p, N, m, beta.norm=1, ...){
 
 
 biasMeanRidge_Fixp <- function(lambda, p, N, m, beta, ...){
+  if(is.list(beta)) beta <- unlist(beta)
   beta.mean <- mean(beta)
   beta.mean * m/N * lambda/(1+lambda) * ((p+2+lambda)/(1+lambda)^2 + 1) 
 }
