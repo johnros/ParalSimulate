@@ -16,7 +16,7 @@ library(InformationAndInference)
 (.n <- round(.N/.m))
 .kappa <- 0.9
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
-.reps <- 1e2
+.reps <- 2e1
 
 
 
@@ -62,7 +62,7 @@ configurations.001 <- makeConfiguration(
   beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
   name='ridge',
-  bias.fun.fixp = biasMeanRidge_Fixp)  ##TODO: compute true mean
+  bias.fun.fixp = biasMeanRidge_Fixp)  ##TODO: fix mean computing functions
 configurations.001 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.001)
 
