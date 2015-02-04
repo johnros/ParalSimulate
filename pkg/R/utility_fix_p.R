@@ -74,6 +74,7 @@ makeConfiguration <- function(reps,
   configurations.frame$beta <- lapply(configurations.frame$p, beta.maker, beta.norm=beta.norm)
   configurations.frame$beta.star <- lapply(configurations.frame$beta, beta.star.maker, lambda=lambda)
   
+  
   # Add theoretical performances
   
   return(configurations.frame)
@@ -269,13 +270,13 @@ plotMSEs <- function(MSEs.framed,
   
   
   if(center=='MSE'){
-    MSEs.framed %<>% mutate(center=parallel.MSE)  
+    MSEs.framed %<>% mutate(center=parallel.MSE, arm=0)  
   }
   if(center=='bias.mean'){
-    MSEs.framed %<>% mutate(center=bias.mean)  
+    MSEs.framed %<>% mutate(center=bias.mean, arm=0)  
   }
   if(center=='bias.norm'){
-    MSEs.framed %<>% mutate(center=bias.norm)  
+    MSEs.framed %<>% mutate(center=bias.norm, arm=0)  
   }    
   if(center=='median'){
     MSEs.framed %<>% mutate(center=median, arm=mad)

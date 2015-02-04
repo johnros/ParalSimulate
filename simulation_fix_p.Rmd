@@ -18,16 +18,16 @@ library(InformationAndInference)
 
 ## OLS
 ```{r OLS testing}
-configurations <- makeConfiguration(reps = 2, m = 95, p = 50, n = .n, lambda = NA, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData, name='ols', bias.fun.highdim = biasOLS_HighDim, bias.fun.fixp = biasOLS_Fixp) 
+configurations <- makeConfiguration(reps = 2e1, m = 95, p = 50, n = .n, lambda = NA, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData, name='ols') 
 configurations %>% dim
 configurations$bias.highdim
 configurations$bias.fixp
 
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
 
-MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations)
+MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations, bias.fun.highdim = biasOLS_HighDim, bias.fun.fixp = biasOLS_Fixp)
 MSEs.framed.0 %>% select(n, average, std.dev, parallel.MSE, parallel.bias)
-plotMSEs(MSEs.framed.0, 'test', y.lim=c(0.9,4))
+plotMSEs(MSEs.framed.0, center='average', the.title='test', y.lim=c(0.9,4))
 ```
 
 
@@ -59,15 +59,16 @@ save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
 ## Ridge
 ```{r Ridge test}
 # Create configurations:
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 2e2) , lambda = 0, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasRandom, beta.star.maker  = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 2e2) , lambda = 10, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasDeterministic, beta.norm = 1e1, beta.star.maker = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
 configurations %>% dim
   
 .MSEs.1 <- apply(configurations, 1, replicateMSE)
 
 MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations, bias.fun.fixp = biasMeanRidge_Fixp)
-MSEs.framed.1 %>% select(n, average, std.dev, median, mad)
+MSEs.framed.1 %>% select(n, average, std.dev, median, mad, bias.mean)
 
-plotMSEs(MSEs.framed.1, center='average', the.title = 'test', y.lim=c(0,4))
+plotMSEs(MSEs.framed.1, center='median', the.title = 'test', y.lim=c(-1,4))
+plotMSEs(MSEs.framed.1, center='bias.mean', the.title = 'test', y.lim=c(-1,4))
 ```
 
 
