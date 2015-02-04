@@ -39,6 +39,7 @@ plot.0010
 
 plot.0011 <- plotMSEs2(MSEs.framed.001, '(d) Ridge bias', robust=NA, legend.position='right', y.lim=c(-0.1,1), jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
 plot.0011
+
 ```
 
 

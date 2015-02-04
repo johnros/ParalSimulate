@@ -262,18 +262,29 @@ plotMSEs <- function(MSEs.framed,
                      the.title, 
                      y.lab= '', 
                      y.lim=c(1,2), 
-                     robust=FALSE, 
+                     center, 
                      legend.position="none",
                      jitter=0, 
                      line=TRUE){
   
-  if(robust){
+  
+  if(center=='MSE'){
+    MSEs.framed %<>% mutate(center=parallel.MSE)  
+  }
+  if(center=='bias.mean'){
+    MSEs.framed %<>% mutate(center=bias.mean)  
+  }
+  if(center=='bias.norm'){
+    MSEs.framed %<>% mutate(center=bias.norm)  
+  }    
+  if(center=='median'){
     MSEs.framed %<>% mutate(center=median, arm=mad)
-  }  else{
+  }
+  if(center=='average'){
     MSEs.framed %<>% mutate(center=average, arm=std.dev)
   }
   
-    MSEs.framed %<>% mutate(n=n+runif(nrow(MSEs.framed),-jitter,jitter),
+  MSEs.framed %<>% mutate(n=n+runif(nrow(MSEs.framed),-jitter,jitter),
                             m=as.factor(m))
   
   plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m, group=m))+

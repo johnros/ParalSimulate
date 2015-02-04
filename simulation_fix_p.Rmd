@@ -66,7 +66,8 @@ configurations %>% dim
 
 MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations, bias.fun.fixp = biasMeanRidge_Fixp)
 MSEs.framed.1 %>% select(n, average, std.dev, median, mad)
-plotMSEs(MSEs.framed.1, 'test', y.lim=c(0,4))
+
+plotMSEs(MSEs.framed.1, center='average', the.title = 'test', y.lim=c(0,4))
 ```
 
 
