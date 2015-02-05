@@ -7,8 +7,8 @@ output: pdf_document
 ## Fix N
 
 ```{r fix N simulate}
+library(InformationAndInference)
 # source('fix_kappa_choose_m.R')
-
 ```
 
 
@@ -29,17 +29,15 @@ plot.0001
 
 
 ```{r Ridge fix N frame and plot}
-# load('RData/MSEs_choose_m_ridge.2.RData')
-MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001,
-                            bias.fun.fixp = biasMeanRidge_Fixp)
-
+# load('RData/MSEs_choose_m_ridge.3.RData')
+MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001, bias.fun.fixp = biasMeanRidge_Fixp)
+MSEs.framed.001 %>% select(replications, bias.single)
 
 plot.0010 <- plotMSEs2(MSEs.framed.001, '(c) Ridge MSE', robust=NA, legend.position='right', y.lim=c(-1,100), jitter=0, line=TRUE, fix='Np', center='MSE')
 plot.0010
 
-plot.0011 <- plotMSEs2(MSEs.framed.001, '(d) Ridge bias', robust=NA, legend.position='right', y.lim=c(-0.1,1), jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
+plot.0011 <- plotMSEs2(MSEs.framed.001, '(d) Ridge bias', robust=NA, legend.position='right', y.lim=c(-1,10), jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
 plot.0011
-
 ```
 
 

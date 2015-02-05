@@ -5,7 +5,7 @@ my.ols <-  list(fitter=function(y, x,...) lm(y~x-1),
 my.ridge <- list(fitter=function(y, x, lambda, ...) lm.ridge(y~x-1, lambda=lambda),
                  coefs= function(fit) coef(fit))
 
-my.log.link <- list(fitter=function(y, x,beta.star,...) {
+my.log.link <- list(fitter=function(y, x, beta.star,...) {
   .start <- beta.star
   .control <- glm.control(epsilon=1e-4, maxit = 1e2 )
   glm(formula = y~x-1, family=gaussian(link='log'),  start=.start,

@@ -66,13 +66,17 @@ makeConfiguration <- function(reps,
                                       sigma=sigma, 
                                       data.maker=c(data.maker),
                                       lambda=lambda,
-                                      name=name)
+                                      name=name,
+                                      beta.norm=beta.norm)
+  
   
   configurations.frame %<>% filter(p<n)
   
   configurations.frame %<>% mutate(N=n*m)    
-  configurations.frame$beta <- lapply(configurations.frame$p, beta.maker, beta.norm=beta.norm)
-  configurations.frame$beta.star <- lapply(configurations.frame$beta, beta.star.maker, lambda=lambda)
+  configurations.frame$beta <- lapply(configurations.frame$p, 
+                                      beta.maker, beta.norm=beta.norm)
+  configurations.frame$beta.star <- lapply(configurations.frame$beta, 
+                                           beta.star.maker, lambda=lambda)
   
   
   # Add theoretical performances
@@ -210,6 +214,8 @@ frameMSEs <- function(MSEs, configurations,
   bias.norm <- parallel.bias %>% sapply( function(x) {x %>% SSQ %>% sqrt})
       
   bias.mean <- parallel.bias %>% sapply( function(x) {x %>% mean})
+  
+  bias.single <- parallel.bias %>% sapply( function(x) {x[[length(x)]]})
       
   # Frame MSE of each configuration
   MSEs.list <- lapply(MSEs, cleanMSEs)
@@ -244,7 +250,8 @@ frameMSEs <- function(MSEs, configurations,
                             ratios.frame, 
                             MSEs.frame.parallel,
                             bias.norm=bias.norm,
-                            bias.mean=bias.mean) 
+                            bias.mean=bias.mean,
+                            bias.single=bias.single) 
     
   return(MSEs.framed)
 }
@@ -369,6 +376,10 @@ plotMSEs2 <- function(MSEs.framed,
   if(center=='bias.norm'){
     MSEs.framed %<>% mutate(center=bias.norm)  
   }
+  if(center=='bias.single'){
+    MSEs.framed %<>% mutate(center=bias.single)  
+  }
+  
       
   if(fix=='N'){
     plot.1 <- ggplot(data = MSEs.framed, aes(x=m, y=center, colour=N, group=N))

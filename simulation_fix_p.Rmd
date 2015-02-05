@@ -26,8 +26,9 @@ configurations$bias.fixp
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
 
 MSEs.framed.0 <- frameMSEs(.MSEs.0, configurations, bias.fun.highdim = biasOLS_HighDim, bias.fun.fixp = biasOLS_Fixp)
-MSEs.framed.0 %>% select(n, average, std.dev, parallel.MSE, parallel.bias)
+MSEs.framed.0 %>% select(n, average, std.dev, mad, bias.mean)
 plotMSEs(MSEs.framed.0, center='average', the.title='test', y.lim=c(0.9,4))
+plotMSEs(MSEs.framed.0, center='bias.mean', the.title='test', y.lim=c(-0.1,0.1))
 ```
 
 
@@ -59,7 +60,7 @@ save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
 ## Ridge
 ```{r Ridge test}
 # Create configurations:
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 2e2) , lambda = 10, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasDeterministic, beta.norm = 1e1, beta.star.maker = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 5e2) , lambda = 0.01, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasDeterministic, beta.norm = 1e1, beta.star.maker = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
 configurations %>% dim
   
 .MSEs.1 <- apply(configurations, 1, replicateMSE)
