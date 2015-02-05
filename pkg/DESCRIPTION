@@ -14,5 +14,6 @@ Depends:
   plyr,
   ggplot2,
   scales,
-  gridExtra
+  gridExtra,
+  ridge
 License: FreeBSD

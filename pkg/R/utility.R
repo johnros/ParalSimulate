@@ -2,7 +2,7 @@
 my.ols <-  list(fitter=function(y, x,...) lm(y~x-1),
                 coefs= function(fit) coef(fit))
 
-my.ridge <- list(fitter=function(y, x, lambda, ...) lm.ridge(y~x-1, lambda=lambda),
+my.ridge <- list(fitter=function(y, x, lambda, ...) linearRidge(y~x-1, lambda=lambda),
                  coefs= function(fit) coef(fit))
 
 my.log.link <- list(fitter=function(y, x, beta.star,...) {

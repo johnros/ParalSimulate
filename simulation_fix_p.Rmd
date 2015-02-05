@@ -60,7 +60,7 @@ save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
 ## Ridge
 ```{r Ridge test}
 # Create configurations:
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 5e2) , lambda = 0.01, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasDeterministic, beta.norm = 1e1, beta.star.maker = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 5e2) , lambda = 1e1, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasDeterministic, beta.norm = 1e1, beta.star.maker = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
 configurations %>% dim
   
 .MSEs.1 <- apply(configurations, 1, replicateMSE)
@@ -68,9 +68,34 @@ configurations %>% dim
 MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations, bias.fun.fixp = biasMeanRidge_Fixp)
 MSEs.framed.1 %>% select(n, average, std.dev, median, mad, bias.mean)
 
-plotMSEs(MSEs.framed.1, center='median', the.title = 'test', y.lim=c(-1,4))
-plotMSEs(MSEs.framed.1, center='bias.mean', the.title = 'test', y.lim=c(-1,4))
+plotMSEs(MSEs.framed.1, center='median', the.title = 'MSE Ratio', y.lim=c(-1,4))
+plotMSEs(MSEs.framed.1, center='bias.mean', the.title = 'Bias', y.lim=c(-1,4))
+plotMSEs(MSEs.framed.1, center='MSE', the.title = 'MSE', y.lim=c(-1,30))
 ```
+
+
+```{r raw plot OLS}
+.MSEs.framed.1  <- MSEs.framed.1 %>% 
+  mutate(center=parallel.MSE, 
+         arm=0,
+         m=as.factor(m))  
+
+.plot.1 <- ggplot(data = .MSEs.framed.1, aes(x=n, y=center, colour=m, group=m))+
+  geom_point()+
+  geom_segment(aes(xend=n, y=center+arm, yend=center-arm)) +
+  labs(title = the.title)+
+  ylab(y.lab)+
+  ylim(y.lim) +
+  xlab(expression(n))+
+  #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
+  theme_bw()+
+  theme(text = element_text(size=20), legend.position = legend.position) + 
+  geom_line()
+
+.plot.1
+```
+
+
 
 
 
