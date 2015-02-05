@@ -125,7 +125,7 @@ makeRegressionData <- function(p, N, beta, link, sigma,...){
 # do.call(makeRegressionData, configurations[1,])
 
 
-analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
+analyzeParallel <- function(data, m, model, N, p, ...){
   y <- data$y
   X <- data$X
   
@@ -133,7 +133,7 @@ analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
   COEFS <- model$coefs
   
   ## Centralized Solution:
-  the.fit <- FITTER(y=y, x=X, beta.star=beta.star,...)
+  the.fit <- FITTER(y=y, x=X, ...)
   center.coefs <- COEFS(the.fit)
   
   ## Parallelized solution:
@@ -146,7 +146,7 @@ analyzeParallel <- function(data, m, model, N, p, beta.star, ...){
   
   machine.wise <-  matrix(NA, ncol = m, nrow = ncol(X))
   for(i in seq_len(m)){
-    .the.fit <- FITTER(y=y[machine.ind==i], x=X[machine.ind==i,], beta.star=beta.star,...)
+    .the.fit <- FITTER(y=y[machine.ind==i], x=X[machine.ind==i,],...)
     .coefs<- COEFS(.the.fit)
     machine.wise[,i] <- .coefs 
   }
