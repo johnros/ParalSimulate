@@ -69,7 +69,7 @@ MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations, bias.fun.fixp = biasMeanRidg
 MSEs.framed.1 %>% select(n, average, std.dev, median, mad, bias.mean)
 
 plotMSEs(MSEs.framed.1, center='median', the.title = 'MSE Ratio', y.lim=c(-1,4))
-plotMSEs(MSEs.framed.1, center='bias.mean', the.title = 'Bias', y.lim=c(-1,4))
+plotMSEs(MSEs.framed.1, center='bias.mean', the.title = 'Bias', y.lim=c(-1,1))
 plotMSEs(MSEs.framed.1, center='MSE', the.title = 'MSE', y.lim=c(-1,30))
 ```
 
