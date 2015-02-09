@@ -10,7 +10,7 @@ output: pdf_document
 ```
 
 ```{r split results}
-# load(file='RData/MSEs_fix_p.1.RData') 
+# load(file='RData/MSEs_fix_p.4.RData') 
 
 MSEs %>% length
 MSEs.framed <- frameMSEs(MSEs, configurations)
@@ -38,10 +38,10 @@ MSEs.framed.4 <- MSEs.framed[logistic.ind,]
 .ylim <- c(0.5,1.5)
 .ylim2 <- c(0.5,5)
 .jitter <- 10
-plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
-plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', robust=TRUE, legend.position='none', y.lim=.ylim, jitter=.jitter)
-plot.3 <- plotMSEs(MSEs.framed.3, '(c) Non-Linear Least Squares', robust=TRUE, legend.position='none', y.lim=.ylim2, jitter=.jitter)
-plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic Regression', robust=TRUE, legend.position='right', y.lim=.ylim2, jitter=.jitter)
+plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.3 <- plotMSEs(MSEs.framed.3, '(c) Non-Linear Least Squares', center='median', legend.position='none', y.lim=.ylim2, jitter=.jitter)
+plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic Regression', center='median', legend.position='right', y.lim=.ylim2, jitter=.jitter)
 
 grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
 ```
