@@ -15,22 +15,10 @@ output: pdf_document
 MSEs %>% length
 MSEs.framed <- frameMSEs(MSEs, configurations)
 
-ols.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.ols))) 
-ols.ind %>% table
-ridge.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.ridge)))
-nls.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.log.link)))
-logistic.ind <- sapply(MSEs.framed$model, function(x) isTRUE(all.equal(x, my.logistic)))
-
-configurations[ols.ind,'name'] <- 'ols'
-configurations[ridge.ind,'name'] <- 'ridge'
-configurations[nls.ind,'name'] <- 'non-linear'
-configurations[logistic.ind,'name'] <- 'logistic'
-
-
-MSEs.framed.0 <- MSEs.framed[ols.ind,]
-MSEs.framed.1 <- MSEs.framed[ridge.ind,]
-MSEs.framed.3 <- MSEs.framed[nls.ind,]
-MSEs.framed.4 <- MSEs.framed[logistic.ind,]
+MSEs.framed.0$name<- MSEs.framed %>% filter(name=='ols')
+MSEs.framed.1 <- MSEs.framed %>% filter(name=='ridge')
+MSEs.framed.3 <- MSEs.framed %>% filter(name=='nls')
+MSEs.framed.4 <- MSEs.framed %>% filter(name=='logistic')
 ```
 
 
