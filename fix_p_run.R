@@ -3,7 +3,7 @@ library(InformationAndInference)
 .p <- 5e1
 .n <- seq(4e1, 1e3, length.out=6)
 .sigma <- 1e1
-
+.lambda <- 2
 
 ## OLS
 configurations.0 <- makeConfiguration(
@@ -19,7 +19,7 @@ configurations.1 <- makeConfiguration(
   m = .m, 
   p = .p, 
   n = .n, 
-  lambda=2,
+  lambda=.lambda,
   model = my.ridge, link = identity, sigma = .sigma, 
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
@@ -41,6 +41,7 @@ configurations.4<- makeConfiguration(
   m = .m, 
   p = .p, 
   n = .n, 
+  lambda=NA,
   model = my.logistic, link = sigmoid, sigma = 1e1, 
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
   data.maker = makeClassificationData,
@@ -53,11 +54,11 @@ configurations <- rbind(
 
 
 
-cl <- makeCluster(35)
+cl <- makeCluster(10, useXDR=FALSE, homogeneous=TRUE)
 clusterEvalQ(cl, library(InformationAndInference))
 MSEs <- parApply(cl, configurations, 1, replicateMSE)
+save(MSEs, configurations, file='RData/MSEs_fix_p.4.RData')
 stopCluster(cl)
-save(MSEs, configurations, file='RData/MSEs_fix_p.1.RData')
 
 
 
