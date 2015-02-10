@@ -20,8 +20,6 @@ library(InformationAndInference)
 ```{r OLS testing}
 configurations <- makeConfiguration(reps = 2e1, m = 95, p = 50, n = .n, lambda = NA, model = my.ols, link = identity, sigma = 1e1, beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData, name='ols') 
 configurations %>% dim
-configurations$bias.highdim
-configurations$bias.fixp
 
 .MSEs.0 <- apply(configurations, 1, replicateMSE)
 
