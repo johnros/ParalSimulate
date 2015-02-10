@@ -3,8 +3,7 @@ library(InformationAndInference)
 .kappa <- 0.2
 .n <- seq(4e1, 4e3, length.out=6)
 .sigma <- 1e1
-file.ending <- 2
-
+.beta.norm <- 1e1
 
 ## OLS
 configurations.00 <- makeConfiguration_fixKappa(
@@ -16,7 +15,7 @@ configurations.00 <- makeConfiguration_fixKappa(
   sigma = .sigma, 
   model = my.ols, link = identity, beta.maker = makeBetasDeterministic, 
   beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData,
-  truth.fun=truthOLS) 
+  truth.fun=truthOLS, name='ols') 
 ## Ridge
 configurations.10 <- makeConfiguration_fixKappa(
   reps = 1e2,
@@ -26,7 +25,7 @@ configurations.10 <- makeConfiguration_fixKappa(
   lambda=2,
   model = my.ridge, link = identity, sigma = .sigma, 
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarRidge,
-  data.maker=makeRegressionData) 
+  data.maker=makeRegressionData, name='ridge') 
 ## Non Linear
 configurations.30 <- makeConfiguration_fixKappa(
   reps = 5e2, 
@@ -36,16 +35,17 @@ configurations.30 <- makeConfiguration_fixKappa(
   lambda = NA, 
   model = my.log.link, link = exp, sigma = 1, 
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
-  data.maker=makeRegressionData) 
+  data.maker=makeRegressionData, name='nls') 
 ## Logistic Regression
 configurations.40<- makeConfiguration_fixKappa(
   reps = 2e2, 
   m = .m, 
   kappa = .kappa, 
-  n = .n, 
+  n = .n,
+  lambda=NA,
   model = my.logistic, link = sigmoid, sigma = .sigma, 
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
-  data.maker = makeClassificationData) 
+  data.maker = makeClassificationData, name='logistic') 
 
 
 configurations.fix.kappa <- rbind(

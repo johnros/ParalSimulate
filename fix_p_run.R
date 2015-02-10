@@ -54,10 +54,12 @@ configurations <- rbind(
 
 
 
-cl <- makeCluster(10, useXDR=FALSE, homogeneous=TRUE)
+# cl <- makeCluster(3, useXDR=TRUE, homogeneous=FALSE, rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
+cl <- makeCluster(3, type="FORK", rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
+
 clusterEvalQ(cl, library(InformationAndInference))
 
-MSEs <- parApply(cl, configurations, 1, replicateMSE)
+MSEs <- parApply(cl, configurations[1:3,], 1, replicateMSE)
 stopCluster(cl)
 
 attr(MSEs, "createdAt") <- Sys.time()

@@ -2,3 +2,4 @@ TODO:
 
 - Run Ridge with lambda=0 to compare to OLS.
 - Run Ridge with non regularized beta so that shrinkage acts in wrong direction.
+- Fix fix_kappa simulation.
