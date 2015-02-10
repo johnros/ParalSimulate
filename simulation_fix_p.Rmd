@@ -35,10 +35,10 @@ configurations.0 <- makeConfiguration(
   reps = 5e1, m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, link = identity, sigma = .sigma, 
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
-  data.maker=makeRegressionData) 
+  data.maker=makeRegressionData, name='OLS') 
 
-# cl <- makeCluster(min(30, nrow(configurations.0)))
-# clusterEvalQ(cl, library(InformationAndInference))
+cl <- makeCluster(min(30, nrow(configurations.0)))
+clusterEvalQ(cl, library(InformationAndInference))
 MSEs.0 <- parApply(cl, configurations.0, 1, replicateMSE)
 # stopCluster(cl)
 ```
@@ -58,13 +58,13 @@ save(MSEs.0, configurations.0, file='RData/MSEs.0.RData')
 ## Ridge
 ```{r Ridge test}
 # Create configurations:
-configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 5e2) , lambda = 1e1, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasDeterministic, beta.norm = 1e1, beta.star.maker = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
+configurations <- makeConfiguration(reps = 2e1, m = c(5e0, 1e2), p = 5e1, n = c(1.5e2, 5e2) , lambda = 2e0, model = my.ridge, link = identity, sigma = 1e1, beta.maker=makeBetasDeterministic, beta.norm = 1e1, beta.star.maker = BetaStarRidge, data.maker = makeRegressionData, name='ridge' ) 
 configurations %>% dim
   
 .MSEs.1 <- apply(configurations, 1, replicateMSE)
 
 MSEs.framed.1 <- frameMSEs(.MSEs.1, configurations, bias.fun.fixp = biasMeanRidge_Fixp)
-MSEs.framed.1 %>% select(n, average, std.dev, median, mad, bias.mean)
+MSEs.framed.1 %>% select(n, average, lambda, median, mad, bias.mean)
 
 plotMSEs(MSEs.framed.1, center='median', the.title = 'MSE Ratio', y.lim=c(-1,4))
 plotMSEs(MSEs.framed.1, center='bias.mean', the.title = 'Bias', y.lim=c(-1,1))
