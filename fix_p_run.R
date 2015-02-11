@@ -55,7 +55,7 @@ configurations <- rbind(
 
 
 # cl <- makeCluster(3, useXDR=TRUE, homogeneous=FALSE, rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
-cl <- makeCluster(30, type="FORK", rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
+cl <- makeCluster(15, type="FORK", rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
 clusterEvalQ(cl, library(InformationAndInference))
 
 MSEs <- parApply(cl, configurations, 1, replicateMSE)

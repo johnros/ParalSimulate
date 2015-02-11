@@ -41,7 +41,7 @@ nrow(configurations.000)
 # MSEs.000 <- apply(configurations.000, 1, replicateMSE)
 # attr(MSEs.000, "createdAt") <- Sys.time()
 
-cl <- makeCluster(3, type="FORK", rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
+cl <- makeCluster(15, type="FORK", rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
 clusterEvalQ(cl, library(InformationAndInference))
 
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
