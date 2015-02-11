@@ -44,7 +44,8 @@ makeTest <- function(reps=1e1,
 # Return a frame with all simulation configurations
 makeConfiguration <- function(reps, 
                               m, 
-                              p, 
+                              p=NA, 
+                              kappa=NA,
                               n, 
                               lambda=NA,
                               model, 
@@ -56,10 +57,13 @@ makeConfiguration <- function(reps,
                               data.maker,
                               name){
   
-  
+  if(is.na(p) && is.na(kappa)) stop('Either p or kappa are required!')
+  if(!is.na(p) && !is.na(kappa)) stop('Only p or kappa are required!')
+    
   configurations.frame <- expand.grid(replications=reps, 
                                       m=m, 
                                       p=p, 
+                                      kappa=kappa,
                                       n=n, 
                                       model=list(model),
                                       link=c(link),
@@ -69,6 +73,9 @@ makeConfiguration <- function(reps,
                                       name=name,
                                       beta.norm=beta.norm)
   
+  if(is.na(p)) {
+    configurations.frame %<>% mutate(p=n*kappa)    
+  }
   
   configurations.frame %<>% filter(p<n)
   

@@ -1,51 +1,51 @@
-truthNULL <- function(kappa,m) 100
+truthNULL <- function(kappa,m) NA
 truthOLS <- function(kappa,m) (1 - kappa/m) / (1-kappa)  
 truthAbsolute <- function(kappa,m) 1 + 0.9 * kappa * (1-1/as.numeric(as.character(m)))
 
 
+
+
+## Deprecated and replaced by makeConfigurations:
+
 # Return a frame with all simulation configurations
-makeConfiguration_fixKappa <- function(reps, 
-                                       m, 
-                                       n, 
-                                       kappa, 
-                                       lambda=NA,
-                                       model, 
-                                       link=identity, 
-                                       sigma=1, 
-                                       beta.maker,
-                                       beta.star.maker, 
-                                       data.maker, 
-                                       truth.fun,
-                                       name){
-  
-  configurations.frame <- expand.grid(replications=reps, 
-                                      m=m, 
-                                      kappa=kappa, 
-                                      n=n,
-                                      lambda=lambda,
-                                      model=list(model),
-                                      link=c(link),
-                                      sigma=sigma, 
-                                      data.maker=c(data.maker),
-                                      truth=NA,
-                                      name)
-  
-  
-  configurations.frame %<>% 
-    mutate(p=ceiling(n*kappa), N=n*m) 
-  
-  if(!missing(truth.fun)) {
-    configurations.frame %<>% 
-      mutate(truth=truth.fun(kappa=kappa, m=m)) 
-  }
-    
-  configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
-  configurations.frame$beta.star <- beta.star.maker %>% 
-    mapply(beta=configurations.frame$beta, 
-           lambda=configurations.frame$lambda)
-  
-  return(configurations.frame)
-}
+# makeConfiguration_fixKappa <- function(reps, 
+#                                        m, 
+#                                        n, 
+#                                        kappa, 
+#                                        lambda=NA,
+#                                        model, 
+#                                        link=identity, 
+#                                        sigma=1, 
+#                                        beta.maker,
+#                                        beta.star.maker, 
+#                                        data.maker, 
+#                                        truth.fun,
+#                                        name){
+#   
+#   configurations.frame <- expand.grid(replications=reps, 
+#                                       m=m, 
+#                                       kappa=kappa, 
+#                                       n=n,
+#                                       lambda=lambda,
+#                                       model=list(model),
+#                                       link=c(link),
+#                                       sigma=sigma, 
+#                                       data.maker=c(data.maker),
+#                                       truth=NA,
+#                                       name)
+#   
+#   
+#   configurations.frame %<>% 
+#     mutate(p=ceiling(n*kappa), N=n*m) 
+#   
+#   
+#   configurations.frame$beta <- lapply(configurations.frame$p, beta.maker)
+#   configurations.frame$beta.star <- beta.star.maker %>% 
+#     mapply(beta=configurations.frame$beta, 
+#            lambda=configurations.frame$lambda)
+#   
+#   return(configurations.frame)
+# }
 ## Testing:
 #   OLS:
 # makeTest()
@@ -96,7 +96,7 @@ getMSEParallel <- function(x){
 
 
 ## Get MSE results and configuration and return data.frame for plotting.
-frameMSEs_fixKappa <- function(MSEs, configurations){
+frameMSEs_fixKappa <- function(MSEs, configurations, truth.fun=truthNull){
   
   MSEs.list <- lapply(MSEs, cleanMSEs)
   
@@ -109,7 +109,13 @@ frameMSEs_fixKappa <- function(MSEs, configurations){
   
   # Old version: MSEs.framed <- data.frame(configurations, MSEs.frame, MSEs.frame.parallel) 
   MSEs.framed <- data.frame(configurations, MSEs.frame) 
+  
+  ## TODO: move truch function to frameMSEs
+  MSEs.framed %<>% mutate(truth=truth.fun(kappa=kappa, m=m)) 
+  
+  
   MSEs.framed %<>% mutate(m=as.factor(m))
+
   
   return(MSEs.framed)
 }
@@ -131,15 +137,11 @@ getModel <- function(x,model){
 plotMSEs_fixKappa <- function(MSEs.framed, 
                               the.title, 
                               y.lab='', 
-                              y.lim=c(1,2), 
-                              robust=FALSE,
+                              y.lim=c(1,2),
                               legend.position='none',
                               line=TRUE){
-  if(robust){
-    MSEs.framed %<>% mutate(center=median, arm=0)
-  }  else{
-    MSEs.framed %<>% mutate(center=average, arm=0)
-  }
+  
+  MSEs.framed %<>% mutate(center=average, arm=0)
   
   plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m, group=m))+
     geom_point()  

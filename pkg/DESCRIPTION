@@ -9,9 +9,9 @@ Description: InformationAndInference
 Depends:
   magrittr (>= 1.5), 
   MASS,
+  plyr,
   dplyr,
   parallel,
-  plyr,
   ggplot2,
   scales,
   gridExtra,
