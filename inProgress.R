@@ -5,14 +5,11 @@
 ..beta <- rnorm(..p,mean = 2)
 ..sigma <- 1e1
 ..y <- ..x %*% ..beta + rnorm(..n, sd = ..sigma)
-
-
-BetaStarRidge <- function(beta, lambda) beta/(1+lambda)
   
 
 ## Using MASS
 library(MASS)
-..lambda <- 1e0
+..lambda <- 1e1
 ..beta.star <- BetaStarRidge(beta = ..beta, lambda = ..lambda)
 ..ridge.1 <- lm.ridge(..y~..x-1, lambda=..lambda)
 ..coef.1 <- coef(..ridge.1)
@@ -45,3 +42,12 @@ library(glmnet)
 ..coef.4 <- coef(..ridge.4)@x
 plot(..beta~..coef.4);abline(0,1)
 plot(..beta.star~..coef.4);abline(0,1)
+
+# Using genridge
+library(genridge)
+..lambda <- 1e1
+..beta.star <- BetaStarRidge(beta = ..beta, lambda = ..lambda/2)
+..ridge.5 <- ridge(..y~..x-1, lambda=..lambda)
+..coef.5 <- coef(..ridge.5) %>% drop
+plot(..beta~..coef.5);abline(0,1)
+plot(..beta.star~..coef.5);abline(0,1)

@@ -12,10 +12,10 @@
 library(InformationAndInference)
 .sigma <- 2e1
 .N <- 5e4
-(.m <- seq.int(1e1, 1e2, by=20) )
+(.m <- seq.int(1e1, 1e2, by=10) )
 (.n <- round(.N/.m))
 .kappa <- 0.9
-(.p <- seq(5e1, min(.n)*.kappa, length.out=2) %>% round(-1))
+(.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
 .reps <- 2e1
 .beta.norm <- 1e1
 
@@ -41,13 +41,13 @@ nrow(configurations.000)
 # MSEs.000 <- apply(configurations.000, 1, replicateMSE)
 # attr(MSEs.000, "createdAt") <- Sys.time()
 
-cl <- makeCluster(10, methods=FALSE, useXDR=FALSE, homogeneous=TRUE)
+cl <- makeCluster(3, type="FORK", rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
 clusterEvalQ(cl, library(InformationAndInference))
 
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
 
-save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.3.RData')
+save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.5.RData')
 
 
 
@@ -70,11 +70,11 @@ configurations.001 %<>% filter(round(N,-2) ==.N)
 nrow(configurations.001)
 
 
-# cl <- makeCluster(3)
+# cl <- makeCluster(3, type="FORK", rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
 # clusterEvalQ(cl, library(InformationAndInference))
 MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
 attr(MSEs.001, "createdAt") <- Sys.time()
-save(MSEs.001, configurations.001, file='RData/MSEs_choose_m_ridge.3.RData')
+save(MSEs.001, configurations.001, file='RData/MSEs_choose_m_ridge.5.RData')
 
 stopCluster(cl)
 

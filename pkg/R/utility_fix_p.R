@@ -359,7 +359,8 @@ plotMSEs2 <- function(MSEs.framed,
                       bias.fixp=FALSE,
                       bias.highdim=FALSE,
                       mse.fixp=FALSE,
-                      mse.highdim=FALSE){
+                      mse.highdim=FALSE, 
+                      lwd=1){
 
   
   MSEs.framed %<>% mutate(arm=0, 
@@ -405,7 +406,7 @@ plotMSEs2 <- function(MSEs.framed,
   
   # Actual plotting
   plot.1 <- plot.1 + 
-    geom_line() + 
+    geom_line(lwd=lwd) + 
     geom_point() +
     labs(title = the.title)+
     ylab(y.lab)+
@@ -415,16 +416,16 @@ plotMSEs2 <- function(MSEs.framed,
     theme(text = element_text(size=20), legend.position = legend.position) 
   
   if(bias.fixp){
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=bias.fixp),lty=2)
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=bias.fixp),lty=2, lwd=lwd)
   }
   if(bias.highdim){
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=bias.highdim), lty=2)
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=bias.highdim), lty=2, lwd=lwd)
   }
   if(mse.fixp){
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=mse.fixp), lty=2)
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=mse.fixp), lty=2, lwd=lwd)
   }
   if(mse.highdim){
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=mse.highdim), lty=2)
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=mse.highdim), lty=2, lwd=lwd)
   }
   
   

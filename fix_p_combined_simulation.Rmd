@@ -10,7 +10,7 @@ output: pdf_document
 ```
 
 ```{r split results}
-# load(file='RData/MSEs_fix_p.4.RData') 
+# load(file='RData/MSEs_fix_p.1.RData') 
 
 MSEs %>% length
 MSEs.framed <- frameMSEs(MSEs, configurations)
