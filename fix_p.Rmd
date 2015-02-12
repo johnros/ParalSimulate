@@ -129,7 +129,7 @@ save(MSEs.1, configurations.1, file='RData/MSEs.1.RData')
 
 ## Non Linear
 ```{r nonlinear test}
-configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2), lambda = 10, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData) 
+configurations <- makeConfiguration(reps = 1e1, m = c(5e0, 5e1), p = 5e1, n = c(1e2, 2e2), lambda = 10, model = my.log.link, link = exp, sigma = 1e0, beta.maker = makeBetasRandom, beta.norm = 1e1, beta.star.maker = BetaStarIdentity, data.maker = makeRegressionData, name='nls') 
 configurations %>% dim
 .MSEs.3 <- apply(configurations, 1, replicateMSE)
 # cl <- makeCluster(3)
@@ -138,8 +138,8 @@ configurations %>% dim
 # stopCluster(cl)
 MSEs.framed.3 <- frameMSEs(.MSEs.3, configurations)
 MSEs.framed.3 %>% select(n, average, std.dev, median, mad)
-plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,20))
-plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,2), robust = TRUE)
+plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,20), center='median')
+plotMSEs(MSEs.framed.3, 'test', y.lim=c(0.8,20), center='average')
 ```
 
 

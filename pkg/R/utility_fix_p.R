@@ -52,7 +52,7 @@ makeConfiguration <- function(reps,
                               link=identity, 
                               sigma=1, 
                               beta.maker,
-                              beta.norm=1,
+                              beta.norm,
                               beta.star.maker, 
                               data.maker,
                               name){
@@ -276,7 +276,7 @@ frameMSEs <- function(MSEs, configurations,
 plotMSEs <- function(MSEs.framed, 
                      the.title, 
                      y.lab= '', 
-                     y.lim=c(1,2), 
+                     y.lim, 
                      center, 
                      legend.position="none",
                      jitter=0, 
@@ -309,7 +309,6 @@ plotMSEs <- function(MSEs.framed,
   plot.1 <- plot.1 +
     labs(title = the.title)+
     ylab(y.lab)+
-    ylim(y.lim) +
     xlab(expression(n))+
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
@@ -318,6 +317,12 @@ plotMSEs <- function(MSEs.framed,
   if(line){
     plot.1 <- plot.1 + geom_line()
   }
+  
+  if(!missing(y.lim)){
+    plot.1 <- plot.1 + ylim(y.lim) 
+  }
+  
+  
   return(plot.1)  
 }
 ## Testing

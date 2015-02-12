@@ -4,12 +4,13 @@ library(InformationAndInference)
 .n <- seq(4e1, 1e3, length.out=6)
 .sigma <- 1e1
 .lambda <- 1e-1
+.beta.norm <- 1e0
 
 ## OLS
 configurations.0 <- makeConfiguration(
   reps = 1e2, 
   m = .m, p = .p, n = .n, lambda = NA, 
-  model = my.ols, link = identity, sigma = .sigma, beta.norm = 1e1,
+=  model = my.ols, link = identity, sigma = .sigma, beta.norm = .beta.norm,
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
   data.maker=makeRegressionData,
   name='ols') 
@@ -20,7 +21,7 @@ configurations.1 <- makeConfiguration(
   p = .p, 
   n = .n, 
   lambda=.lambda,
-  model = my.ridge, link = identity, sigma = .sigma, beta.norm = 1e1,
+  model = my.ridge, link = identity, sigma = .sigma, beta.norm = .beta.norm,
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
   name='ridge') 
@@ -31,10 +32,10 @@ configurations.3 <- makeConfiguration(
   p = .p, 
   n = .n, 
   lambda = NA, 
-  model = my.log.link, link = exp, sigma = 1, beta.norm = 1e1,
+  model = my.log.link, link = exp, sigma = 1, beta.norm = .beta.norm,
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
   data.maker=makeRegressionData,
-  name='non-linear') 
+  name='nls') 
 ## Logistic Regression
 configurations.4<- makeConfiguration(
   reps = 2e2, 
@@ -42,10 +43,12 @@ configurations.4<- makeConfiguration(
   p = .p, 
   n = .n, 
   lambda = NA, 
-  model = my.logistic, link = sigmoid, sigma = 1e1, beta.norm = 1e1,
+  model = my.logistic, link = sigmoid, sigma = 1e1, beta.norm = .beta.norm,
   beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
   data.maker = makeClassificationData,
   name='logistic') 
+
+
 
 configurations <- rbind(
   configurations.0, configurations.1, 
