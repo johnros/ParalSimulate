@@ -137,7 +137,7 @@ getModel <- function(x,model){
 plotMSEs_fixKappa <- function(MSEs.framed, 
                               the.title, 
                               y.lab='', 
-                              y.lim=c(1,2),
+                              y.lim,
                               legend.position='none',
                               line=TRUE){
   
@@ -152,7 +152,6 @@ plotMSEs_fixKappa <- function(MSEs.framed,
   plot.1 <- plot.1 +
     labs(title = the.title)+
     ylab(y.lab)+
-    ylim(y.lim) +
     xlab(expression(n))+
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
@@ -161,6 +160,11 @@ plotMSEs_fixKappa <- function(MSEs.framed,
   if(line){
     plot.1 <- plot.1 + geom_line()
   }
+  
+  if(!missing(y.lim)){
+    plot.1 <- plot.1 + ylim(y.lim) 
+  }
+  
   return(plot.1)  
 }
 ## Testing
