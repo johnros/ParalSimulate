@@ -11,7 +11,10 @@ library(InformationAndInference)
 .kappa <- 0.2
 .n <- seq(4e1, 4e3, length.out=6)
 .sigma <- 1e1
+.sigma.nls <- 1e0
 .beta.norm <- 1e0
+.lambda <- 1
+
 
 ## OLS
 configurations.00 <- makeConfiguration(
@@ -33,8 +36,9 @@ configurations.10 <- makeConfiguration(
   m = .m, 
   kappa = .kappa, 
   n = .n, 
-  lambda=2,
-  model = my.ridge, link = identity, sigma = .sigma, 
+  lambda=.lambda,
+  model = my.ridge, link = identity, 
+  sigma = .sigma, 
   beta.maker = makeBetasDeterministic, 
   beta.norm=.beta.norm, 
   beta.star.maker = BetaStarRidge,
@@ -47,7 +51,8 @@ configurations.30 <- makeConfiguration(
   kappa = .kappa, 
   n = .n, 
   lambda = NA, 
-  model = my.log.link, link = exp, sigma = 1, 
+  model = my.log.link, link = exp, 
+  sigma = .sigma.nls, 
   beta.maker = makeBetasDeterministic, 
   beta.norm=.beta.norm, 
   beta.star.maker = BetaStarIdentity, 
@@ -60,7 +65,8 @@ configurations.40<- makeConfiguration(
   kappa = .kappa, 
   n = .n,
   lambda=NA,
-  model = my.logistic, link = sigmoid, sigma = .sigma, 
+  model = my.logistic, link = sigmoid, 
+  sigma = .sigma, 
   beta.maker = makeBetasDeterministic, 
   beta.norm=.beta.norm,
   beta.star.maker = BetaStarIdentity, 
