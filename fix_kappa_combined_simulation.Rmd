@@ -10,27 +10,16 @@ source('fix_kappa_run.R')
 ```
 
 ```{r split results}
-# load(file='RData/MSEs_fix_kappa.1.RData') 
+# load(file='RData/MSEs_fix_kappa.5RData') 
 
 MSEs.framed.fix.kappa <- frameMSEs_fixKappa(MSEs.fix.kappa, configurations.fix.kappa)
 
+MSEs.framed.00 <- MSEs.framed.fix.kappa %>% filter(name=='ols')
+MSEs.framed.10 <- MSEs.framed.fix.kappa %>% filter(name=='ridge')
+MSEs.framed.30 <- MSEs.framed.fix.kappa %>% filter(name=='nls')
+MSEs.framed.40 <- MSEs.framed.fix.kappa %>% filter(name=='logistic')
 
-ols.ind <- getModel(MSEs.framed.fix.kappa, my.ols)
-ols.ind %>% table
-ridge.ind <- getModel(MSEs.framed.fix.kappa, my.ridge)
-nls.ind <- getModel(MSEs.framed.fix.kappa, my.log.link)
-logistic.ind <- getModel(MSEs.framed.fix.kappa, my.logistic)
-
-configurations.fix.kappa[ols.ind,'name'] <- 'ols'
-configurations.fix.kappa[ridge.ind,'name'] <- 'ridge'
-configurations.fix.kappa[nls.ind,'name'] <- 'non-linear'
-configurations.fix.kappa[logistic.ind,'name'] <- 'logistic'
-
-
-MSEs.framed.00 <- MSEs.framed.fix.kappa[ols.ind,]
-MSEs.framed.10 <- MSEs.framed.fix.kappa[ridge.ind,]
-MSEs.framed.30 <- MSEs.framed.fix.kappa[nls.ind,]
-MSEs.framed.40 <- MSEs.framed.fix.kappa[logistic.ind,]
+MSEs.framed.00 %<>% mutate(truth=truthOLS(kappa=kappa, m=m)) 
 ```
 
 
