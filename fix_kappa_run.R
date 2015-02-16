@@ -7,10 +7,10 @@ configurations.fix.kappa <- rbind(
   configurations.40)
 
 
-cl <- makeCluster(15, type='FORK')
+cl <- makeCluster(37, type='FORK')
 clusterEvalQ(cl, library(InformationAndInference))
 MSEs.fix.kappa <- parApply(cl, configurations.fix.kappa, 1, replicateMSE)
-save(MSEs.fix.kappa, configurations.fix.kappa, file='RData/MSEs_fix_kappa.5.RData')
+save(MSEs.fix.kappa, configurations.fix.kappa, file='RData/MSEs_fix_kappa.7.RData')
 
 stopCluster(cl)
 ############################################
