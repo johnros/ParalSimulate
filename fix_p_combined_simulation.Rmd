@@ -101,20 +101,5 @@ grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
 dev.off()
 ```
 
-```{r export data}
-flat <- lapply(MSEs, t) %>% do.call(rbind,.)
 
-selected.configurations <- configurations %>% select(name,n,p,m,N,sigma)
-
-repeated.configurations <- NULL
-for(i in 1:nrow(configurations) ){
-  repeated.configurations <- rbind(
-    repeated.configurations, 
-    rep.row(selected.configurations[i,], configurations$replications[i]))
-}
-MSEs.boaz <- cbind(repeated.configurations, flat) 
-head(MSEs.boaz)
-
-write.csv(MSEs.boaz %>% as.matrix, file='output/fix_p_raw.csv',col.names=TRUE)
-```
 
