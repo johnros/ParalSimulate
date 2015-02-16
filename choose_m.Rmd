@@ -8,16 +8,14 @@ output: pdf_document
 
 ```{r fix N simulate}
 library(InformationAndInference)
-# source('fix_kappa_choose_m.R')
+# source('choose_m.R')
 ```
 
 
 
 ```{r OLS fix N frame and plot}
 # load('RData/MSEs_choose_m.5.RData')
-MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000, 
-                             bias.fun.highdim = biasOLS_HighDim,
-                             bias.fun.fixp = biasOLS_Fixp)
+MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
 
 plot.000 <- plotMSEs2(MSEs.framed.000, '(a) OLS MSE', robust=NA, legend.position='right', jitter=0, line=TRUE, fix='Np', center='MSE', bias.fixp = FALSE)
 plot.000

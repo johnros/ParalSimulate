@@ -55,7 +55,11 @@ makeConfiguration <- function(reps,
                               beta.norm,
                               beta.star.maker, 
                               data.maker,
-                              name){
+                              name,           
+                              bias.fun.highdim=NA_fun,
+                              bias.fun.fixp=NA_fun,
+                              mse.fun.highdim=NA_fun,
+                              mse.fun.fixp=NA_fun){
   
   if(is.na(p) && is.na(kappa)) stop('Either p or kappa are required!')
   if(!is.na(p) && !is.na(kappa)) stop('Only p or kappa are required!')
@@ -71,7 +75,11 @@ makeConfiguration <- function(reps,
                                       data.maker=c(data.maker),
                                       lambda=lambda,
                                       name=name,
-                                      beta.norm=beta.norm)
+                                      beta.norm=beta.norm,
+                                      bias.fun.highdim=c(bias.fun.highdim),
+                                      bias.fun.fixp=c(bias.fun.fixp),
+                                      mse.fun.highdim=c(mse.fun.highdim),
+                                      mse.fun.fixp=c(mse.fun.fixp) )
   
   if(is.na(p)) {
     configurations.frame %<>% mutate(p=n*kappa)    
@@ -209,11 +217,7 @@ getBias <- function(x){
 
 
 ## Get errors (MSE and bias) for each configuration and return data.frame.
-frameMSEs <- function(MSEs, configurations,
-                      bias.fun.highdim=NA_fun,
-                      bias.fun.fixp=NA_fun,
-                      mse.fun.highdim=NA_fun,
-                      mse.fun.fixp=NA_fun){
+frameMSEs <- function(MSEs, configurations){
   
   # Compute norm of bias
   parallel.bias <- lapply(MSEs, getBias)

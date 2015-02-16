@@ -26,7 +26,7 @@ my.absolute <- list(fitter=function(y, x,...) rq(y~x-1, method="fn",...),
 
 
 
-NA_fun <- function(...) NA
+NA_fun <- function() NA
 
 
 rep.row<-function(x,n){
