@@ -32,7 +32,7 @@ plotMSEs_fixKappa(MSEs.framed.0, 'test', y.lim=c(0.9,2))
 ```{r  OLS run}
 ## Make configurations.00 in fix_kappa_combined_simulation.Rmd
 
-cl <- makeCluster(14)
+cl <- makeCluster(3, type='FORK')
 clusterEvalQ(cl, library(InformationAndInference))
 MSEs.00 <- parApply(cl, configurations.00, 1, replicateMSE)
 # stopCluster(cl)

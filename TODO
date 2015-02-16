@@ -1,4 +1,3 @@
 TODO:
 
-- Run Ridge with non regularized beta so that shrinkage acts in wrong direction.
 - Fix fix_kappa simulation.
