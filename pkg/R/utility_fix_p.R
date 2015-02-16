@@ -71,7 +71,11 @@ makeConfiguration <- function(reps,
                                       data.maker=c(data.maker),
                                       lambda=lambda,
                                       name=name,
-                                      beta.norm=beta.norm)
+                                      beta.norm=beta.norm,
+                                      bias.fun.highdim=c(bias.fun.highdim),
+                                      bias.fun.fixp=c(bias.fun.fixp),
+                                      mse.fun.highdim=c(mse.fun.highdim),
+                                      mse.fun.fixp=c(mse.fun.fixp) )
   
   if(is.na(p)) {
     configurations.frame %<>% mutate(p=n*kappa)    
@@ -209,11 +213,7 @@ getBias <- function(x){
 
 
 ## Get errors (MSE and bias) for each configuration and return data.frame.
-frameMSEs <- function(MSEs, configurations,
-                      bias.fun.highdim=NA_fun,
-                      bias.fun.fixp=NA_fun,
-                      mse.fun.highdim=NA_fun,
-                      mse.fun.fixp=NA_fun){
+frameMSEs <- function(MSEs, configurations){
   
   # Compute norm of bias
   parallel.bias <- lapply(MSEs, getBias)
@@ -243,13 +243,13 @@ frameMSEs <- function(MSEs, configurations,
     as.data.frame %>%
     setNames('parallel.MSE')
 
-  configurations %<>% 
-    mutate(
-      mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
-      mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
-      bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
-      bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
-    )    
+  #   configurations %<>% 
+  #     mutate(
+  #       mse.highdim=mse.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+  #       mse.fixp=mse.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+  #       bias.highdim=bias.fun.highdim(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+  #       bias.fixp=bias.fun.fixp(lambda=lambda, p=p, N=N, m=m, beta=beta.star),
+  #     )    
   
   
   
@@ -258,7 +258,8 @@ frameMSEs <- function(MSEs, configurations,
                             MSEs.frame.parallel,
                             bias.norm=bias.norm,
                             bias.mean=bias.mean,
-                            bias.single=bias.single) 
+                            bias.single=bias.single,
+                            error.asympt=NA) 
     
   return(MSEs.framed)
 }
@@ -367,11 +368,7 @@ plotMSEs2 <- function(MSEs.framed,
                       line=TRUE, 
                       fix,
                       center,
-                      rounding=-2, 
-                      bias.fixp=FALSE,
-                      bias.highdim=FALSE,
-                      mse.fixp=FALSE,
-                      mse.highdim=FALSE, 
+                      rounding=-2,
                       lwd=1){
 
   
@@ -427,19 +424,9 @@ plotMSEs2 <- function(MSEs.framed,
     theme_bw()+
     theme(text = element_text(size=20), legend.position = legend.position) 
   
-  if(bias.fixp){
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=bias.fixp),lty=2, lwd=lwd)
-  }
-  if(bias.highdim){
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=bias.highdim), lty=2, lwd=lwd)
-  }
-  if(mse.fixp){
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=mse.fixp), lty=2, lwd=lwd)
-  }
-  if(mse.highdim){
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=mse.highdim), lty=2, lwd=lwd)
-  }
-  
+  if(!is.na(MSEs.framed$error.asympt[1]))  
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=error.asympt),lty=2, lwd=lwd)
+    
   
   return(plot.1)  
 }

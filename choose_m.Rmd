@@ -8,21 +8,22 @@ output: pdf_document
 
 ```{r fix N simulate}
 library(InformationAndInference)
-# source('fix_kappa_choose_m.R')
+# source('choose_m.R')
 ```
 
 
 
 ```{r OLS fix N frame and plot}
 # load('RData/MSEs_choose_m.5.RData')
-MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000, 
-                             bias.fun.highdim = biasOLS_HighDim,
-                             bias.fun.fixp = biasOLS_Fixp)
+MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
 
-plot.000 <- plotMSEs2(MSEs.framed.000, '(a) OLS MSE', robust=NA, legend.position='right', jitter=0, line=TRUE, fix='Np', center='MSE', bias.fixp = FALSE)
+
+MSEs.framed.000 %<>% mutate(error.asympt=NA)
+plot.000 <- plotMSEs2(MSEs.framed.000, '(a) OLS MSE', robust=NA, legend.position='right', jitter=0, line=TRUE, fix='Np', center='MSE')
 plot.000
 
-plot.0001 <- plotMSEs2(MSEs.framed.000, '(b) OLS Bias', robust=NA, legend.position='right', jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
+MSEs.framed.000 %<>% mutate(error.asympt=biasOLS_Fixp())
+plot.0001 <- plotMSEs2(MSEs.framed.000, '(b) OLS Bias', robust=NA, legend.position='right', jitter=0, line=TRUE, fix='Np', center='bias.mean')
 plot.0001
 ```
 
@@ -30,13 +31,15 @@ plot.0001
 
 ```{r Ridge fix N frame and plot}
 # load('RData/MSEs_choose_m_ridge.5.RData')
-MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001, bias.fun.fixp = biasMeanRidge_Fixp)
+MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001)
 MSEs.framed.001 %>% select(replications, bias.single)
 
 plot.0010 <- plotMSEs2(MSEs.framed.001, '(c) Ridge MSE', robust=NA, legend.position='right', jitter=0, line=TRUE, fix='Np', center='MSE')
 plot.0010
 
-plot.0011 <- plotMSEs2(MSEs.framed.001, '(d) Ridge bias', robust=NA, legend.position='right',  jitter=0, line=TRUE, fix='Np', center='bias.mean', bias.fixp = TRUE)
+MSEs.framed.001 %<>% 
+  mutate(error.asympt=biasMeanRidge_Fixp(lambda = lambda, p = p, N = N, m = m, beta = beta.star))
+plot.0011 <- plotMSEs2(MSEs.framed.001, '(d) Ridge bias', robust=NA, legend.position='right',  jitter=0, line=TRUE, fix='Np', center='bias.mean')
 plot.0011
 ```
 

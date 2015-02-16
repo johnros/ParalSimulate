@@ -7,9 +7,9 @@ Author: Jonathan Rosenblatt
 Maintainer: Jonathan Rosenblatt <john.ros.work@gmail.com>
 Description: InformationAndInference
 Depends:
+  plyr,
   magrittr (>= 1.5), 
   MASS,
-  plyr,
   dplyr,
   parallel,
   ggplot2,

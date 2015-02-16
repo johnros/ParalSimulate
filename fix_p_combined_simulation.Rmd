@@ -18,7 +18,7 @@ library(InformationAndInference)
 configurations.0 <- makeConfiguration(
   reps = 1e2, 
   m = .m, p = .p, n = .n, lambda = NA, 
-=  model = my.ols, link = identity, sigma = .sigma, beta.norm = .beta.norm,
+  model = my.ols, link = identity, sigma = .sigma, beta.norm = .beta.norm,
   beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
   data.maker=makeRegressionData,
   name='ols') 
