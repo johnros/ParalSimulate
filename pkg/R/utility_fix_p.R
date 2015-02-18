@@ -71,11 +71,7 @@ makeConfiguration <- function(reps,
                                       data.maker=c(data.maker),
                                       lambda=lambda,
                                       name=name,
-                                      beta.norm=beta.norm,
-                                      bias.fun.highdim=c(bias.fun.highdim),
-                                      bias.fun.fixp=c(bias.fun.fixp),
-                                      mse.fun.highdim=c(mse.fun.highdim),
-                                      mse.fun.fixp=c(mse.fun.fixp) )
+                                      beta.norm=beta.norm )
   
   if(is.na(p)) {
     configurations.frame %<>% mutate(p=n*kappa)    

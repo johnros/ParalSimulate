@@ -96,7 +96,7 @@ getMSEParallel <- function(x){
 
 
 ## Get MSE results and configuration and return data.frame for plotting.
-frameMSEs_fixKappa <- function(MSEs, configurations, truth.fun=truthNull){
+frameMSEs_fixKappa <- function(MSEs, configurations){
   
   MSEs.list <- lapply(MSEs, cleanMSEs)
   
@@ -110,12 +110,8 @@ frameMSEs_fixKappa <- function(MSEs, configurations, truth.fun=truthNull){
   # Old version: MSEs.framed <- data.frame(configurations, MSEs.frame, MSEs.frame.parallel) 
   MSEs.framed <- data.frame(configurations, MSEs.frame) 
   
-  ## TODO: move truch function to frameMSEs
-  MSEs.framed %<>% mutate(truth=truth.fun(kappa=kappa, m=m)) 
-  
-  
-  MSEs.framed %<>% mutate(m=as.factor(m))
-
+  # Initializing a column for asymptotic results
+  MSEs.framed$truth=NA
   
   return(MSEs.framed)
 }
@@ -140,6 +136,8 @@ plotMSEs_fixKappa <- function(MSEs.framed,
                               y.lim,
                               legend.position='none',
                               line=TRUE){
+  
+  MSEs.framed %<>% mutate(m=as.factor(m))
   
   MSEs.framed %<>% mutate(center=average, arm=0)
   

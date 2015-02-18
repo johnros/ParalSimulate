@@ -1,5 +1,4 @@
 TODO:
 
-- Run Ridge with non regularized beta so that shrinkage acts in wrong direction.
-- Fix fix_kappa simulation.
-- Move error functions from makeFrame to make Configuration (or think about it some more).
+- Create CIs to parameters. E.g. in OLS.
+- 

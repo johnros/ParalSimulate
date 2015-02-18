@@ -77,17 +77,17 @@ MSEs.framed.4 <- MSEs.framed %>% filter(name=='logistic')
 
 
 ```{r all_plots}
-.ylim <- c(0.5,1.5)
-.ylim2 <- c(0.5,20)
+.ylim <- c(0.9,1.5)
+.ylim2 <- c(0.9,20)
 .jitter <- 10
 
 plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter)
 
 plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter)
 
-plot.3 <- plotMSEs(MSEs.framed.3, '(c) Non-Linear Least Squares', center='median', legend.position='none', jitter=.jitter, y.lim=.ylim2)
+plot.3 <- plotMSEs(MSEs.framed.3, '(c) NLS', center='median', legend.position='none', jitter=.jitter, y.lim=.ylim2)
 
-plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic Regression', center='median', legend.position='right', jitter=.jitter, y.lim=.ylim2)
+plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic', center='median', legend.position='none', jitter=.jitter, y.lim=.ylim2)
 
 grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
 ```
@@ -97,6 +97,10 @@ grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
 directory <- "~/workspace/ParalSimulate/output/"
 the.file <-paste(directory, "classic_asymptotics_1.pdf", sep='')
 pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
+
+plot.0 <- plot.0 +
+  theme(legend.position=c(0.85, 0.75), legend.key.size=unit(5,"mm"))
+
 grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
 dev.off()
 ```
