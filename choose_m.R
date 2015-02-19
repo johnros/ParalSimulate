@@ -14,7 +14,7 @@ library(InformationAndInference)
 .N <- 5e4
 (.m <- seq.int(1e1, 1e2, by=10) )
 (.n <- round(.N/.m))
-.kappa <- 0.9
+.kappa <- 0.2
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
 .reps <- 2e1
 .beta.norm <- 1e1

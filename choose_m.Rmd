@@ -14,11 +14,13 @@ library(InformationAndInference)
 
 
 ```{r OLS fix N frame and plot}
-# load('RData/MSEs_choose_m.5.RData')
+load('RData/MSEs_choose_m.5.RData')
 MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
 
 
-MSEs.framed.000 %<>% mutate(error.asympt=NA)
+MSEs.framed.000 %<>% mutate(kappa=p/n)
+MSEs.framed.000$error.asympt <-  apply(MSEs.framed.000, 1, function(x) 
+  ApproxMSE_OLS_highdim2(kappa=x[['kappa']], m=x[['m']], sigma.sq = x[['sigma']]^2))
 plot.000 <- plotMSEs2(MSEs.framed.000, '(a) OLS MSE', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE')
 plot.000
 
@@ -30,15 +32,18 @@ plot.0001
 
 
 ```{r Ridge fix N frame and plot}
-# load('RData/MSEs_choose_m_ridge.5.RData')
+load('RData/MSEs_choose_m_ridge.5.RData')
 MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001)
-MSEs.framed.001 %>% select(replications, bias.single)
+MSEs.framed.001 %>% select(replications, bias.single, p)
 
+MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 
+  ApproxMSE_Ridge_fixp(n=x[['n']], p = x[['p']], m=x[['m']], lambda = x[['lambda']], sigma.sq = x[['sigma']]^2, beta = x[['beta']]))
 plot.0010 <- plotMSEs2(MSEs.framed.001, '(c) Ridge MSE', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE')
 plot.0010
 
-MSEs.framed.001 %<>% 
-  mutate(error.asympt=biasMeanRidge_Fixp(lambda = lambda, p = p, N = N, m = m, beta = beta.star))
+
+MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 
+  biasMeanRidge_Fixp(N=x[['N']], p = x[['p']], m=x[['m']], lambda = x[['lambda']], beta = x[['beta.star']]))
 plot.0011 <- plotMSEs2(MSEs.framed.001, '(d) Ridge bias', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='bias.mean')
 plot.0011
 ```
@@ -74,6 +79,28 @@ dev.off()
 
 
 
+```{r Arror approximations for OLS}
+MSEs.framed.000 %<>% mutate(error.asympt=ApproxMSE_OLS_highdim2(kappa=kappa, m = m, sigma.sq = sigma^2))
+plot.00001 <- plotMSEs2(MSEs.framed.000, '(a) OLS MSE HighDim 1', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE')
+plot.00001
+
+MSEs.framed.000 %<>% mutate(error.asympt=ApproxMSE_OLS_highdim(kappa=kappa, m = m, sigma.sq = sigma^2))
+plot.00002 <- plotMSEs2(MSEs.framed.000, '(b) OLS MSE HighDim 2', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE')
+plot.00002
+
+MSEs.framed.000 %<>% mutate(error.asympt=ApproxMSE_OLS_fixp(n=n, p=p, m = m, sigma.sq = sigma^2))
+plot.00003 <- plotMSEs2(MSEs.framed.000, '(c) OLS MSE Fix p', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE')
+plot.00003
+
+
+# plot
+the.file <-paste(directory, "choose_m_compare_OLS.pdf", sep='')
+pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
+plot.00001 <- plot.00001 +
+  theme(legend.position=c(0.2, 0.65), legend.key.size=unit(5,"mm"))
+grid.arrange(plot.00001, plot.00002, plot.00003, ncol=2)
+dev.off()
+```
 
 
 

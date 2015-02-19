@@ -1,3 +1,25 @@
+
+# First order approximation of MSE for OLS in fix_p:
+ApproxMSE_OLS_fixp <- function(n,p,m,sigma.sq){
+  p/(n*m)*sigma.sq
+}
+## Testing:
+# ApproxMSE_OLS_fixp(100,10,2, 1)
+
+
+# First order approximation of MSE for Ridge in fix_p:
+ApproxMSE_Ridge_fixp <- function(n, p, m, lambda, sigma.sq, beta){
+  if(is.list(beta)) beta <- unlist(beta)
+  
+  ( (p+1) * (lambda)^2/(1+lambda)^4 * SSQ(beta) + (p * sigma.sq) ) / (n*m) 
+}
+## Testing:
+# ..p <- 1e1
+# ApproxMSE_Ridge_fixp(n = 1e3, p = ..p, lambda = 2, beta = runif(..p))
+
+
+
+
 # Generate true parameters
 makeBetasRandom <- function(p, beta.norm){
   beta <- rnorm(p)
@@ -365,7 +387,9 @@ plotMSEs2 <- function(MSEs.framed,
                       fix,
                       center,
                       rounding=-2,
-                      lwd=1){
+                      lwd=1,
+                      lwd.error=2,
+                      lty.error=3){
 
   
   MSEs.framed %<>% mutate(arm=0, 
@@ -421,7 +445,7 @@ plotMSEs2 <- function(MSEs.framed,
     theme(text = element_text(size=20), legend.position = legend.position) 
   
   if(!is.na(MSEs.framed$error.asympt[1]))  
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=error.asympt),lty=2, lwd=lwd)
+    plot.1 <- plot.1 + geom_line(aes(x=m, y=error.asympt),lty=lty.error, lwd=lwd.error)
     
   
   return(plot.1)  
