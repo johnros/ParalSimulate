@@ -10,7 +10,7 @@ library(InformationAndInference)
 .m <- c(1e1, 2e1, 4e1, 1e2)
 .kappa <- 0.2
 .n <- seq(4e1, 1e3, length.out=6)
-.sigma <- 1e1
+.sigma <- 1e0
 .sigma.nls <- 1e0
 .beta.norm <- 1e0
 .lambda <- 1
