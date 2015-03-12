@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 # Testing ridge.lm:
 BetaStarRidge <- function(beta, lambda) beta/(1+lambda)
 

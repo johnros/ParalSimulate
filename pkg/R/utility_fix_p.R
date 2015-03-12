@@ -20,6 +20,54 @@ ApproxMSE_Ridge_fixp <- function(n, p, m, lambda, sigma.sq, beta){
 
 
 
+# Second order approximation of MSE for Ridge in fix_p:
+
+ll <- function(lambda,x,y){
+  lambda^x/(1+lambda)^y
+}
+
+ApproxMSE_Ridge_matrix <- function(n, p, m, lambda, sigma.sq, beta){
+  
+  B <- outer(beta, beta)
+  I <- diag(p)
+  A <- SSQ(beta) * I
+  l <- function(x,y) ll(lambda,x,y)
+  
+  zeta0 <- 1/n^2 * l(2,6) * (p+1)^2 * B
+  
+  zeta1 <- l(0,1) * ( l(2,2)*(4*B+A) + sigma.sq*I)
+  
+  zeta2 <- - l(0,4)*(p+4)*(B+A) - l(0,2)*(p+1)*sigma.sq*I
+  
+  zeta3 <-  B*l(2,6)*(p^2+3*p+3) + A*l(2,6)*(p+1)+ l(0,4)*sigma.sq*(p+1)*I
+  
+  zeta4 <- B*l(2,6)*(p+2) + A*l(2,6)*(p+5) 
+  
+  N1 <- m*n
+  N2 <- m*n^2
+  M <-  (1-1/m) * zeta0 + 1/N1 * zeta1 + 1/N2 * (2* zeta2 + zeta3+ 2*zeta4) 
+  
+  return(M)
+}
+## Testing:
+# sum(diag(ApproxMSE_Ridge_matrix(100,10,5,2,1,rnorm(10))))
+
+
+
+
+
+ApproxMSE_Ridge_fixp2 <- function(n, p, m, lambda, sigma.sq, beta){
+  if(is.list(beta)) beta <- unlist(beta)
+  
+  # Return trace of second order error matrix
+  sum(diag(ApproxMSE_Ridge_matrix(n, p, m, lambda, sigma.sq, beta)))
+}
+## Testing:
+
+
+
+
+
 # Generate true parameters
 makeBetasRandom <- function(p, beta.norm){
   beta <- rnorm(p)
