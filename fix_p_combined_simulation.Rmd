@@ -9,7 +9,7 @@ output: pdf_document
 library(InformationAndInference)
 .m <- c(1e1, 2e1, 4e1, 1e2)
 .p <- 5e1
-.n <- seq(4e1, 1e3, length.out=6)
+.n <- seq(4e1, 2e3, length.out=6)
 .sigma <- 1e1
 .lambda <- 1e-1
 .beta.norm <- 1e0
@@ -66,7 +66,6 @@ configurations.4<- makeConfiguration(
 ```{r split results}
 # load(file='RData/MSEs_fix_p.5.RData') 
 
-MSEs %>% length
 MSEs.framed <- frameMSEs(MSEs, configurations)
 
 MSEs.framed.0 <- MSEs.framed %>% filter(name=='ols')
