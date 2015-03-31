@@ -1,4 +1,7 @@
 TODO:
 
 - Create CIs to parameters. E.g. in OLS.
-- 
+- Why does OLS MSE grow faster than Ridge MSE?
+- A problem where the error is dominated by the bias? (not that important)
+- Put high dim MSE approximation on plots (a) and (c).
+

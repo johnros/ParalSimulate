@@ -2,7 +2,17 @@ truthNULL <- function(kappa,m) NA
 truthOLS <- function(kappa,m) (1 - kappa/m) / (1-kappa)  
 truthAbsolute <- function(kappa,m) 1 + 0.9 * kappa * (1-1/as.numeric(as.character(m)))
 
+# First order high-dim approximation to the OLS MSE
+ApproxMSE_OLS_highdim <- function(kappa, m, sigma.sq){
+  kappa / ((1-kappa) * m) * sigma.sq
+}
+## Testing:
+#  ApproxMSE_OLS(0.2, 100, 1)
 
+ApproxMSE_OLS_highdim2 <- function(kappa, m, sigma.sq){
+   (kappa+kappa^2) / m * sigma.sq
+}
+# ApproxMSE_OLS2(0.2, 100, 1)
 
 
 ## Deprecated and replaced by makeConfigurations:

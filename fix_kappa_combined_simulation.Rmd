@@ -80,7 +80,7 @@ configurations.40<- makeConfiguration(
 ```
 
 ```{r split results}
-# load(file='RData/MSEs_fix_kappa.7.RData') 
+# load(file='RData/MSEs_fix_kappa.8.RData') 
 
 MSEs.framed.fix.kappa <- frameMSEs_fixKappa(MSEs.fix.kappa, configurations.fix.kappa)
 

@@ -28,6 +28,8 @@ my.absolute <- list(fitter=function(y, x,...) rq(y~x-1, method="fn",...),
 
 NA_fun <- function() NA
 
+Trace <- function(A) A %>% diag %>% sum
+
 
 rep.row<-function(x,n){
   result <- matrix(rep(c(x),each=n),nrow=n)
