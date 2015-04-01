@@ -78,7 +78,7 @@ MSEs.framed.4 <- MSEs.framed %>% filter(name=='logistic')
 
 ```{r all_plots}
 .ylim <- c(0.9,1.5)
-.ylim2 <- c(0.9,20)
+.ylim2 <- c(0.9,5)
 .jitter <- 10
 
 plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter)
