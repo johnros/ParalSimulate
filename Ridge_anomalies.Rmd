@@ -1,0 +1,67 @@
+---
+title: "Ridge anomalies"
+author: "Jonathan Rosenblatt"
+date: "1/1/2015"
+output: pdf_document
+---
+
+```{r Make configurations}
+library(InformationAndInference)
+.m <- c(1e1, 2e1, 4e1, 1e2)
+.p <- 5e1
+.n <- seq(4e1, 1e3, length.out=6)
+.sigma <- 1e1
+.lambda <- 1
+.beta.norm <- 1e0
+.beta.maker <- makeBetasRandom
+
+## Ridge
+configurations.1 <- makeConfiguration(
+  reps = 5e1,
+  m = .m, 
+  p = .p, 
+  n = .n, 
+  lambda=.lambda,
+  model = my.ridge, link = identity, sigma = .sigma, beta.norm = .beta.norm,
+  beta.maker = .beta.maker, 
+  beta.star.maker = BetaStarRidge,
+  data.maker=makeRegressionData,
+  name='ridge') 
+```
+
+
+```{r run simulation}
+source('ridge_anomalies.R')
+```
+
+```{r split results}
+# load(file='MSEs_Ridge_anomalies.1.RData') 
+
+MSEs.framed <- frameMSEs(MSEs, configurations)
+
+```
+
+
+```{r all_plots}
+.ylim <- c(0.9,1.5)
+.ylim2 <- c(0.9,20)
+.jitter <- 10
+
+
+plot.1 <- plotMSEs(MSEs.framed, '(b) Ridge', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter)
+plot.1
+```
+
+
+```{r export plot}
+directory <- "~/workspace/ParalSimulate/output/"
+the.file <-paste(directory, "ridge_anomalies.pdf", sep='')
+pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
+
+plot.1
+
+dev.off()
+```
+
+
+

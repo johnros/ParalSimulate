@@ -9,28 +9,29 @@ output: pdf_document
 library(InformationAndInference)
 .m <- c(1e1, 2e1, 4e1, 1e2)
 .p <- 5e1
-.n <- seq(4e1, 2e3, length.out=6)
+.n <- seq(4e1, 3e3, length.out=6)
 .sigma <- 1e1
 .lambda <- 1e-1
 .beta.norm <- 1e0
+.beta.maker <- makeBetasDeterministic
 
 ## OLS
 configurations.0 <- makeConfiguration(
   reps = 1e2, 
   m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, link = identity, sigma = .sigma, beta.norm = .beta.norm,
-  beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarIdentity,
+  beta.maker = .beta.maker, beta.star.maker = BetaStarIdentity,
   data.maker=makeRegressionData,
   name='ols') 
 ## Ridge
 configurations.1 <- makeConfiguration(
-  reps = 2e1,
+  reps = 5e1,
   m = .m, 
   p = .p, 
   n = .n, 
   lambda=.lambda,
   model = my.ridge, link = identity, sigma = .sigma, beta.norm = .beta.norm,
-  beta.maker = makeBetasDeterministic, beta.star.maker = BetaStarRidge,
+  beta.maker = .beta.maker, beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
   name='ridge') 
 ## Non Linear
@@ -41,7 +42,8 @@ configurations.3 <- makeConfiguration(
   n = .n, 
   lambda = NA, 
   model = my.log.link, link = exp, sigma = 1, beta.norm = .beta.norm,
-  beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
+  beta.maker = .beta.maker, 
+  beta.star.maker = BetaStarIdentity, 
   data.maker=makeRegressionData,
   name='nls') 
 ## Logistic Regression
@@ -52,19 +54,18 @@ configurations.4<- makeConfiguration(
   n = .n, 
   lambda = NA, 
   model = my.logistic, link = sigmoid, sigma = 1e1, beta.norm = .beta.norm,
-  beta.maker = makeBetasRandom, beta.star.maker = BetaStarIdentity, 
+  beta.maker = .beta.maker, beta.star.maker = BetaStarIdentity, 
   data.maker = makeClassificationData,
   name='logistic') 
-
 ```
 
 
 ```{r run simulation}
-# source('fix_p_run.R')
+source('fix_p_run.R')
 ```
 
 ```{r split results}
-# load(file='RData/MSEs_fix_p.5.RData') 
+# load(file='RData/MSEs_fix_p.8.RData') 
 
 MSEs.framed <- frameMSEs(MSEs, configurations)
 
