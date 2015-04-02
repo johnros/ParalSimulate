@@ -69,7 +69,7 @@ ApproxMSE_Ridge_matrix <- function(n, p, m, lambda, sigma.sq, beta){
   
   zeta1 <- l(2,4)*(B+A) + l(0,2)*sigma.sq*I
   
-  zeta2 <- - l(2,5)*(B*(p+4)+A*(p+3))- l(0,3)*(p+1)*sigma.sq*I
+  zeta2 <- - l(2,5)*(B*(p+4)+A*(p+2))- l(0,3)*(p+1)*sigma.sq*I
   
   zeta3 <-  l(2,6)*B*(p^2+p+5) + l(2,6)*A*(p+2)+ l(0,4)*sigma.sq*(p+1)*I
   
