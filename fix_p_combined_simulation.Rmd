@@ -17,10 +17,11 @@ library(InformationAndInference)
 
 ## OLS
 configurations.0 <- makeConfiguration(
-  reps = 1e2, 
+  reps = 2e2, 
   m = .m, p = .p, n = .n, lambda = NA, 
   model = my.ols, link = identity, sigma = .sigma, beta.norm = .beta.norm,
-  beta.maker = .beta.maker, beta.star.maker = BetaStarIdentity,
+  beta.maker = .beta.maker, 
+  beta.star.maker = BetaStarIdentity,
   data.maker=makeRegressionData,
   name='ols') 
 ## Ridge
@@ -31,7 +32,8 @@ configurations.1 <- makeConfiguration(
   n = .n, 
   lambda=.lambda,
   model = my.ridge, link = identity, sigma = .sigma, beta.norm = .beta.norm,
-  beta.maker = .beta.maker, beta.star.maker = BetaStarRidge,
+  beta.maker = .beta.maker, 
+  beta.star.maker = BetaStarRidge,
   data.maker=makeRegressionData,
   name='ridge') 
 ## Non Linear
@@ -48,7 +50,7 @@ configurations.3 <- makeConfiguration(
   name='nls') 
 ## Logistic Regression
 configurations.4<- makeConfiguration(
-  reps = 2e2, 
+  reps = 5e2, 
   m = .m, 
   p = .p, 
   n = .n, 
