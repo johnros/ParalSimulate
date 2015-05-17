@@ -67,7 +67,7 @@ source('fix_p_run.R')
 ```
 
 ```{r split results}
-# load(file='RData/MSEs_fix_p.9.RData') 
+load(file='RData/MSEs_fix_p.9.RData') 
 library(InformationAndInference)
 
 MSEs.framed <- frameMSEs(MSEs, configurations)

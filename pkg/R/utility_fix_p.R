@@ -380,7 +380,8 @@ plotMSEs <- function(MSEs.framed,
                      center, 
                      legend.position="none",
                      jitter=0, 
-                     line=TRUE){
+                     line=TRUE,
+                     lty=3){
   
   
   if(center=='MSE'){
@@ -415,8 +416,8 @@ plotMSEs <- function(MSEs.framed,
     theme(text = element_text(size=20), legend.position = legend.position) 
   
   if(line){
-    plot.1 <- plot.1 + geom_line()
-  }
+    plot.1 <- plot.1 + geom_line(linetype=lty)
+    }
   
   if(!missing(y.lim)){
     plot.1 <- plot.1 + ylim(y.lim) 
@@ -454,7 +455,9 @@ makeClassificationData <- function(p, N, betas, link,...){
 # .classification.data <- makeClassificationData(.p, .N, .betas, sigmoid)
 # .classification.data$y
 
-
+## Deprecated!
+# For creating lty='b' type lines using package 'ggExtra'
+# geom_barbed <- GeomBarbed$build_accessor()
 
 # Plot results for choosing m:
 plotMSEs2 <- function(MSEs.framed, 
@@ -468,9 +471,12 @@ plotMSEs2 <- function(MSEs.framed,
                       fix,
                       center,
                       rounding=-2,
+                      lty=3,
                       lwd=1,
-                      lwd.error=2,
-                      lty.error=3){
+                      lwd.error=0.5,
+                      lty.error=1,
+                      point.size=1,
+                      point.size.error=0){
 
   
   MSEs.framed %<>% mutate(arm=0, 
@@ -507,6 +513,7 @@ plotMSEs2 <- function(MSEs.framed,
   if(fix=='Np'){
     plot.1 <- ggplot(data = MSEs.framed, 
                      aes(x=m, y=center, 
+                         shape=p,
                          colour=p,
                          #shape = N,
                          #group=interaction(N, p)))
@@ -520,8 +527,9 @@ plotMSEs2 <- function(MSEs.framed,
   
   # Actual plotting
   plot.1 <- plot.1 + 
-    geom_line(lwd=lwd) + 
-    geom_point() +
+    # geom_line(lwd=lwd) + 
+    geom_point(size=point.size) +
+    geom_line(linetype=lty, lwd=lwd)+
     labs(title = the.title)+
     ylab(y.lab)+
     xlab(expression(m))+
@@ -530,7 +538,10 @@ plotMSEs2 <- function(MSEs.framed,
     theme(text = element_text(size=20), legend.position = legend.position) 
   
   if(!is.na(MSEs.framed$error.asympt[1]))  
-    plot.1 <- plot.1 + geom_line(aes(x=m, y=error.asympt),lty=lty.error, lwd=lwd.error)
+    plot.1 <- plot.1 + 
+    geom_line(aes(x=m, y=error.asympt), linetype=lty.error, lwd=lwd.error)+
+    geom_point(aes(x=m, y=error.asympt, shape=p),  size=point.size.error)
+    
     
   
   return(plot.1)  

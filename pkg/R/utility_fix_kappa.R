@@ -145,7 +145,8 @@ plotMSEs_fixKappa <- function(MSEs.framed,
                               y.lab='', 
                               y.lim,
                               legend.position='none',
-                              line=TRUE){
+                              line=TRUE,
+                              lty=3){
   
   MSEs.framed %<>% mutate(m=as.factor(m))
   
@@ -166,7 +167,7 @@ plotMSEs_fixKappa <- function(MSEs.framed,
     theme(text = element_text(size=20), legend.position = legend.position) 
 
   if(line){
-    plot.1 <- plot.1 + geom_line()
+    plot.1 <- plot.1 + geom_line(linetype=lty)
   }
   
   if(!missing(y.lim)){

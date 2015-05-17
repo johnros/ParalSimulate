@@ -16,24 +16,30 @@ library(InformationAndInference)
 ```{r OLS fix N frame and plot}
 load('RData/MSEs_choose_m.5.RData')
 MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
+.lwd <- 1
+.lty <- 3
+.lwd.error <- 0.5
+.lty.error <- 1
+.point.size <- 3
+.point.size.error <- 0
 
 # Second order fixed-p bias approxiamtion
 MSEs.framed.000 %<>% mutate(error.asympt=biasOLS_Fixp())
-plot.0001 <- plotMSEs2(MSEs.framed.000, '(a) OLS Bias', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='bias.mean')
+plot.0001 <- plotMSEs2(MSEs.framed.000, '(a) OLS Bias', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='bias.mean', lty=.lty, lwd=.lwd, lwd.error=.lwd.error, lty.error = .lty.error, point.size = .point.size, point.size.error = .point.size.error)
 plot.0001
 
 # High dim MSE approximation
 MSEs.framed.000 %<>% mutate(kappa=p/n)
 MSEs.framed.000$error.asympt <-  apply(MSEs.framed.000, 1, function(x) 
   ApproxMSE_OLS_highdim2(kappa=x[['kappa']], m=x[['m']], sigma.sq = x[['sigma']]^2))
-plot.0002 <- plotMSEs2(MSEs.framed.000, '(b) OLS MSE- high-dim', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE')
+plot.0002 <- plotMSEs2(MSEs.framed.000, '(b) OLS MSE- high-dim', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE',  lty=.lty, lwd=.lwd, lwd.error=.lwd.error, lty.error = .lty.error, point.size = .point.size, point.size.error = .point.size.error)
 plot.0002
 
 # Second order fixed-p MSE approximation
 MSEs.framed.000 %<>% mutate(kappa=p/n)
 MSEs.framed.000$error.asympt <-  apply(MSEs.framed.000, 1, function(x) 
   ApproxMSE_OLS_fixp2(n=x[['n']], p=x[['p']], m=x[['m']], sigma.sq = x[['sigma']]^2))
-plot.0003 <- plotMSEs2(MSEs.framed.000, '(c) OLS MSE- second order fixed-p', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE')
+plot.0003 <- plotMSEs2(MSEs.framed.000, '(c) OLS MSE- second order fixed-p', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE', lty=.lty, lwd=.lwd,  lwd.error=.lwd.error, lty.error = .lty.error, point.size = .point.size, point.size.error = .point.size.error)
 plot.0003
 ```
 
@@ -65,13 +71,13 @@ MSEs.framed.001 %>% select(replications, bias.single, p) %>% head
 # Second order Ridge bias
 MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 
   biasMeanRidge_Fixp(N=x[['N']], p = x[['p']], m=x[['m']], lambda = x[['lambda']], beta = x[['beta.star']]))
-plot.0011 <- plotMSEs2(MSEs.framed.001, '(a) Ridge bias', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='bias.mean')
+plot.0011 <- plotMSEs2(MSEs.framed.001, '(a) Ridge bias', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='bias.mean', lty = .lty, lwd=.lwd, lty.error = .lty.error, lwd.error = .lwd.error,  point.size = .point.size, point.size.error = .point.size.error)
 plot.0011
 
 # Second order Ridge MSE
 MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 
   ApproxMSE_Ridge_fixp2(n=x[['n']], p=x[['p']], m=x[['m']], lambda = x[['lambda']], beta = x[['beta']], sigma.sq = x[['sigma']]^2))
-plot.0012 <- plotMSEs2(MSEs.framed.001, '(b) Ridge second order MSE ', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='MSE')
+plot.0012 <- plotMSEs2(MSEs.framed.001, '(b) Ridge second order MSE ', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='MSE', lty = .lty, lwd=.lwd, lty.error = .lty.error, lwd.error = .lwd.error,  point.size = .point.size, point.size.error = .point.size.error)
 plot.0012
 ```
 
