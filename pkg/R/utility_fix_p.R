@@ -319,7 +319,7 @@ frameMSEs <- function(MSEs, configurations){
   
   bias.norm <- parallel.bias %>% sapply( function(x) {x %>% SSQ %>% sqrt})
       
-  bias.mean <- parallel.bias %>% sapply( function(x) {x %>% mean})
+  bias.mean <- parallel.bias %>% sapply( function(x) {x[length(x)]}) # Use the error in the last coordinate
   
   bias.single <- parallel.bias %>% sapply( function(x) {x[[length(x)]]})
       
@@ -476,7 +476,8 @@ plotMSEs2 <- function(MSEs.framed,
                       lwd.error=0.5,
                       lty.error=1,
                       point.size=1,
-                      point.size.error=0){
+                      point.size.error=0,
+                      scale.y=scale_y_continuous()){
 
   
   MSEs.framed %<>% mutate(arm=0, 
@@ -535,7 +536,8 @@ plotMSEs2 <- function(MSEs.framed,
     xlab(expression(m))+
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
-    theme(text = element_text(size=20), legend.position = legend.position) 
+    theme(text = element_text(size=20), legend.position = legend.position)+
+    scale.y
   
   if(!is.na(MSEs.framed$error.asympt[1]))  
     plot.1 <- plot.1 + 

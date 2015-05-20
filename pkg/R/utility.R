@@ -197,3 +197,15 @@ cleanMSEs <- function(x) {
     do.call(cbind,.) %>%
     apply(2,unlist)
 }
+
+
+
+# Optimize m, fixed-p, fixed-N:
+choose_m_fixp_fixN <- function(eps, p, N, sigma.sq){
+  (eps/p - sigma.sq*p/N)*(N^2 / ((1+p)*p*sigma.sq))
+}
+## Testing:
+# choose_m_fixp_fixN(eps=0.2, p=100, N=1e6, sigma.sq = 1e1) 
+
+
+
