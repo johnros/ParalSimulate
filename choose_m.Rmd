@@ -67,7 +67,7 @@ dev.off()
 
 ```{r Ridge fix N}
 load('RData/MSEs_choose_m_ridge.5.RData')
-MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001)
+MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001, coordinate = 1)
 MSEs.framed.001 %>% select(replications, bias.single, p) %>% head
 
 
@@ -75,12 +75,14 @@ MSEs.framed.001 %>% select(replications, bias.single, p) %>% head
 # Second order Ridge bias
 MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 
   biasMeanRidge_Fixp(N=x[['N']], p = x[['p']], m=x[['m']], lambda = x[['lambda']], beta = x[['beta.star']]))
+
 plot.0011 <- plotMSEs2(MSEs.framed.001, '(a) Ridge bias', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='bias.mean', lty = .lty, lwd=.lwd, lty.error = .lty.error, lwd.error = .lwd.error,  point.size = .point.size, point.size.error = .point.size.error)
 plot.0011
 
 # Second order Ridge MSE
 MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 
   ApproxMSE_Ridge_fixp2(n=x[['n']], p=x[['p']], m=x[['m']], lambda = x[['lambda']], beta = x[['beta']], sigma.sq = x[['sigma']]^2))
+
 plot.0012 <- plotMSEs2(MSEs.framed.001, '(b) Ridge second order MSE ', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='MSE', lty = .lty, lwd=.lwd, lty.error = .lty.error, lwd.error = .lwd.error,  point.size = .point.size, point.size.error = .point.size.error)
 plot.0012
 ```

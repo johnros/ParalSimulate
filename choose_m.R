@@ -16,7 +16,7 @@ library(InformationAndInference)
 (.n <- round(.N/.m))
 .kappa <- 0.2
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
-.reps <- 1e2
+.reps <- 1e3
 .beta.norm <- 1e1
 
 

@@ -312,7 +312,7 @@ getBias <- function(x){
 
 
 ## Get errors (MSE and bias) for each configuration and return data.frame.
-frameMSEs <- function(MSEs, configurations){
+frameMSEs <- function(MSEs, configurations, coordinate=50){
   
   # Compute norm of bias
   parallel.bias <- lapply(MSEs, getBias)
@@ -321,7 +321,7 @@ frameMSEs <- function(MSEs, configurations){
       
   bias.mean <- parallel.bias %>% sapply( function(x) {x[length(x)]}) # Use the error in the last coordinate
   
-  bias.single <- parallel.bias %>% sapply( function(x) {x[[length(x)]]})
+  bias.single <- parallel.bias %>% sapply( function(x) {x[coordinate]})
       
   # Frame MSE of each configuration
   MSEs.list <- lapply(MSEs, cleanMSEs)
