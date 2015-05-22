@@ -80,7 +80,7 @@ source('fix_kappa_run.R')
 ```
 
 ```{r split results}
-# load(file='RData/MSEs_fix_kappa.9.RData') 
+load(file='RData/MSEs_fix_kappa.9.RData') 
 
 MSEs.framed.fix.kappa <- frameMSEs_fixKappa(MSEs.fix.kappa, configurations.fix.kappa)
 
