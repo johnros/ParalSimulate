@@ -83,7 +83,7 @@ plot.0011
 MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 
   ApproxMSE_Ridge_fixp2(n=x[['n']], p=x[['p']], m=x[['m']], lambda = x[['lambda']], beta = x[['beta']], sigma.sq = x[['sigma']]^2))
 
-plot.0012 <- plotMSEs2(MSEs.framed.001, '(b) Ridge second order MSE ', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='MSE', lty = .lty, lwd=.lwd, lty.error = .lty.error, lwd.error = .lwd.error,  point.size = .point.size, point.size.error = .point.size.error)
+plot.0012 <- plotMSEs2(MSEs.framed.001, '(b) Ridge second order MSE ', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='MSE', lty = .lty, lwd=.lwd, lty.error = .lty.error, lwd.error = .lwd.error,  point.size = .point.size, point.size.error = .point.size.error, scale.y = scale_y_log10())
 plot.0012
 ```
 
