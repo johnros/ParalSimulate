@@ -32,7 +32,7 @@ configurations.00 <- makeConfiguration(
   name='ols') 
 ## Ridge
 configurations.10 <- makeConfiguration(
-  reps = 5e2,
+  reps = 1e3,
   m = .m, 
   kappa = .kappa, 
   n = .n, 
@@ -76,7 +76,7 @@ configurations.40<- makeConfiguration(
 
 
 ```{r run simulation}
-# source('fix_kappa_run.R')
+source('fix_kappa_run.R')
 ```
 
 ```{r split results}
