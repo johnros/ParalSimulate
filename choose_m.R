@@ -10,13 +10,13 @@
 # For large p, MSE should be linear. 
 # For small p, MSE can be non linear.
 library(InformationAndInference)
-.sigma <- 2e1
+.sigma <- 2e0
 .N <- 5e4
 (.m <- seq.int(1e1, 1e2, by=10) )
 (.n <- round(.N/.m))
 .kappa <- 0.2
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
-.reps <- 1e3
+.reps <- 1e2
 .beta.norm <- 1e1
 
 
@@ -47,7 +47,7 @@ clusterEvalQ(cl, library(InformationAndInference))
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
 
-save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.6.RData')
+save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.7.RData')
 
 
 
@@ -75,7 +75,7 @@ nrow(configurations.001)
 MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
 attr(MSEs.001, "createdAt") <- Sys.time()
 save(MSEs.001, configurations.001, 
-     file='RData/MSEs_choose_m_ridge.6.RData')
+     file='RData/MSEs_choose_m_ridge.7.RData')
 
 stopCluster(cl)
 
