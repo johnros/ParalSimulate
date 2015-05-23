@@ -47,7 +47,7 @@ clusterEvalQ(cl, library(InformationAndInference))
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
 
-save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.5.RData')
+save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.6.RData')
 
 
 
@@ -74,7 +74,8 @@ nrow(configurations.001)
 # clusterEvalQ(cl, library(InformationAndInference))
 MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
 attr(MSEs.001, "createdAt") <- Sys.time()
-save(MSEs.001, configurations.001, file='RData/MSEs_choose_m_ridge.5.RData')
+save(MSEs.001, configurations.001, 
+     file='RData/MSEs_choose_m_ridge.6.RData')
 
 stopCluster(cl)
 
