@@ -14,7 +14,7 @@ source('choose_m.R')
 
 
 ```{r OLS fix N frame and plot}
-# load('RData/MSEs_choose_m.6.RData')
+# load('RData/MSEs_choose_m.7.RData')
 MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
 .lwd <- 1
 .lty <- 3
@@ -66,7 +66,7 @@ dev.off()
 
 
 ```{r Ridge fix N}
-w# load('RData/MSEs_choose_m_ridge.6.RData')
+# load('RData/MSEs_choose_m_ridge.7.RData')
 MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001, coordinate = 1)
 MSEs.framed.001 %>% select(replications, bias.single, p) %>% head
 

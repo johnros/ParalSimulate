@@ -16,7 +16,7 @@ library(InformationAndInference)
 (.n <- round(.N/.m))
 .kappa <- 0.2
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
-.reps <- 1e2
+.reps <- 1e3
 .beta.norm <- 1e1
 
 
@@ -47,8 +47,6 @@ clusterEvalQ(cl, library(InformationAndInference))
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
 
-save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.7.RData')
-
 
 
 ## Ridge
@@ -74,8 +72,13 @@ nrow(configurations.001)
 # clusterEvalQ(cl, library(InformationAndInference))
 MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
 attr(MSEs.001, "createdAt") <- Sys.time()
+
+
+
 save(MSEs.001, configurations.001, 
-     file='RData/MSEs_choose_m_ridge.7.RData')
+     file='RData/MSEs_choose_m_ridge.8.RData')
+save(MSEs.000, configurations.000, 
+     file='RData/MSEs_choose_m.8.RData')
 
 stopCluster(cl)
 
