@@ -146,14 +146,18 @@ plotMSEs_fixKappa <- function(MSEs.framed,
                               y.lim,
                               legend.position='none',
                               line=TRUE,
-                              lty=3){
+                              lty=3,
+                              size=1, 
+                              font.size=50){
   
   MSEs.framed %<>% mutate(m=as.factor(m))
   
   MSEs.framed %<>% mutate(center=average, arm=0)
   
+  # Actual plotting:
   plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m, group=m))+
-    geom_point()  
+    geom_point(aes(shape=m), size=size)  
+  
   if(!is.na(MSEs.framed$truth[1])){
     plot.1 <- plot.1 + geom_hline(aes(yintercept=truth, col=m), linetype=2)
   }
@@ -162,9 +166,8 @@ plotMSEs_fixKappa <- function(MSEs.framed,
     labs(title = the.title)+
     ylab(y.lab)+
     xlab(expression(n))+
-    #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
-    theme(text = element_text(size=20), legend.position = legend.position) 
+    theme(text = element_text(size=font.size), legend.position = legend.position) 
 
   if(line){
     plot.1 <- plot.1 + geom_line(linetype=lty)

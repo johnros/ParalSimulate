@@ -84,14 +84,15 @@ MSEs.framed.4 <- MSEs.framed %>% filter(name=='logistic')
 .ylim2 <- c(0.95,4)
 .jitter <- 10
 .size <- 3
+.font.size <- 40
 
-plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter, size = .size)
+plot.0 <- plotMSEs(MSEs.framed.0, '(a) OLS', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter, size = .size, font.size = .font.size)
 
-plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter, size = .size)
+plot.1 <- plotMSEs(MSEs.framed.1, '(b) Ridge', center='median', legend.position='none', y.lim=.ylim, jitter=.jitter, size = .size, font.size = .font.size)
 
-plot.3 <- plotMSEs(MSEs.framed.3, '(c) NLS', center='median', legend.position='none', jitter=.jitter, y.lim=.ylim2, size = .size)
+plot.3 <- plotMSEs(MSEs.framed.3, '(c) NLS', center='median', legend.position='none', jitter=.jitter, y.lim=.ylim2, size = .size, font.size = .font.size)
 
-plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic', center='median', legend.position='none', jitter=.jitter, y.lim=.ylim2, size = .size)
+plot.4 <- plotMSEs(MSEs.framed.4, '(d) Logistic', center='median', legend.position='none', jitter=.jitter, y.lim=.ylim2, size = .size, font.size = .font.size)
 
 grid.arrange(plot.0, plot.1, plot.3, plot.4, ncol=2)
 ```

@@ -382,7 +382,8 @@ plotMSEs <- function(MSEs.framed,
                      jitter=0, 
                      line=TRUE,
                      lty=3,
-                     size=1){
+                     size=1, 
+                     font.size=50){
   
   
   if(center=='MSE'){
@@ -416,7 +417,7 @@ plotMSEs <- function(MSEs.framed,
     xlab(expression(n))+
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
-    theme(text = element_text(size=20), legend.position = legend.position) 
+    theme(text = element_text(size=font.size), legend.position = legend.position) 
   
   if(line){
     plot.1 <- plot.1 + geom_line(linetype=lty)
