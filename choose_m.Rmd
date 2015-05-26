@@ -14,7 +14,8 @@ source('choose_m.R')
 
 
 ```{r OLS fix N frame and plot}
-# load('RData/MSEs_choose_m.6.RData')
+load('RData/MSEs_choose_m.8.RData')
+
 MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
 .lwd <- 1
 .lty <- 3
@@ -50,13 +51,17 @@ plot.0003
 
 ```{r fix N OLS plot}
 directory <- "~/workspace/ParalSimulate/output/"
-the.file <-paste(directory, "choose_m_OLS_1.pdf", sep='')
+the.file <-paste(directory, "choose_m_OLS_%d.pdf", sep='')
 pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
 
 plot.0001 <- plot.0001 +
   theme(legend.position=c(0.08, 0.5), legend.key.size=unit(5,"mm")) 
 
 grid.arrange(plot.0001, plot.0003, plot.0002, ncol=1)
+plot.0001
+plot.0003
+plot.0002
+
 dev.off()
 ```
 
@@ -66,7 +71,7 @@ dev.off()
 
 
 ```{r Ridge fix N}
-w# load('RData/MSEs_choose_m_ridge.6.RData')
+load('RData/MSEs_choose_m_ridge.8.RData')
 MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001, coordinate = 1)
 MSEs.framed.001 %>% select(replications, bias.single, p) %>% head
 
@@ -90,13 +95,16 @@ plot.0012
 
 ```{r fix N Ridge plot}
 directory <- "~/workspace/ParalSimulate/output/"
-the.file <-paste(directory, "choose_m_Ridge_1.pdf", sep='')
+the.file <-paste(directory, "choose_m_Ridge_%d.pdf", sep='')
 pdf(file=the.file, onefile = FALSE, paper = "special", width=8, height=8)
 
 plot.0011 <- plot.0011 +
   theme(legend.position=c(0.08, 0.45), legend.key.size=unit(5,"mm"))
 
 grid.arrange(plot.0011, plot.0012, ncol=1)
+plot.0011
+plot.0012
+
 dev.off()
 ```
 

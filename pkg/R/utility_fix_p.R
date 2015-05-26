@@ -481,7 +481,8 @@ plotMSEs2 <- function(MSEs.framed,
                       lty.error=1,
                       point.size=1,
                       point.size.error=0,
-                      scale.y=scale_y_continuous()){
+                      scale.y=scale_y_continuous(),
+                      font.size=50){
 
   
   MSEs.framed %<>% mutate(arm=0, 
@@ -520,8 +521,6 @@ plotMSEs2 <- function(MSEs.framed,
                      aes(x=m, y=center, 
                          shape=p,
                          colour=p,
-                         #shape = N,
-                         #group=interaction(N, p)))
                          group=p))
   }
   
@@ -540,7 +539,7 @@ plotMSEs2 <- function(MSEs.framed,
     xlab(expression(m))+
     #scale_x_continuous(trans=log_trans(base = 10), breaks=c(5e2, 1e3, 5e3))+
     theme_bw()+
-    theme(text = element_text(size=20), legend.position = legend.position)+
+    theme(text = element_text(size=font.size), legend.position = legend.position)+
     scale.y
   
   if(!is.na(MSEs.framed$error.asympt[1]))  
