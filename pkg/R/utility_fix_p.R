@@ -381,7 +381,8 @@ plotMSEs <- function(MSEs.framed,
                      legend.position="none",
                      jitter=0, 
                      line=TRUE,
-                     lty=3){
+                     lty=3,
+                     size=1){
   
   
   if(center=='MSE'){
@@ -403,8 +404,10 @@ plotMSEs <- function(MSEs.framed,
   MSEs.framed %<>% mutate(n=n+runif(nrow(MSEs.framed),-jitter,jitter),
                             m=as.factor(m))
   
-  plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m, group=m))+
-    geom_point()+
+  
+  # Actual Plotting:
+  plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m))+
+    geom_point(aes(shape=m), size=size)+
     geom_segment(aes(xend=n, y=center+arm, yend=center-arm))  
   
   plot.1 <- plot.1 +
