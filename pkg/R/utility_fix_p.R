@@ -260,7 +260,7 @@ analyzeParallel <- function(data, m, model, N, p, ...){
     .coefs<- COEFS(.the.fit)
     machine.wise[,i] <- .coefs 
   }
-  averaged.coefs <- rowMeans(machine.wise, na.rm=TRUE)
+  averaged.coefs <- rowMeans(machine.wise, na.rm=TRUE) # aggregate by averaging
   
   result <- list(averaged=averaged.coefs, 
                  centralized=center.coefs)
@@ -273,10 +273,10 @@ analyzeParallel <- function(data, m, model, N, p, ...){
 
 # Get single configuration, make data and return errors for parallelized and distributed:
 getErrors <- function(configuration){
-  data.maker <- configuration[['data.maker']]
-  data <- do.call(data.maker, configuration)
-  coefs <- do.call(analyzeParallel, c(list(data=data), configuration))
-  errors <- list(
+  data.maker <- configuration[['data.maker']] # how to create data?
+  data <- do.call(data.maker, configuration) # make data
+  coefs <- do.call(analyzeParallel, c(list(data=data), configuration)) # compute error
+  errors <- list( # substract estimates from truth
     averaged= coefs$averaged - configuration$beta.star,
     centralized= coefs$centralized - configuration$beta.star)  
   return(errors)      
@@ -301,28 +301,33 @@ getBiasNorm <- function(x) {
 
 
 
-# Compute the parallelizastion bias from many replications
+
+
+
+
+
+# Get raw errors of averaged estimator
 getBias <- function(x){
-  x['errors',] %>%
+  x['errors',] %>% 
     lapply(function(x) x[['averaged']]) %>% 
-    do.call(cbind,.)
+    do.call(cbind,.) %>% 
+    rowMeans
 }
 
 
 
 
 ## Get errors (MSE and bias) for each configuration and return data.frame.
-frameMSEs <- function(MSEs, configurations, coordinate=50){
+frameMSEs <- function(MSEs, configurations, coordinate){
   
   # Compute norm of bias
-  parallel.bias <- lapply(MSEs, getBias)
+  parallel.bias <- lapply(MSEs, getBias) # list of raw error in each configuration and replication
   
-  bias.norm <- parallel.bias %>% sapply( function(x) {x %>% SSQ %>% sqrt})
-      
-  bias.mean <- parallel.bias %>% sapply( function(x) {x[length(x)]}) # Use the error in the last coordinate
+  # Average error over replication in each configuration (should return matrix of replicationXp)
+  bias.single <- parallel.bias %>% sapply( function(x) {x[coordinate]}) 
   
-  bias.single <- parallel.bias %>% sapply( function(x) {x[coordinate]})
-      
+  bias.mean <- parallel.bias %>% sapply( function(x) {x %>% mean}) 
+  
   # Frame MSE of each configuration
   MSEs.list <- lapply(MSEs, cleanMSEs)
   
@@ -355,7 +360,6 @@ frameMSEs <- function(MSEs, configurations, coordinate=50){
   MSEs.framed <- data.frame(configurations, 
                             ratios.frame, 
                             MSEs.frame.parallel,
-                            bias.norm=bias.norm,
                             bias.mean=bias.mean,
                             bias.single=bias.single,
                             error.asympt=NA) 
@@ -482,7 +486,7 @@ plotMSEs2 <- function(MSEs.framed,
                       point.size=1,
                       point.size.error=0,
                       scale.y=scale_y_continuous(),
-                      font.size=50){
+                      font.size=20){
 
   
   MSEs.framed %<>% mutate(arm=0, 

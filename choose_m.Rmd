@@ -15,8 +15,8 @@ output: pdf_document
 ```{r OLS fix N frame and plot}
 library(InformationAndInference)
 load('RData/MSEs_choose_m.8.RData')
-
-MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
+.coodrinate <- 50
+MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000, coordinate = .coodrinate)
 .lwd <- 1
 .lty <- 3
 .lwd.error <- 0.5
@@ -26,6 +26,7 @@ MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000)
 .font.size <- 20
 # .scale <- scale_y_log10()
 .scale <- scale_y_continuous()
+
 
 # Second order fixed-p bias approxiamtion
 MSEs.framed.000 %<>% mutate(error.asympt=biasOLS_Fixp())
@@ -48,7 +49,6 @@ MSEs.framed.000$error.asympt <-  apply(MSEs.framed.000, 1, function(x)
 
 plot.0002 <- plotMSEs2(MSEs.framed.000, '(c) OLS MSE- high-dim', robust=NA, legend.position='none', jitter=0, line=TRUE, fix='Np', center='MSE',  lty=.lty, lwd=.lwd, lwd.error=.lwd.error, lty.error = .lty.error, point.size = .point.size, point.size.error = .point.size.error, scale.y = .scale, font.size = .font.size) +  coord_trans(y="log10")
 plot.0002
-
 ```
 
 
@@ -78,18 +78,23 @@ dev.off()
 
 ```{r Ridge fix N}
 load('RData/MSEs_choose_m_ridge.8.RData')
-MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001, coordinate = 1)
+MSEs.framed.001<- frameMSEs(MSEs.001, configurations.001, coordinate = .coodrinate)
 # MSEs.framed.001 %>% select(replications, bias.single, p) %>% head
 
 
 
 # Second order Ridge bias
+# TODO: fix to return the bias of single coordinate
 MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 
-  biasMeanRidge_Fixp(N=x[['N']], p = x[['p']], m=x[['m']], lambda = x[['lambda']], beta = x[['beta.star']]))
+  biasSingleCoordinateRidge_Fixp(N=x[['N']], p = x[['p']], m=x[['m']], lambda = x[['lambda']], beta = x[['beta']], coordinate=.coodrinate))
 
-plot.0011 <- plotMSEs2(MSEs.framed.001, '(a) Ridge bias', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='bias.mean', lty = .lty, lwd=.lwd, lty.error = .lty.error, lwd.error = .lwd.error,  point.size = .point.size, point.size.error = .point.size.error, font.size = .font.size) + 
-  stat_smooth(method = "lm", alpha=0.1, lty=2)
+plot.0011 <- plotMSEs2(MSEs.framed.001, '(a) Ridge bias', robust=NA, legend.position='none',  jitter=0, line=TRUE, fix='Np', center='bias.single', lty = 0, lwd=.lwd, lty.error = .lty.error, lwd.error = .lwd.error,  point.size = .point.size, point.size.error = .point.size.error, font.size = .font.size) + 
+  stat_smooth(method = lm, alpha=1, lty=2, se=FALSE)
 plot.0011
+
+
+
+
 
 # Second order Ridge MSE
 MSEs.framed.001$error.asympt <-  apply(MSEs.framed.001, 1, function(x) 

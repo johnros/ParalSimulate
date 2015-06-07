@@ -123,6 +123,14 @@ biasMeanRidge_Fixp <- function(lambda, p, N, m, beta, ...){
 ## Testing:
 
 
+biasSingleCoordinateRidge_Fixp <- function(lambda, p, N, m, beta, coordinate, ...){
+  if(is.list(beta)) beta <- unlist(beta)
+  - beta[coordinate] * m/N * lambda/(1+lambda)^3 * (p+1) 
+}
+## Testing:
+
+
+
 # The norm of the parallelization in Ridge 
 biasNormRidge_HighDim <- function(lambda, p, N, m, beta.norm, ...){
   # TODO
@@ -174,7 +182,7 @@ errorFun <- function(errors){
 replicateMSE <- function(configuration){
   MSEs <- replicate(configuration$replications,{
     # get the estimation errors of centralized and parallelized
-    errors <- getErrors(configuration)
+    errors <- getErrors(configuration) # get raw errors
     # Return raw errors with statistic
     list(errorFun(errors), errors=errors)
   })
@@ -200,7 +208,7 @@ cleanMSEs <- function(x) {
 
 
 
-# Optimize m, fixed-p, fixed-N:
+# Optimize m, fixed-p, fixed-N (fixed error):
 choose_m_fixp_fixN <- function(eps, p, N, sigma.sq){
   (eps/p - sigma.sq*p/N)*(N^2 / ((1+p)*p*sigma.sq))
 }
@@ -208,4 +216,27 @@ choose_m_fixp_fixN <- function(eps, p, N, sigma.sq){
 # choose_m_fixp_fixN(eps=0.2, p=100, N=1e6, sigma.sq = 1e1) 
 
 
+# Optimize m, fixed-p, fixed-n (fixed error):
+choose_m_fixp_fixn <- function(eps, p, n, sigma.sq){
+  p/eps * sigma.sq * p * (1/n+(1+p)/n^2)
+}
+## Testing:
+# choose_m_fixp_fixn(eps=0.2, p=100, n=1e4, sigma.sq = 1e1) 
+
+# Optimize m, fixed-p, fixed-N (proportional error):
+choose_m_fixp_fixN_prop <- function(eps, p, N, sigma.sq){
+  1+ eps + eps * N/(1+p)
+}
+## Testing:
+# choose_m_fixp_fixN_prop(eps=0.1, p=1e2, N=1e6, sigma.sq = 1e1) 
+# choose_m_fixp_fixN_prop(eps=0.1, p=1e3, N=1e6, sigma.sq = 1e1) 
+
+
+# Optimize m, fixed-p, fixed-n (proportional error):
+choose_m_fixp_fixn_prop <- function(eps, p, n, sigma.sq){
+  (1+eps)*(1+p)/(p+1-eps*n)
+}
+## Testing:
+# choose_m_fixp_fixn_prop(eps=0.01, p=1e2, n=1e4, sigma.sq = 1e1) 
+# choose_m_fixp_fixn_prop(eps=0.01, p=1e3, n=1e4, sigma.sq = 1e1) 
 

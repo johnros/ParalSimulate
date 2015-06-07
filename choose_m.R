@@ -10,13 +10,14 @@
 # For large p, MSE should be linear. 
 # For small p, MSE can be non linear.
 library(InformationAndInference)
+.reps <- 1e5
+
 .sigma <- 2e0
 .N <- 5e4
 (.m <- seq.int(1e1, 1e2, by=10) )
 (.n <- round(.N/.m))
 .kappa <- 0.2
 (.p <- seq(5e1, min(.n)*.kappa, length.out=4) %>% round(-1))
-.reps <- 1e2
 .beta.norm <- 1e1
 
 
@@ -47,8 +48,6 @@ clusterEvalQ(cl, library(InformationAndInference))
 MSEs.000 <- parApply(cl, configurations.000, 1, replicateMSE)
 attr(MSEs.000, "createdAt") <- Sys.time()
 
-save(MSEs.000, configurations.000, file='RData/MSEs_choose_m.7.RData')
-
 
 
 ## Ridge
@@ -72,10 +71,15 @@ nrow(configurations.001)
 
 # cl <- makeCluster(3, type="FORK", rscript_args = c("--no-init-file", "--no-site-file", "--no-environ"))
 # clusterEvalQ(cl, library(InformationAndInference))
-MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE)
+MSEs.001 <- parApply(cl, configurations.001, 1, replicateMSE) #object with raw errors.
 attr(MSEs.001, "createdAt") <- Sys.time()
+
+
+
 save(MSEs.001, configurations.001, 
-     file='RData/MSEs_choose_m_ridge.7.RData')
+     file='RData/MSEs_choose_m_ridge.9.RData')
+save(MSEs.000, configurations.000, 
+     file='RData/MSEs_choose_m.9.RData')
 
 stopCluster(cl)
 
