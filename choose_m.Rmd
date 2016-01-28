@@ -17,9 +17,9 @@ library(InformationAndInference)
 load('RData/MSEs_choose_m.8.RData')
 .coodrinate <- 50
 MSEs.framed.000 <- frameMSEs(MSEs.000, configurations.000, coordinate = .coodrinate)
-.lwd <- 1
+.lwd <- 2
 .lty <- 3
-.lwd.error <- 0.5
+.lwd.error <- 2
 .lty.error <- 1
 .point.size <- 3
 .point.size.error <- 0

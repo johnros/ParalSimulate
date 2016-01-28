@@ -480,9 +480,9 @@ plotMSEs2 <- function(MSEs.framed,
                       center,
                       rounding=-2,
                       lty=3,
-                      lwd=1,
-                      lwd.error=0.5,
-                      lty.error=1,
+                      lwd,
+                      lwd.error,
+                      lty.error,
                       point.size=1,
                       point.size.error=0,
                       scale.y=scale_y_continuous(),
@@ -537,7 +537,7 @@ plotMSEs2 <- function(MSEs.framed,
   plot.1 <- plot.1 + 
     # geom_line(lwd=lwd) + 
     geom_point(size=point.size) +
-    geom_line(linetype=lty, lwd=lwd)+
+    geom_line(linetype=lty, size=lwd)+
     labs(title = the.title)+
     ylab(y.lab)+
     xlab(expression(m))+

@@ -217,7 +217,7 @@ save(MSEs.4, configurations.4, file='RData/MSEs.4.RData')
 
 
 
-
+# All plots
 ```{r all_plots}
 load(file = 'RData/MSEs.0.RData')
 load(file = 'RData/MSEs.1.RData')

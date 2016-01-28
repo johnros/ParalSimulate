@@ -97,14 +97,15 @@ MSEs.framed.00 %<>% mutate(truth=truthOLS(kappa=kappa, m=m))
 .ylim <- c(0.8,2)
 .ylim2 <- c(0.8,15)
 .jitter <- 100
-.size <- 3
+line.size <- 3
+point.size <- 3
 .font.size <- 40
 
 
-plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, '(a) OLS', legend.position='none', y.lim=.ylim, size=.size, font.size = .font.size)
-plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, '(b) Ridge', legend.position='none', y.lim=.ylim, size=.size, font.size = .font.size)
-plot.30 <- plotMSEs_fixKappa(MSEs.framed.30, '(c) NLS', legend.position='none', y.lim=.ylim2, size=.size, font.size = .font.size)
-plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, '(d) Logistic', legend.position='none', y.lim=.ylim2, size=.size, font.size = .font.size)
+plot.00 <- plotMSEs_fixKappa(MSEs.framed.00, '(a) OLS', legend.position='none', y.lim=.ylim, line.size=line.size, point.size=point.size, font.size = .font.size)
+# plot.10 <- plotMSEs_fixKappa(MSEs.framed.10, '(b) Ridge', legend.position='none', y.lim=.ylim, line.size=line.size, point.size=point.size, font.size = .font.size)
+plot.30 <- plotMSEs_fixKappa(MSEs.framed.30, '(c) NLS', legend.position='none', y.lim=.ylim2, line.size=line.size, point.size=point.size, font.size = .font.size)
+plot.40 <- plotMSEs_fixKappa(MSEs.framed.40, '(d) Logistic', legend.position='none', y.lim=.ylim2, line.size=line.size, point.size=point.size, font.size = .font.size)
 
 grid.arrange(plot.00, plot.10, plot.30, plot.40, ncol=2)
 ```

@@ -148,7 +148,8 @@ plotMSEs_fixKappa <- function(MSEs.framed,
                               legend.position='none',
                               line=TRUE,
                               lty=3,
-                              size=1, 
+                              line.size, 
+                              point.size,
                               font.size=50){
   
   MSEs.framed %<>% mutate(m=as.factor(m))
@@ -157,7 +158,8 @@ plotMSEs_fixKappa <- function(MSEs.framed,
   
   # Actual plotting:
   plot.1 <- ggplot(data = MSEs.framed, aes(x=n, y=center, colour=m, group=m))+
-    geom_point(aes(shape=m), size=size)  
+    geom_point(aes(shape=m), size=point.size)+
+    geom_line(size=line.size)  
   
   if(!is.na(MSEs.framed$truth[1])){
     plot.1 <- plot.1 + geom_hline(aes(yintercept=truth, col=m), linetype=2)
